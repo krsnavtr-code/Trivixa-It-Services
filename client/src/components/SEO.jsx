@@ -22,29 +22,30 @@ import { Helmet } from 'react-helmet-async';
  * @returns {JSX.Element} - Returns Helmet component with meta tags
  */
 const SEO = ({
-  title = 'FirstVITE - Online Learning Platform',
-  description = 'FirstVITE E-Learning Pvt Ltd offers professional and management courses, including short programs and degree collaborations with international universities.',
-  keywords = 'online courses, e-learning, professional courses, management courses, online education, FirstVITE, skill development',
-  canonical = '',
+  title = "Trivixa IT Solution - Software & Website Development Company",
+  description = "Trivixa IT Solution is a professional IT services company offering website development, software solutions, mobile apps, UI/UX design, and digital transformation services for businesses.",
+  keywords = "Trivixa IT Solution, software company, website development company, IT services, web development, mobile app development, software solutions, UI UX design, digital solutions",
+  canonical = "",
   og = {},
-  twitter = {}
+  twitter = {},
 }) => {
-  const siteName = 'FirstVITE';
-  const siteUrl = 'https://firstvite.com';
-  const defaultImage = `${siteUrl}/images/firstvite-logo.png`;
-  
+  const siteName = "Trivixa IT Solution";
+  const siteUrl = "https://trivixa.in";
+  const defaultImage = `${siteUrl}/images/trivixa-fix-size-brand-logo.png`;
+
   // Default Open Graph values
   const ogTitle = og.title || title;
   const ogDescription = og.description || description;
   const ogImage = og.image || defaultImage;
-  const ogType = og.type || 'website';
-  const ogUrl = og.url || (typeof window !== 'undefined' ? window.location.href : siteUrl);
-  
+  const ogType = og.type || "website";
+  const ogUrl =
+    og.url || (typeof window !== "undefined" ? window.location.href : siteUrl);
+
   // Default Twitter card values
-  const twitterCard = twitter.card || 'summary_large_image';
-  const twitterSite = twitter.site || '@firstvite';
-  const twitterCreator = twitter.creator || '@firstvite';
-  
+  const twitterCard = twitter.card || "summary_large_image";
+  const twitterSite = twitter.site || "@trivixait";
+  const twitterCreator = twitter.creator || "@trivixait";
+
   return (
     <Helmet>
       {/* Primary Meta Tags */}
@@ -52,7 +53,7 @@ const SEO = ({
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       {canonical && <link rel="canonical" href={canonical} />}
-      
+
       {/* Open Graph / Facebook */}
       <meta property="og:title" content={ogTitle} />
       <meta property="og:description" content={ogDescription} />
@@ -60,14 +61,16 @@ const SEO = ({
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={ogUrl} />
       <meta property="og:site_name" content={siteName} />
-      
+
       {/* Twitter */}
       <meta name="twitter:card" content={twitterCard} />
       <meta name="twitter:title" content={ogTitle} />
       <meta name="twitter:description" content={ogDescription} />
       <meta name="twitter:image" content={ogImage} />
       {twitterSite && <meta name="twitter:site" content={twitterSite} />}
-      {twitterCreator && <meta name="twitter:creator" content={twitterCreator} />}
+      {twitterCreator && (
+        <meta name="twitter:creator" content={twitterCreator} />
+      )}
     </Helmet>
   );
 };

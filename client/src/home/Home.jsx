@@ -16,18 +16,18 @@ function Home() {
   return (
     <>
       <SEO
-        title="FirstVITE - Online Learning Platform | Professional & Management Courses"
-        description="FirstVITE E-Learning offers professional and management courses, including short programs and degree collaborations with international universities. Start your learning journey today!"
-        keywords="online courses, e-learning, professional courses, management courses, online education, FirstVITE, skill development, online learning platform"
+        title="Trivixa IT Solution - Software & Website Development Company"
+        description="Trivixa IT Solution provides professional website development, custom software solutions, mobile app development, and IT services to help businesses grow digitally."
+        keywords="Trivixa IT Solution, software company, website development, IT services, web development company, custom software, mobile app development, digital solutions"
         og={{
-          title: "FirstVITE - Transform Your Career with Online Learning",
+          title: "Trivixa IT Solution - Build Smart Digital Solutions",
           description:
-            "Join thousands of students learning in-demand skills with our expert-led courses. Flexible learning, industry-recognized certifications, and career support.",
+            "We help startups and businesses with modern websites, scalable software, mobile applications, and complete IT solutions tailored to your business needs.",
           type: "website",
-          image:
-            "http://firstvite.com/api/upload/file/img-1753961989896-7541613.png",
+          image: "https://trivixa.in/images/trivixa-og.png",
         }}
       />
+
       <div className="flex flex-col min-h-screen">
         {/* Hero Banner */}
         <Banner />
