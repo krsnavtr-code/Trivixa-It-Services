@@ -25,7 +25,7 @@ const RegisterForm = ({ onSuccess }) => {
         email: data.email,
         password: data.password,
         role: data.role || "student", // Default to student if not specified
-        department: data.department,
+        department: data.department || "Default IT",
         phone: data.phone,
       };
 
@@ -33,7 +33,7 @@ const RegisterForm = ({ onSuccess }) => {
       const response = await api.post("/auth/register", userData);
 
       // Show success message
-      toast.success("Registration successful! Please wait for admin approval.");
+      toast.success("Registration successful! You can LogIn now");
 
       // Call the success handler if provided
       if (onSuccess) {
@@ -219,33 +219,33 @@ const RegisterForm = ({ onSuccess }) => {
         )}
       </div>
 
-      <div>
+      <div className="flex items-center">
         <label
           htmlFor="role"
-          className="block text-sm font-medium  text-black "
+          className="block w-[50%] text-sm font-medium  text-black "
         >
-          I am a
+          Registering as
         </label>
         <select
           id="role"
           {...register("role", { required: "Please select a role" })}
-          className="mt-1 w-full border-gray-800 py-2 sm:text-sm rounded-md  bg-gray-50 text-black"
+          className="w-full border border-gray-800 py-1 sm:text-sm rounded-md  bg-gray-50 text-black"
           defaultValue="student"
         >
-          <option value="student">Student</option>
-          <option value="teacher">Teacher</option>
+          <option value="student">Individual</option>
+          <option value="teacher">Organization</option>
         </select>
         {errors.role && (
           <p className="text-sm text-red-600">{errors.role.message}</p>
         )}
       </div>
 
-      <div>
+      {/* <div>
         <label
           htmlFor="department"
           className="block text-sm font-medium text-black "
         >
-          Department
+          Industry
         </label>
         <input
           id="department"
@@ -258,7 +258,7 @@ const RegisterForm = ({ onSuccess }) => {
         {errors.department && (
           <p className="text-sm text-red-600">{errors.department.message}</p>
         )}
-      </div>
+      </div> */}
 
       <div>
         <button

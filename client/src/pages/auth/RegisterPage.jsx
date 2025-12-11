@@ -7,16 +7,16 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   const handleSuccess = () => {
-    navigate('/login', { state: { message: 'Registration successful! Please wait for admin approval.' } });
+    navigate('/login', { state: { message: 'Registration successful! You can LogIn now' } });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-500 to-blue-500 p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg overflow-hidden grid md:grid-cols-2">
         {/* Left Side - Welcome */}
-        <div className="bg-gradient-to-br from-orange-500 to-blue-500 text-white flex flex-col justify-center relative p-8">
+        <div className="flex text-black flex-col justify-center relative p-8">
           {/* Home icon button */}
-          <Link to="/" className="text-white absolute top-4 left-8">
+          <Link to="/" className="absolute top-4 left-8">
             <svg
               className="w-6 h-6"
               fill="currentColor"
@@ -26,14 +26,13 @@ const RegisterPage = () => {
               <path d="M10.707 1.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 9.414V17a1 1 0 001 1h3a1 1 0 001-1v-3h2v3a1 1 0 001 1h3a1 1 0 001-1V9.414l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
           </Link>
-          <h1 className="text-3xl font-bold mb-4">Welcome to FirstVITE</h1>
+          <h1 className="text-3xl font-bold mb-4">Welcome to Trivixa</h1>
           <p className="text-sm opacity-90">
-            To make high-quality education accessible online, helping learners
-            gain practical, job-ready skills in trending domains.
+            Transform your vision into a high-performance, fully functional website with Trivixa.
           </p>
         </div>
         {/* Right Side - Login Form */}
-        <div className="p-8 flex flex-col justify-center">
+        <div className="p-8 flex flex-col justify-center dark:bg-slate-800">
           <RegisterForm onSuccess={handleSuccess} />
         </div>
       </div>

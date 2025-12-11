@@ -21,6 +21,7 @@ import { toast } from "react-hot-toast";
 import { debounce } from "lodash";
 import api from "../api/axios";
 import PaymentForm from "./PaymentForm";
+import { FiSun, FiMoon } from "react-icons/fi";
 
 function Navbar() {
   const { authUser, isAuthenticated, isAdmin, isApproved, logout } = useAuth();
@@ -34,16 +35,19 @@ function Navbar() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if the click was outside the dropdown and not on the payment button
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target) && 
-          !event.target.closest('[data-payment-button]')) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        !event.target.closest("[data-payment-button]")
+      ) {
         setShowPaymentDropdown(false);
       }
     };
 
     // Use 'click' instead of 'mousedown' for better reliability
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
@@ -357,17 +361,18 @@ function Navbar() {
   // Navigation items
   const navItems = [
     // { to: "/", label: "Home" },
-    { to: "/free-courses", label: "Free Courses" },
+    { to: "/github", label: "GitHub" },
+    { to: "/free-courses", label: "Free Projects" },
     { to: "/lms", lmscolors: true },
     ...(isAdmin ? [{ to: "/admin", label: "Admin" }] : []),
   ];
 
   const renderNavItems = (className = "") => (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       {/* Home */}
       <Link
         to="/"
-        className={`px-2 py-1.5 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap ${
+        className={`hover-underline px-2 py-1.5 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap ${
           false
             ? "text-black dark:text-white hover:bg-orange-50 dark:hover:bg-orange-900/30"
             : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
@@ -384,17 +389,12 @@ function Navbar() {
         <Link
           key={item.to}
           to={item.to}
-          className={`px-2 py-1.5 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap ${
+          className={`hover-underline px-2 py-1.5 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap ${
             item.lmscolors
               ? "text-black dark:text-white hover:bg-orange-50 dark:hover:bg-orange-900/30"
               : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
           } ${className}`}
         >
-          {item.lmscolors && (
-            <span className="px-1 py-1 font-bold text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-200 dark:bg-blue-900/30 rounded hover:bg-blue-300 dark:hover:bg-blue-900/30">
-              SMART <span className=" text-orange-500">Board</span>
-            </span>
-          )}
           {item.label}
         </Link>
       ))}
@@ -405,13 +405,13 @@ function Navbar() {
     <>
       {/* Nabvar */}
       <div
-        className="z-50 transition-all duration-300 bg-white dark:bg-gray-900 h-16 sticky top-0 left-0 right-0"
+        className="z-50 transition-all duration-300 bg-white dark:bg-gray-900 h-12 sticky top-0 left-0 right-0"
         id="main-navbar"
       >
         {/* Desktop Navbar */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Mobile menu button */}
+          <div className="flex items-center justify-between h-12">
+            {/* Mobile menu togol button */}
             <div className="flex items-center">
               <button
                 type="button"
@@ -433,22 +433,15 @@ function Navbar() {
                 />
               </button>
               <div className="flex-shrink-0">
-                <Link
-                  to="/"
-                  className="text-lg font-bold text-blue-600 dark:text-blue-400"
-                >
-                  <span style={{ color: "#F47C26" }}>First</span>
-                  <span style={{ color: "#1E90FF" }}>VITE</span>
+                <Link to="/" className="group inline-block">
+                  <img
+                    src="/images/trivixa-fix-size-brand-logo.png"
+                    alt="Trivixa Logo"
+                    className="h-10 w-auto rounded transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-1 group-hover:shadow-lg dark:group-hover:shadow-blue-500/30"
+                  />
                 </Link>
               </div>
 
-              {/* Desktop menu */}
-              <div className="hidden md:flex md:items-center xl:ml-8 lg:ml-6">
-                <div className="flex-shrink-0">{renderNavItems()}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
               {/* Search */}
               <div className="relative" ref={searchRef}>
                 <div className="flex items-center">
@@ -462,16 +455,18 @@ function Navbar() {
                         }, 0);
                       }
                     }}
-                    className="p-2 rounded-full text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-900 transition-colors duration-200 search-icon-container"
                     aria-label="Search"
+                    className="group p-2 ml-6 rounded-full text-gray-600 dark:text-gray-300 bg-transparent transition-all duration-300 ease-out hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:shadow-md hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <FaSearch className="w-4 h-4" />
+                    <FaSearch
+                      className="w-4 h-4 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110"
+                    />
                   </button>
                 </div>
 
                 {/* Search Dropdown */}
                 <div
-                  className={`absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out transform ${
+                  className={`absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out transform ${
                     isSearchOpen
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 -translate-y-2 pointer-events-none"
@@ -557,34 +552,39 @@ function Navbar() {
                   </form>
                 </div>
               </div>
+            </div>
+
+            {/* Right */}
+            <div className="flex items-center space-x-2">
+              {/* Desktop menu */}
+              <div className="hidden md:flex md:items-center xl:ml-8 lg:ml-6">
+                <div className="flex-shrink-0">{renderNavItems()}</div>
+              </div>
 
               {/* Theme Toggle */}
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-900 transition-colors duration-200"
                 aria-label={
                   theme === "dark"
                     ? "Switch to light mode"
                     : "Switch to dark mode"
                 }
+                className="relative flex items-center justify-between w-12 h-6 rounded-full bg-gray-300 dark:bg-gray-700 p-1 transition-colors duration-300"
               >
-                {theme === "dark" ? (
-                  <FaSun className="w-4 h-4 p-0 m-0" />
-                ) : (
-                  <FaMoon className="w-4 h-4 p-0 m-0" />
-                )}
+                {/* Sliding Circle */}
+                <span
+                  className={`absolute top-1 h-4 w-4 rounded-full bg-white dark:bg-gray-900 shadow-md transition-transform duration-300 ${
+                    theme === "dark" ? "translate-x-6" : "translate-x-0"
+                  }`}
+                />
+
+                {/* Icons */}
+                <FiSun className="z-10 w-3 h-3 text-yellow-600" />
+                <FiMoon className="z-10 w-3 h-3 text-gray-700 dark:text-gray-200" />
               </button>
 
-              {/* Payment Button */}
-              <a
-                href="https://genlead.in/agent/register"
-                className="flex hidden lg:block items-center flex-col px-1 py-1 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Agent Register
-              </a>
-
               {/* Payment Dropdown */}
-              <div className="relative hidden lg:block md:block">
+              {/* <div className="relative hidden lg:block md:block">
                 <button
                   className="flex items-center px-1 py-1 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   onClick={() => setShowPaymentDropdown(!showPaymentDropdown)}
@@ -637,77 +637,9 @@ function Navbar() {
                         </svg>
                       </button>
                     </div>
-                    {/* <div className="px-3 py-2 border-b border-gray-100">
-                      <button
-                        className="flex flex-col justify-between w-full px-4 py-2.5 text-sm font-medium text-indigo-700 transition-colors bg-indigo-50 rounded-md hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
-                        role="menuitem"
-                      >
-                        <span>Pay with QR Code</span>
-                        <img src="" alt="QR Code" className="w-12 h-12" />
-                      </button>
-                    </div> */}
-
-                    {/*    
-                    <div
-                      className="py-1"
-                      role="menu"
-                      aria-orientation="vertical"
-                    >
-                      <div className="space-y-2 p-4">
-                        <h3 className="font-medium text-blue-600 mb-3">
-                          Pay Using{" "}
-                          <span className="text-orange-600">Bank Transfer</span>
-                        </h3>
-                        <div className="space-y-2">
-                          {[
-                            {
-                              label: "Branch",
-                              value: "ICICI Bank, Noida Sector 61",
-                            },
-                            {
-                              label: "Account  Name",
-                              value: "FirstVITE e learning Pvt Ltd.",
-                            },
-                            { label: "Account Number", value: "025305010216" },
-                            { label: "IFSC Code", value: "ICIC0000253" },
-                          ].map((item, index) => (
-                            <div key={index} className="group relative">
-                              <div className="flex flex-col justify-between">
-                                <span className="text-sm font-medium text-black w-full">
-                                  {item.label}:
-                                </span>
-                                <div className="flex items-center">
-                                  <button
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(item.value);
-                                      setCopiedIndex(index);
-                                      setTimeout(() => {
-                                        setCopiedIndex(null);
-                                      }, 2000);
-                                    }}
-                                    className="pe-1 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
-                                    title={`Copy ${item.label}`}
-                                  >
-                                    {copiedIndex === index ? (
-                                      <FaCheck className="text-green-500" />
-                                    ) : (
-                                      <FaCopy />
-                                    )}
-                                  </button>
-                                  <span className="text-xs text-black font-mono">
-                                    {item.value}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    */}
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* User menu */}
               {isAuthenticated ? (
@@ -781,10 +713,10 @@ function Navbar() {
                   <Link
                     to="/login"
                     state={{ from: location }}
-                    className="flex items-center px-1 py-1 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+                    className="flex items-center px-1 py-1 text-sm font-medium rounded-md text-black dark:text-white gap-1 transition-colors duration-200"
                   >
-                    <FaSignInAlt className="mr-0.5" />
                     Login
+                    <FaSignInAlt className="mr-0.5" />
                   </Link>
                 </div>
               )}
@@ -818,7 +750,7 @@ function Navbar() {
               {/* Bottom Action Buttons */}
               <div className="pt-1 border-t border-gray-200 dark:border-gray-700 space-y-3">
                 {/* SMART Board */}
-                <Link
+                {/* <Link
                   to="/lms"
                   className={`block px-4 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${
                     location.pathname === "/"
@@ -828,10 +760,10 @@ function Navbar() {
                   onClick={toggleMobileMenu}
                 >
                   SMART <span className=" text-orange-500">Board</span>
-                </Link>
+                </Link> */}
 
                 {/* Movile Payment menu */}
-                <button
+                {/* <button
                   className={`block px-4 flex items-center w-full py-3 text-base font-medium rounded-lg transition-colors duration-200 ${
                     location.pathname === "/"
                       ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
@@ -887,78 +819,8 @@ function Navbar() {
                         </svg>
                       </button>
                     </div>
-
-                    {/* 
-                    <div
-                      className="py-1"
-                      role="menu"
-                      aria-orientation="vertical"
-                    >
-                      <div className="space-y-2 p-4">
-                        <h3 className="font-medium text-blue-600 mb-3">
-                          Pay Using{" "}
-                          <span className="text-orange-600">Bank Transfer</span>
-                        </h3>
-                        <div className="space-y-2">
-                          {[
-                            {
-                              label: "Branch",
-                              value: "ICICI Bank, Noida Sector 61",
-                            },
-                            {
-                              label: "Account  Name",
-                              value: "FirstVITE e learning Pvt Ltd.",
-                            },
-                            { label: "Account Number", value: "025305010216" },
-                            { label: "IFSC Code", value: "ICIC0000253" },
-                          ].map((item, index) => (
-                            <div key={index} className="group relative">
-                              <div className="flex flex-col justify-between">
-                                <span className="text-sm font-medium text-black w-full">
-                                  {item.label}:
-                                </span>
-                                <div className="flex items-center">
-                                  <button
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(item.value);
-                                      setCopiedIndex(index);
-                                      setTimeout(() => {
-                                        setCopiedIndex(null);
-                                      }, 2000);
-                                    }}
-                                    className="pe-1 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
-                                    title={`Copy ${item.label}`}
-                                  >
-                                    {copiedIndex === index ? (
-                                      <FaCheck className="text-green-500" />
-                                    ) : (
-                                      <FaCopy />
-                                    )}
-                                  </button>
-                                  <span className="text-xs text-black font-mono">
-                                    {item.value}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    */}
                   </div>
-                )}
-
-                {/* Genlead Agent Register */}
-                <a
-                  href="https://genlead.in/agent/register"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center w-full px-4 py-1.5 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200"
-                  onClick={toggleMobileMenu}
-                >
-                  Agent Register
-                </a>
+                )}   */}
               </div>
 
               {/* Course Menu - Mobile Version */}

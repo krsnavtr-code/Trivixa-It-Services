@@ -234,7 +234,12 @@ const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
   // ... (previous imports remain the same)
 
   return (
-    <div className={`relative ${isMobile ? "w-full" : ""}`} ref={menuRef}>
+    <div
+      className={`hover-underline whitespace-nowrap relative ${
+        isMobile ? "w-full" : ""
+      }`}
+      ref={menuRef}
+    >
       {/* Main Menu Button - Only show in desktop or as a toggle in mobile */}
       {!isMobile && (
         <button
@@ -242,12 +247,12 @@ const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
             e.stopPropagation();
             setIsOpen(!isOpen);
           }}
-          className="flex items-center text-sm px-1 py-1 text-blue-900 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-400 bg-blue-200 dark:bg-blue-900/30 rounded transition-colors duration-200 font-medium"
+          className="flex items-center text-sm px-1 py-1 text-black dark:text-white rounded transition-colors duration-200 font-medium"
           aria-expanded={isOpen}
           aria-haspopup="true"
           aria-controls="course-menu-dropdown"
         >
-          <span>Course Menu</span>
+          <span>Projects Menu</span>
           <svg
             className={`w-3 h-3 transition-transform duration-200 ${
               isOpen ? "transform rotate-180" : ""
@@ -392,7 +397,9 @@ const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
                         className={`${
                           !isMobile
                             ? `absolute left-full ml-1 w-[400px] max-h-[80vh] overflow-y-auto ${
-                                dropdownPosition === 'top' ? 'bottom-0' : 'top-0'
+                                dropdownPosition === "top"
+                                  ? "bottom-0"
+                                  : "top-0"
                               }`
                             : "w-full mt-2"
                         } bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50`}

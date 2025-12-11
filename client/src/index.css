@@ -7,3 +7,32 @@
 body {
   font-family: "Poppins", sans-serif;
 }
+
+
+.hover-underline {
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.hover-underline:hover {
+  transform: translateY(-3px);
+}
+
+.hover-underline::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background-color: #A6A6A6;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s ease;
+}
+
+.hover-underline:hover::before {
+  transform: scaleY(1);
+}
