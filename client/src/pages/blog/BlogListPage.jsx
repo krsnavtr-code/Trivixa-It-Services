@@ -1,26 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import SEO from '../../components/SEO';
-import { Skeleton, Empty, Pagination, Select } from 'antd';
-import { CalendarOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { getBlogPosts } from '../../api/blogApi';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import SEO from "../../components/SEO";
+import { getBlogPosts } from "../../api/blogApi";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  FaCalendarAlt,
+  FaClock,
+  FaArrowRight,
+  FaSearch,
+  FaTag,
+} from "react-icons/fa";
 
 dayjs.extend(relativeTime);
-
-const { Option } = Select;
 
 export default function BlogListPage() {
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [total, setTotal] = useState(0);
-
   const [searchParams, setSearchParams] = useSearchParams();
-  
-  const page = parseInt(searchParams.get('page') || '1');
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const page = parseInt(searchParams.get("page") || "1");
   const pageSize = 9;
+
+  // Animation Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -29,13 +44,12 @@ export default function BlogListPage() {
         const response = await getBlogPosts({
           page,
           limit: pageSize,
-          status: 'published' // Ensure we only fetch published posts
+          status: "published",
         });
         setPosts(response.data?.posts || []);
         setTotal(response.data?.total || 0);
       } catch (error) {
-        console.error('Error fetching blog posts:', error);
-        // Set empty state on error
+        console.error("Error fetching blog posts:", error);
         setPosts([]);
         setTotal(0);
       } finally {
@@ -48,141 +62,181 @@ export default function BlogListPage() {
 
   const handlePageChange = (newPage) => {
     setSearchParams({ page: newPage });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-
   const renderPostCard = (post) => (
-    <div key={post._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
-      {post.featuredImage && (
-        <div className="h-48 overflow-hidden">
-          <Link to={`/blog/${post.slug}`}>
-          <img 
-            src={post.featuredImage} 
-            alt={post.title} 
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+    <motion.div
+      variants={itemVariants}
+      key={post._id}
+      className="group flex flex-col bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-[#F47C26]/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50"
+    >
+      <Link
+        to={`/blog/${post.slug}`}
+        className="block relative h-52 overflow-hidden"
+      >
+        {post.featuredImage ? (
+          <img
+            src={post.featuredImage}
+            alt={post.title}
+            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
           />
-          </Link>
-        </div>
-      )}
+        ) : (
+          <div className="w-full h-full bg-[#0a0f2d] flex items-center justify-center border-b border-white/5">
+            <span className="text-white/20 text-4xl font-bold">TRIVIXA</span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f2d] via-transparent to-transparent opacity-60"></div>
+
+        {/* Category Badge */}
+        {post.categories?.length > 0 && (
+          <div className="absolute top-4 left-4">
+            <span className="px-3 py-1 bg-[#F47C26]/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wide rounded-full shadow-lg">
+              {post.categories[0].name}
+            </span>
+          </div>
+        )}
+      </Link>
+
       <div className="p-6 flex flex-col flex-grow">
-        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
-          <span className="flex items-center mr-4">
-            <CalendarOutlined className="mr-1" />
-            {dayjs(post.createdAt).format('MMM D, YYYY')}
+        {/* Meta Data */}
+        <div className="flex items-center gap-4 text-xs text-gray-400 mb-3">
+          <span className="flex items-center gap-1.5">
+            <FaCalendarAlt className="text-[#F47C26]" />
+            {dayjs(post.createdAt).format("MMM D, YYYY")}
           </span>
-          <span className="flex items-center">
-            <ClockCircleOutlined className="mr-1" />
+          <span className="flex items-center gap-1.5">
+            <FaClock className="text-[#F47C26]" />
             {Math.ceil(post.readingTime || 5)} min read
           </span>
         </div>
-        
-        <h2 className="text-xl font-semibold mb-3 dark:text-white">
-          <Link 
-            to={`/blog/${post.slug}`} 
-            className="hover:text-blue-600 text-black dark:hover:text-blue-400 transition-colors line-clamp-2"
-          >
-            {post.title}
-          </Link>
+
+        <h2 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-[#F47C26] transition-colors">
+          <Link to={`/blog/${post.slug}`}>{post.title}</Link>
         </h2>
-        
-        <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3 flex-grow">
-          {post.excerpt || post.content?.substring(0, 200) + '...'}
+
+        <p className="text-sm text-gray-400 mb-6 line-clamp-3 flex-grow leading-relaxed">
+          {post.excerpt ||
+            post.content?.substring(0, 150).replace(/<[^>]*>?/gm, "") + "..."}
         </p>
-        
-        {post.categories?.length > 0 && (
-          <div className="mt-2 mb-4 flex flex-wrap gap-2">
-            {post.categories.map(category => (
-              <span 
-                key={category._id}
-                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-              >
-                {category.name}
-              </span>
-            ))}
+
+        <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {/* Optional: Author Avatar if available */}
+            {/* <div className="w-6 h-6 rounded-full bg-white/10"></div> */}
+            <span className="text-xs text-gray-500">By Trivixa Team</span>
           </div>
-        )}
-        
-        <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-          <Link 
-            to={`/blog/${post.slug}`} 
-            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium inline-flex items-center"
+
+          <Link
+            to={`/blog/${post.slug}`}
+            className="flex items-center gap-2 text-xs font-bold text-[#F47C26] uppercase tracking-wide group-hover:underline decoration-2 underline-offset-4"
           >
-            Read More
-            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            Read Article <FaArrowRight className="text-[10px]" />
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <SEO 
-        title="Blog | FirstVITE - Latest Articles & Insights"
-        description="Explore our latest blog posts on education, career development, and industry insights. Stay updated with FirstVITE's expert articles and resources."
-        keywords="education blog, career advice, learning resources, industry insights, FirstVITE articles, professional development"
+    <div className="min-h-screen bg-[#0a0f2d] text-white relative overflow-hidden">
+      <SEO
+        title="Tech Insights | Trivixa IT Solutions"
+        description="Explore the latest trends in software development, cloud architecture, and digital transformation. Expert insights from the Trivixa engineering team."
+        keywords="tech blog, software engineering insights, IT trends, web development tutorials, Trivixa blog"
         og={{
-          title: 'FirstVITE Blog - Education & Career Insights',
-          description: 'Discover expert articles, study tips, and industry insights from FirstVITE. Stay ahead in your learning journey with our educational blog.',
-          type: 'website'
+          title: "Trivixa Insights - Engineering the Future",
+          description:
+            "Deep dives into code, cloud, and culture. Read the latest from our tech experts.",
+          type: "website",
         }}
       />
-      <div className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Blog</h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Insights, tutorials, and updates from our team
-          </p>
-        </div>
 
-        <div className="mb-5 text-right">
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          Showing {posts.length} of {total} posts
-        </div>
-      </div>
+      {/* Background Ambience */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none fixed"></div>
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#F47C26]/10 rounded-full blur-[120px] pointer-events-none"></div>
 
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-              <Skeleton.Image className="w-full h-48" />
-              <div className="p-6">
-                <Skeleton active paragraph={{ rows: 3 }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : posts.length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map(renderPostCard)}
-          </div>
-          
-          <div className="mt-12 flex justify-center">
-            <Pagination
-              current={page}
-              pageSize={pageSize}
-              total={total}
-              onChange={handlePageChange}
-              showSizeChanger={false}
-              hideOnSinglePage
-              className="pagination-custom"
-            />
-          </div>
-        </>
-      ) : (
-        <Empty 
-          description={
-            <span className="text-gray-600 dark:text-gray-400">
-              No blog posts found
+      <div className="relative z-10 py-24 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[#F47C26] text-xs font-bold uppercase tracking-wider">
+              Blog & News
             </span>
-          }
-          className="py-12"
-        />
-      )}
+            <h1 className="mt-6 text-4xl md:text-5xl font-extrabold text-white">
+              Engineering{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
+                Insights
+              </span>
+            </h1>
+            <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg">
+              Thoughts on technology, design, and business innovation.
+            </p>
+
+            {/* Search Bar (Visual Only for now unless you hook up logic) */}
+            <div className="mt-10 max-w-md mx-auto relative hidden md:block">
+              <input
+                type="text"
+                placeholder="Search articles..."
+                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-[#F47C26] transition-colors"
+              />
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            </div>
+          </div>
+
+          {/* Content Area */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-96 bg-white/5 rounded-2xl animate-pulse border border-white/5"
+                ></div>
+              ))}
+            </div>
+          ) : posts.length > 0 ? (
+            <>
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              >
+                {posts.map(renderPostCard)}
+              </motion.div>
+
+              {/* Pagination */}
+              <div className="mt-16 flex justify-center gap-2">
+                <button
+                  disabled={page <= 1}
+                  onClick={() => handlePageChange(page - 1)}
+                  className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-lg disabled:opacity-50 hover:bg-white/10 transition-colors"
+                >
+                  Previous
+                </button>
+                <div className="px-4 py-2 text-gray-400 text-sm flex items-center">
+                  Page {page}
+                </div>
+                <button
+                  disabled={posts.length < pageSize} // Simple check, ideally check total > page * pageSize
+                  onClick={() => handlePageChange(page + 1)}
+                  className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-lg disabled:opacity-50 hover:bg-white/10 transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-24 bg-white/5 rounded-3xl border border-white/10">
+              <FaTag className="mx-auto text-4xl text-gray-600 mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">
+                No articles found
+              </h3>
+              <p className="text-gray-400">Check back later for new updates.</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

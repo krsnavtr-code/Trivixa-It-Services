@@ -176,12 +176,12 @@ function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-[#05081a]/90 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20"
+            ? "bg-[#fff] dark:bg-[#05081a]/90 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20"
             : "bg-transparent border-b border-transparent"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-14">
             {/* Logo Section */}
             <div className="flex-shrink-0 flex items-center gap-4">
               <Link to="/" className="group flex items-center gap-2">
@@ -200,10 +200,10 @@ function Navbar() {
             <div className="hidden lg:flex items-center space-x-1">
               <Link
                 to="/"
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
+                className={`hover-underline px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
                   location.pathname === "/"
                     ? "text-[#F47C26]"
-                    : "text-gray-300 hover:text-white hover:bg-white/5"
+                    : "text-gray-300"
                 }`}
               >
                 Home
@@ -218,12 +218,12 @@ function Navbar() {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
+                  className={`hover-underline px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
                     item.isPrimary
                       ? "text-[#F47C26] bg-[#F47C26]/10 border border-[#F47C26]/20 hover:bg-[#F47C26] hover:text-white"
                       : location.pathname === item.to
                       ? "text-[#F47C26]"
-                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                      : "text-gray-300 "
                   }`}
                 >
                   {item.label}

@@ -26,11 +26,13 @@ body {
   bottom: -1px;
   left: 0;
   right: 0;
-  height: 5px;
+  height: 4px;
   background-color: #A6A6A6;
   transform: scaleY(0);
   transform-origin: bottom;
   transition: transform 0.3s ease;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 
 .hover-underline:hover::before {

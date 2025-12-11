@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import SEO from "../../components/SEO";
-import { Skeleton, Button, message, Divider, Tag, Empty } from "antd";
 import {
-  CalendarOutlined,
-  UserOutlined,
-  ClockCircleOutlined,
-  TagOutlined,
-  ArrowLeftOutlined,
-  ShareAltOutlined,
-} from "@ant-design/icons";
+  FaCalendarAlt,
+  FaUser,
+  FaClock,
+  FaTag,
+  FaArrowLeft,
+  FaShareAlt,
+  FaHashtag,
+} from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { getBlogPostBySlug, getPostsByCategory } from "../../api/blogApi";
+import { motion } from "framer-motion";
 import "github-markdown-css/github-markdown.css";
-import "./BlogDetailPage.css";
+import "./BlogDetailPage.css"; // Ensure this CSS handles dark mode markdown styles if needed
 
 dayjs.extend(relativeTime);
 
@@ -30,69 +31,51 @@ export default function BlogDetailPage() {
   const [isRelatedLoading, setIsRelatedLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Animation Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.5 } },
+  };
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        console.log("Fetching blog post with slug:", slug);
         setIsLoading(true);
         const response = await getBlogPostBySlug(slug);
-        console.log("API Response:", response);
-
-        // Updated to handle the correct response structure
         const postData = response?.data?.post || response?.post;
 
-        if (!postData) {
-          console.error("No post data in response:", response);
-          throw new Error("No post data received");
-        }
+        if (!postData) throw new Error("No post data received");
 
         setPost(postData);
-        console.log("Post state set:", postData);
 
-        // Fetch related posts after the main post is loaded
         if (postData?.categories?.length > 0) {
-          console.log(
-            "Fetching related posts for category:",
-            postData.categories[0]._id
-          );
           fetchRelatedPosts(postData.categories[0]._id, postData._id);
         }
-
-        setIsLoading(false);
       } catch (err) {
         console.error("Error fetching blog post:", err);
-        setError(
-          "Failed to load blog post. It may have been moved or deleted."
-        );
+        setError("Failed to load article.");
+      } finally {
         setIsLoading(false);
       }
     };
 
     const fetchRelatedPosts = async (categoryId, excludePostId) => {
       try {
-        console.log("Fetching related posts for category:", categoryId);
         setIsRelatedLoading(true);
         const response = await getPostsByCategory(categoryId, {
           exclude: excludePostId,
           limit: 3,
         });
-
-        // Handle both response structures: response.data.posts and response.posts
-        const relatedPosts = response?.data?.posts || response?.posts || [];
-        console.log("Related posts response:", { response, relatedPosts });
-
-        setRelatedPosts(Array.isArray(relatedPosts) ? relatedPosts : []);
+        const related = response?.data?.posts || response?.posts || [];
+        setRelatedPosts(Array.isArray(related) ? related : []);
       } catch (error) {
-        console.error("Error fetching related posts:", error);
-        setRelatedPosts([]); // Ensure we always set an array, even if there's an error
+        setRelatedPosts([]);
       } finally {
         setIsRelatedLoading(false);
       }
     };
 
-    if (slug) {
-      fetchPost();
-    }
+    if (slug) fetchPost();
   }, [slug]);
 
   const handleShare = async () => {
@@ -105,61 +88,45 @@ export default function BlogDetailPage() {
         });
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        message.success("Link copied to clipboard!");
+        alert("Link copied to clipboard!"); // Replaced AntD message with standard alert or toast
       }
     } catch (err) {
       console.error("Error sharing:", err);
     }
   };
 
-  const renderLoadingSkeleton = () => (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="mb-8">
-        <Skeleton active paragraph={{ rows: 2 }} />
-      </div>
-      <div className="mb-12">
-        <Skeleton.Image className="w-full h-96" />
-      </div>
-      <div className="space-y-4">
-        {[...Array(8)].map((_, i) => (
-          <Skeleton key={i} active paragraph={{ rows: 3 }} />
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderErrorState = () => (
-    <div className="min-h-[70vh] flex items-center justify-center">
-      <Empty
-        description={
-          <span className="text-gray-600 dark:text-gray-400">
-            {error || "Blog post not found"}
-          </span>
-        }
-      >
-        <Button
-          type="primary"
-          onClick={() => navigate("/blog")}
-          className="mt-4"
-        >
-          Back to Blog
-        </Button>
-      </Empty>
-    </div>
-  );
-
   if (isLoading) {
-    return renderLoadingSkeleton();
+    return (
+      <div className="min-h-screen bg-[#0a0f2d] py-24 px-6">
+        <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
+          <div className="h-8 bg-white/10 rounded w-1/3"></div>
+          <div className="h-64 bg-white/5 rounded-xl"></div>
+          <div className="space-y-4">
+            <div className="h-4 bg-white/5 rounded w-full"></div>
+            <div className="h-4 bg-white/5 rounded w-5/6"></div>
+            <div className="h-4 bg-white/5 rounded w-4/6"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  if (error) {
-    console.error("Error state:", { error, post });
-    return renderErrorState();
-  }
-
-  if (!post) {
-    console.error("No post data available");
-    return renderErrorState();
+  if (error || !post) {
+    return (
+      <div className="min-h-screen bg-[#0a0f2d] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">
+            Article Not Found
+          </h2>
+          <button
+            onClick={() => navigate("/blog")}
+            className="px-6 py-2 bg-[#F47C26] text-white rounded-lg hover:bg-[#d5671f] transition-colors"
+          >
+            Back to Insights
+          </button>
+        </div>
+      </div>
+    );
   }
 
   const {
@@ -174,347 +141,237 @@ export default function BlogDetailPage() {
     readingTime,
   } = post;
 
-  // Generate SEO metadata based on the blog post
-  const seoTitle = post ? `${post.title} | FirstVITE Blog` : 'Blog Post | FirstVITE';
-  const seoDescription = post?.excerpt || 'Read this article on FirstVITE';
-  const seoKeywords = post?.tags?.join(', ') || 'blog, article, education, learning';
-  const canonicalUrl = post ? `https://firstvite.com/blog/${post.slug}` : 'https://firstvite.com/blog';
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <SEO 
-        title={seoTitle}
-        description={seoDescription}
-        keywords={seoKeywords}
-        canonical={canonicalUrl}
+    <div className="min-h-screen bg-[#0a0f2d] text-white relative overflow-hidden">
+      <SEO
+        title={`${title} | Trivixa Insights`}
+        description={excerpt || "Read this engineering insight on Trivixa."}
+        keywords={tags?.join(", ") || "tech blog, software engineering"}
         og={{
-          title: post?.title || 'FirstVITE Blog',
-          description: post?.excerpt || 'Read this article on FirstVITE',
-          type: 'article',
-          image: post?.imageUrl,
-          url: canonicalUrl
+          title,
+          description: excerpt,
+          type: "article",
+          image: featuredImage,
+          url: window.location.href,
         }}
       />
-      {/* Header with back button and share */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Button
-              type="text"
-              icon={<ArrowLeftOutlined />}
-              onClick={() => navigate("/blog")}
-              className="flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              size="large"
-            >
-              Back to Blog
-            </Button>
 
-            <Button
-              type="primary"
-              icon={<ShareAltOutlined />}
-              onClick={handleShare}
-              className="flex items-center bg-blue-600 hover:bg-blue-700 border-none"
-              size="large"
-            >
-              Share Article
-            </Button>
-          </div>
+      {/* Background Ambience */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none fixed"></div>
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      {/* --- Header / Nav --- */}
+      <header className="fixed top-20 left-0 right-0 z-40 px-6 pointer-events-none">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <button
+            onClick={() => navigate("/blog")}
+            className="pointer-events-auto flex items-center gap-2 text-gray-400 hover:text-white bg-[#0a0f2d]/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 hover:border-[#F47C26]/50 transition-all"
+          >
+            <FaArrowLeft /> <span className="hidden sm:inline">Back</span>
+          </button>
+
+          <button
+            onClick={handleShare}
+            className="pointer-events-auto flex items-center gap-2 text-[#F47C26] hover:text-white bg-[#0a0f2d]/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 hover:bg-[#F47C26] transition-all"
+          >
+            <FaShareAlt /> <span className="hidden sm:inline">Share</span>
+          </button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Left: Blog Content (75%) */}
-        <section className="lg:col-span-3">
-          <article className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-            {/* Keep your entire blog article section here (image, title, author, markdown, tags etc.) */}
-            <article className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-              {/* Featured Image */}
-              {featuredImage && (
-                <div className="w-full h-96 overflow-hidden">
-                  <img
-                    src={featuredImage}
-                    alt={title}
-                    className="w-full h-full object-cover"
-                  />
+      <main className="relative z-10 pt-32 pb-20 px-6">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-12"
+        >
+          {/* --- Main Content (Left) --- */}
+          <article className="lg:col-span-3">
+            {/* Featured Image */}
+            {featuredImage && (
+              <div className="relative h-[400px] rounded-2xl overflow-hidden mb-8 border border-white/10 shadow-2xl">
+                <img
+                  src={featuredImage}
+                  alt={title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f2d] via-transparent to-transparent opacity-80"></div>
+
+                {/* Title Overlay */}
+                <div className="absolute bottom-0 left-0 p-8 w-full">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {categories?.map((cat) => (
+                      <span
+                        key={cat._id}
+                        className="px-3 py-1 bg-[#F47C26] text-white text-xs font-bold uppercase tracking-wide rounded-full"
+                      >
+                        {cat.name}
+                      </span>
+                    ))}
+                  </div>
+                  <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-4 shadow-black drop-shadow-lg">
+                    {title}
+                  </h1>
+
+                  <div className="flex flex-wrap items-center gap-6 text-sm text-gray-300">
+                    <span className="flex items-center gap-2">
+                      <FaUser className="text-[#F47C26]" />{" "}
+                      {author?.name || "Trivixa Team"}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <FaCalendarAlt className="text-[#F47C26]" />{" "}
+                      {dayjs(createdAt).format("MMM D, YYYY")}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <FaClock className="text-[#F47C26]" />{" "}
+                      {Math.ceil(readingTime || 5)} min read
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Markdown Content */}
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 md:p-12 shadow-xl">
+              <div
+                className="prose prose-invert prose-lg max-w-none 
+                prose-headings:text-white prose-headings:font-bold 
+                prose-p:text-gray-300 prose-p:leading-relaxed
+                prose-a:text-[#F47C26] prose-a:no-underline hover:prose-a:underline
+                prose-strong:text-white
+                prose-code:text-[#F47C26] prose-code:bg-black/30 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+                prose-pre:bg-[#05081a] prose-pre:border prose-pre:border-white/10
+                prose-li:text-gray-300 prose-li:marker:text-[#F47C26]
+                prose-img:rounded-xl prose-img:border prose-img:border-white/10
+              "
+              >
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                >
+                  {content}
+                </ReactMarkdown>
+              </div>
+
+              {/* Tags Footer */}
+              {tags?.length > 0 && (
+                <div className="mt-12 pt-8 border-t border-white/10">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <FaTag className="text-[#F47C26]" />
+                    {tags.map((tag, idx) => (
+                      <Link
+                        key={idx}
+                        to={`/blog?tag=${encodeURIComponent(tag)}`}
+                        className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-300 hover:bg-white/10 hover:text-[#F47C26] transition-colors"
+                      >
+                        #{tag}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
+            </div>
 
-              {/* Article Header */}
-              <div className="p-3 sm:p-6 md:p-12">
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {categories?.map((category) => (
+            {/* Related Posts Section */}
+            {relatedPosts.length > 0 && (
+              <div className="mt-16">
+                <h3 className="text-2xl font-bold text-white mb-8 border-l-4 border-[#F47C26] pl-4">
+                  Related Insights
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {relatedPosts.map((post) => (
                     <Link
-                      key={category._id}
-                      to={`/blog?category=${category.slug}`}
-                      className="inline-block"
+                      key={post._id}
+                      to={`/blog/${post.slug}`}
+                      className="group block bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:-translate-y-1 transition-transform duration-300"
                     >
-                      <Tag color="blue" className="text-sm">
-                        {category.name}
-                      </Tag>
+                      <div className="h-40 overflow-hidden relative">
+                        <img
+                          src={
+                            post.featuredImage || "/images/blog-placeholder.jpg"
+                          }
+                          alt={post.title}
+                          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                      </div>
+                      <div className="p-4">
+                        <h4 className="text-white font-bold text-sm line-clamp-2 group-hover:text-[#F47C26] transition-colors">
+                          {post.title}
+                        </h4>
+                        <div className="flex items-center gap-2 mt-3 text-xs text-gray-500">
+                          <FaClock /> {Math.ceil(post.readingTime || 5)} min
+                          read
+                        </div>
+                      </div>
                     </Link>
                   ))}
                 </div>
-
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
-                  {title}
-                </h1>
-
-                <div className="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
-                  <div className="flex items-center mr-6 mb-2 sm:mb-0">
-                    <UserOutlined className="mr-1" />
-                    <span>{author?.name || "FirstVITE"}</span>
-                  </div>
-                  <div className="flex items-center mr-6 mb-2 sm:mb-0">
-                    <CalendarOutlined className="mr-1" />
-                    <time dateTime={createdAt}>
-                      {dayjs(createdAt).format("MMMM D, YYYY")}
-                    </time>
-                  </div>
-                  <div className="flex items-center">
-                    <ClockCircleOutlined className="mr-1" />
-                    <span>{Math.ceil(readingTime || 5)} min read</span>
-                  </div>
-                </div>
-
-                {excerpt && (
-                  <p className="text-xl text-gray-600 dark:text-gray-300 mb-3 font-medium">
-                    {excerpt}
-                  </p>
-                )}
               </div>
-
-              {/* Article Content */}
-              <div className="px-3 sm:px-6 md:px-12 pb-6">
-                <div className="text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw]}
-                    components={{
-                      img: ({ node, ...props }) => (
-                        <img
-                          {...props}
-                          className="rounded-lg shadow-md my-6 w-full h-auto"
-                          alt={props.alt || ""}
-                        />
-                      ),
-                      a: ({ node, ...props }) => (
-                        <a
-                          {...props}
-                          className="text-blue-600 dark:text-blue-400 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        />
-                      ),
-                      code: ({
-                        node,
-                        inline,
-                        className,
-                        children,
-                        ...props
-                      }) => {
-                        const match = /language-(\w+)/.exec(className || "");
-                        return !inline && match ? (
-                          <pre className="bg-white p-4 rounded-lg overflow-x-auto">
-                            <code className={className} {...props}>
-                              {children}
-                            </code>
-                          </pre>
-                        ) : (
-                          <code className="bg-white px-1.5 py-0.5 rounded text-sm">
-                            {children}
-                          </code>
-                        );
-                      },
-                    }}
-                  >
-                    {content}
-                  </ReactMarkdown>
-                </div>
-              </div>
-
-              {/* Tags */}
-              {tags?.length > 0 && (
-                <div className="px-3 sm:px-6 md:px-12 pb-6">
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <TagOutlined className="text-gray-500 mr-2" />
-                      {tags.map((tag, index) => (
-                        <Link
-                          key={index}
-                          to={`/blog?tag=${encodeURIComponent(tag)}`}
-                          className="inline-block"
-                        >
-                          <Tag className="text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                            {tag}
-                          </Tag>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </article>
+            )}
           </article>
 
-          {/* Related Posts */}
-          {relatedPosts.length > 0 && (
-            <section className="">
-              <Divider orientation="left" className="text-xl font-semibold">
-                Related Articles
-              </Divider>
-
-              {isRelatedLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {[...Array(3)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden p-3 sm:p-6 md:p-12"
-                    >
-                      <Skeleton.Image className="w-full h-48" />
-                      <div className="p-6">
-                        <Skeleton active paragraph={{ rows: 2 }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedPosts.map((relatedPost) => (
-                    <article
-                      key={relatedPost._id}
-                      className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 p-3 sm:p-6 md:p-12"
-                    >
-                      {relatedPost.featuredImage && (
-                        <Link
-                          to={`/blog/${relatedPost.slug}`}
-                          className="block h-48 overflow-hidden"
-                        >
-                          <img
-                            src={relatedPost.featuredImage}
-                            alt={relatedPost.title}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                          />
-                        </Link>
-                      )}
-                      <div className="p-6">
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {relatedPost.categories
-                            ?.slice(0, 2)
-                            .map((category) => (
-                              <Link
-                                key={category._id}
-                                to={`/blog?category=${category.slug}`}
-                                className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                              >
-                                {category.name}
-                              </Link>
-                            ))}
-                        </div>
-                        <h3 className="text-lg font-semibold mb-2 line-clamp-2">
-                          <Link
-                            to={`/blog/${relatedPost.slug}`}
-                            className="text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                          >
-                            {relatedPost.title}
-                          </Link>
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 mb-3">
-                          {relatedPost.excerpt}
-                        </p>
-                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                          <ClockCircleOutlined className="mr-1" />
-                          <span>
-                            {Math.ceil(relatedPost.readingTime || 5)} min read
-                          </span>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Related Posts Full Width */}
-          {relatedPosts.length > 0 && (
-            <section className="">
-              <Divider orientation="left" className="text-xl font-semibold">
-                Related Articles
-              </Divider>
-              {/* Related Posts Grid */}
-              ...
-            </section>
-          )}
-        </section>
-
-        {/* Right: Sidebar (25%) */}
-        <aside className="lg:col-span-1 space-y-6">
-          {/* Author Info */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
-              About the Author
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-              {author?.bio ||
-                "This author loves writing about technology, design, and web development."}
-            </p>
-            {/* <p className="text-sm text-gray-400">
-              Written by <strong>{author?.name || "Admin"}</strong>
-            </p> */}
-          </div>
-
-          {/* Share Button */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Enjoyed the post?
-            </p>
-            <Button
-              type="primary"
-              icon={<ShareAltOutlined />}
-              onClick={handleShare}
-              className="w-full"
-            >
-              Share This Post
-            </Button>
-          </div>
-
-          {/* Categories */}
-          {categories?.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-                Categories
+          {/* --- Sidebar (Right) --- */}
+          <aside className="lg:col-span-1 space-y-8">
+            {/* Author Card */}
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
+              <h3 className="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">
+                About the Author
               </h3>
-              <ul className="space-y-2">
-                {categories.map((category) => (
-                  <li key={category._id}>
-                    <Link
-                      to={`/blog?category=${category.slug}`}
-                      className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
-                    >
-                      {category.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Tags */}
-          {tags?.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-                Tags
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag, index) => (
-                  <Link key={index} to={`/blog?tag=${encodeURIComponent(tag)}`}>
-                    <Tag>{tag}</Tag>
-                  </Link>
-                ))}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-[#F47C26] flex items-center justify-center text-white font-bold text-xl">
+                  {author?.name?.charAt(0) || "T"}
+                </div>
+                <div>
+                  <p className="text-white font-bold">
+                    {author?.name || "Trivixa Team"}
+                  </p>
+                  <p className="text-xs text-gray-400">Tech Contributor</p>
+                </div>
               </div>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                {author?.bio ||
+                  "Expert insights from our engineering and design teams."}
+              </p>
             </div>
-          )}
-        </aside>
+
+            {/* Newsletter CTA */}
+            <div className="bg-gradient-to-br from-[#F47C26]/20 to-purple-900/20 border border-[#F47C26]/30 rounded-2xl p-6 text-center">
+              <h3 className="text-lg font-bold text-white mb-2">
+                Stay Updated
+              </h3>
+              <p className="text-xs text-gray-300 mb-4">
+                Get the latest tech trends delivered to your inbox.
+              </p>
+              <button className="w-full py-2 bg-[#F47C26] text-white font-bold rounded-lg hover:bg-[#d5671f] transition-colors text-sm">
+                Subscribe Now
+              </button>
+            </div>
+
+            {/* Category List */}
+            {categories?.length > 0 && (
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">
+                  Topic Hubs
+                </h3>
+                <ul className="space-y-2">
+                  {categories.map((cat) => (
+                    <li key={cat._id}>
+                      <Link
+                        to={`/blog?category=${cat.slug}`}
+                        className="flex justify-between items-center text-sm text-gray-400 hover:text-[#F47C26] hover:bg-white/5 p-2 rounded transition-all"
+                      >
+                        <span>{cat.name}</span>
+                        <FaArrowLeft className="rotate-180 text-xs opacity-50" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </aside>
+        </motion.div>
       </main>
     </div>
   );
