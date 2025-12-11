@@ -1,275 +1,196 @@
-import React, { useState, useEffect } from "react";
-import {
-  FaSearch,
-  FaBookOpen,
-  FaUsers,
-  FaCertificate,
-  FaPlay,
-  FaArrowRight,
-  FaTimes,
-} from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-const bannerImg =
-  "http://firstvite.com/api/upload/file/img-1752554019521-300496356.png";
+import React from "react";
+import { FaArrowRight, FaCheckCircle, FaPlayCircle } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
-const logoImg =
-  "http://firstvite.com/api/upload/file/img-1753961989896-7541613.png";
-import "./Banner.css";
-import "../styles/typography.css";
+const Banner = () => {
+  // Animation Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
+  };
 
-const CertificateModal = ({ isOpen, onClose }) => {
-  // Prevent right-click context menu
-  useEffect(() => {
-    const handleContextMenu = (e) => {
-      if (isOpen) {
-        e.preventDefault();
-      }
-    };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
 
-    document.addEventListener("contextmenu", handleContextMenu);
-    return () => {
-      document.removeEventListener("contextmenu", handleContextMenu);
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
+  const floatingVariant = {
+    animate: {
+      y: [0, -15, 0],
+      transition: {
+        duration: 4,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  };
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      onContextMenu={(e) => e.preventDefault()}
-    >
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-[550px] w-full max-h-[550px] overflow-auto relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white z-20"
+    <section className="relative w-full min-h-screen flex items-center justify-center bg-[#0a0f2d] overflow-hidden py-20 px-6">
+      {/* --- Background Effects --- */}
+
+      {/* Modern Grid Background */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-0"></div>
+      <div
+        className="absolute inset-0 z-0 opacity-10"
+        style={{
+          backgroundImage: "radial-gradient(#4f46e5 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      ></div>
+
+      {/* Dynamic Glow Blobs */}
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 8, repeat: Infinity }}
+        className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/30 rounded-full blur-[100px] z-0"
+      />
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+        transition={{ duration: 8, repeat: Infinity, delay: 2 }}
+        className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#F47C26]/20 rounded-full blur-[120px] z-0"
+      />
+
+      {/* --- Main Content --- */}
+      <div className="max-w-7xl w-full mx-auto relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-20">
+        {/* Left Content */}
+        <motion.div
+          className="lg:w-1/2 space-y-8 text-center lg:text-left"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
         >
-          <FaTimes className="text-2xl" />
-        </button>
-        <div className="p-6 relative">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Simple Certificate
-          </h3>
-          {/* Image Container with Protection */}
-          <div className="relative">
-            <div
-              className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 z-10 pointer-events-none"
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px)",
-                mixBlendMode: "multiply",
-              }}
-            />
-            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-              <div className="text-2xl font-bold text-gray-400 opacity-30 transform -rotate-45 select-none">
-                SAMPLE CERTIFICATE
-              </div>
-            </div>
-            <div className="relative">
-              {/* This is a decoy element that will appear in dev tools */}
-              <div
-                className="hidden"
-                data-decoysrc="ignore-this-decoysrc"
-                style={{ display: "none" }}
-              >
-                <img
-                  src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-                  alt=""
-                />
-              </div>
+          <motion.div variants={itemVariants} className="inline-block">
+            <span className="px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+              🚀 Welcome to Trivixa
+            </span>
+          </motion.div>
 
-              {/* Actual image with obfuscated attributes */}
-              <div
-                className="certificate-image-container"
-                style={{
-                  backgroundImage:
-                    "url('http://firstvite.com/api/upload/file/img-1754374737042-580116956.jpg')",
-                  backgroundSize: "contain",
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center",
-                  width: "100%",
-                  aspectRatio: "4/3",
-                  filter: "blur(1px)",
-                  WebkitUserSelect: "none",
-                  MozUserSelect: "none",
-                  msUserSelect: "none",
-                  userSelect: "none",
-                  pointerEvents: "none",
-                  WebkitTouchCallout: "none",
-                }}
-                onContextMenu={(e) => e.preventDefault()}
-              />
+          <motion.h1
+            variants={itemVariants}
+            className="text-5xl lg:text-6xl font-extrabold text-white leading-[1.15]"
+          >
+            Convert Your <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] via-[#ff9e5e] to-[#F47C26]">
+              Ideas
+            </span>{" "}
+            Into <br />
+            Digital Reality
+          </motion.h1>
 
-              {/* Add some noise to make screenshotting harder */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background:
-                    "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E\")",
-                  pointerEvents: "none",
-                  mixBlendMode: "overlay",
-                }}
+          <motion.p
+            variants={itemVariants}
+            className="text-lg text-gray-300 max-w-lg mx-auto lg:mx-0 leading-relaxed"
+          >
+            Trivixa empowers you with modern web development, advanced IT
+            solutions, and professional skill-based learning—so you grow
+            smarter, faster, and better.
+          </motion.p>
+
+          {/* Highlights */}
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start text-sm font-medium text-gray-300"
+          >
+            {["Professional Courses", "IT Services", "Scalable Solutions"].map(
+              (text, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <FaCheckCircle className="text-[#F47C26]" /> {text}
+                </div>
+              )
+            )}
+          </motion.div>
+
+          {/* Buttons */}
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start"
+          >
+            <Link to="/courses" className="group">
+              <button className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#F47C26] to-[#d5671f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transform hover:-translate-y-1 transition-all duration-300">
+                Get Started
+                <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+
+            <Link to="/services">
+              <button className="w-full sm:w-auto px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                <FaPlayCircle className="text-gray-400" />
+                Explore Services
+              </button>
+            </Link>
+          </motion.div>
+        </motion.div>
+
+        {/* Right Content: Modern 3D Floating Card */}
+        <motion.div
+          className="lg:w-1/2 relative w-full flex justify-center lg:justify-end"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <motion.div
+            variants={floatingVariant}
+            animate="animate"
+            className="relative z-10 p-4 lg:p-6 rounded-3xl bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-2xl border border-white/20 shadow-2xl w-full max-w-lg"
+          >
+            {/* Image Container with Glow */}
+            <div className="relative rounded-2xl overflow-hidden shadow-inner border border-white/10 group">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f2d] to-transparent opacity-40 z-10"></div>
+              <img
+                src="https://cdni.iconscout.com/illustration/premium/thumb/full-stack-web-development-6103308-5042541.png"
+                alt="Banner Illustration"
+                className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700"
               />
             </div>
-          </div>
-        </div>
+
+            {/* Floating Badge 1 */}
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+              className="absolute -top-6 -right-6 bg-[#1a2d5c] border border-white/10 p-4 rounded-2xl shadow-xl flex items-center gap-3"
+            >
+              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                98%
+              </div>
+              <div className="text-left">
+                <p className="text-white text-xs font-bold">Satisfaction</p>
+                <p className="text-gray-400 text-[10px]">
+                  Based on 5k+ reviews
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Floating Badge 2 */}
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
+              className="absolute -bottom-6 -left-6 bg-[#1a2d5c] border border-white/10 px-6 py-3 rounded-2xl shadow-xl"
+            >
+              <p className="text-white text-sm font-bold flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                Top Rated Courses
+              </p>
+            </motion.div>
+          </motion.div>
+
+          {/* Decorative Elements Behind Card */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-full blur-3xl -z-10"></div>
+        </motion.div>
       </div>
-    </div>
+    </section>
   );
 };
-
-function Banner() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [courseCount, setCourseCount] = useState(0);
-
-  useEffect(() => {
-    const fetchCourseCount = async () => {
-      const API_URL =
-        import.meta.env.VITE_API_BASE_URL || "http://localhost:4002/api";
-      try {
-        const response = await axios.get(`${API_URL}/courses?fields=_id`);
-        setCourseCount(response.data.length + 100);
-      } catch (error) {
-        console.error("Error fetching course count:", error);
-      }
-    };
-
-    fetchCourseCount();
-  }, []);
-
-  const [showCertificate, setShowCertificate] = useState(false);
-
-  const features = [
-    {
-      icon: <FaBookOpen className="text-2xl text-[#F47C26]" />,
-      title: `${courseCount}+ Courses`,
-      desc: "Wide range of topics",
-    },
-    {
-      icon: <FaUsers className="text-2xl text-[#F47C26]" />,
-      title: "Expert Instructors",
-      desc: "Learn from the best",
-    },
-    {
-      icon: <FaCertificate className="text-2xl text-[#F47C26]" />,
-      title: "Certification",
-      desc: "Get certified",
-      onClick: () => setShowCertificate(true),
-    },
-  ];
-
-  return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 py-16 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-          {/* Left Content */}
-          <div className="lg:w-1/2 space-y-8">
-            <div className="space-y-2 w-full">
-              <div className="flex items-center gap-1 text-xl-mobile text-lg-tablet text-xl-desktop font-bold text-gray-900 dark:text-white leading-tight">
-                <img src={logoImg} alt="logo" className="w-6" />
-                <span className="text-blue-600 dark:text-blue-400 whitespace-nowrap">
-                  Be The First
-                </span>
-              </div>
-              <div className="text-xl-mobile text-lg-tablet text-xl-desktop font-bold text-gray-900 dark:text-white leading-tight">
-                <span className="whitespace-nowrap">Learn</span>
-                <span className="text-[#F47C26] whitespace-nowrap">
-                  {" "}
-                  Anytime,
-                </span>
-              </div>
-              <div className="text-xl-mobile text-lg-tablet text-xl-desktop font-bold text-gray-900 dark:text-white leading-tight">
-                <div className="flex items-start">
-                  <div className="w-12 xs:w-16 sm:w-20 md:w-24 flex-shrink-0"></div>
-                  <div>
-                    <span className="whitespace-nowrap">Grow</span>
-                    <span className="text-[#F47C26] whitespace-nowrap">
-                      {" "}
-                      Every Day
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p className="text-sm-mobile text-base-tablet text-base-desktop text-thin text-black dark:text-white">
-              No schedule limits, no boundaries. Learn anytime you choose and
-              make progress every day with simple, effective online education
-              built for real growth.
-            </p>
-
-            {/* Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  onClick={feature.onClick}
-                  className={`flex flex-nowrap items-start p-2.5 bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-lg hover:shadow-md dark:hover:shadow-gray-700 transition-all duration-300 border border-gray-100 dark:border-gray-700 ${
-                    feature.onClick
-                      ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-750"
-                      : ""
-                  }`}
-                >
-                  <div className="flex-shrink-0 p-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-full mr-3">
-                    {feature.icon}
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="font-semibold text-black dark:text-white text-[13px] sm:text-[15px] leading-tight">
-                      {feature.title}
-                    </h4>
-                    <p className="text-[11px] sm:text-[13px] text-black dark:text-gray-400 leading-tight mt-0.5">
-                      {feature.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 pt-2">
-              <Link
-                to="/courses"
-                className="group bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium text-lg transition duration-300 flex items-center w-full sm:w-auto justify-center"
-              >
-                <span>Start Learning</span>
-                <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-              </Link>
-              <Link
-                to="/about"
-                className="border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 px-8 py-3 rounded-lg font-medium text-lg transition duration-300 flex items-center justify-center w-full sm:w-auto"
-              >
-                Learn More
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Content */}
-          <div className="lg:w-1/2 mt-8 lg:mt-0">
-            <div className="relative">
-              <div className="w-[90%] hidden lg:block mx-auto mask-inset-corners hover:scale-105 transition-transform duration-500 shadow-xl dark:shadow-gray-900/50">
-                <img
-                  src={bannerImg}
-                  alt="Online Learning"
-                  className="w-full h-auto rounded-none"
-                />
-              </div>
-
-              {/* Decorative elements */}
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-blue-100 dark:bg-blue-900/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-              <div className="absolute -bottom-8 right-20 w-24 h-24 bg-purple-100 dark:bg-purple-900/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-              <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-yellow-100 dark:bg-yellow-900/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <CertificateModal
-        isOpen={showCertificate}
-        onClose={() => setShowCertificate(false)}
-      />
-    </div>
-  );
-}
 
 export default Banner;

@@ -1,271 +1,246 @@
-import React, { useState } from "react";
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+  FaRocket,
+  FaShieldAlt,
+  FaCode,
+  FaHeadset,
+  FaClock,
+} from "react-icons/fa";
 
-import { FaCheckCircle, FaTimesCircle, FaInfoCircle } from "react-icons/fa";
-import "./WhyLearnWithFirstVITE.css";
-import "../../styles/typography.css";
-
-const data = [
+// Data tailored for an IT Solutions Agency
+const comparisonData = [
   {
-    benefit: "FirstVITE ISO certified certificate",
-    firstVITE: true,
-    others: false,
-    youtube: false,
+    feature: "Custom Scalable Architecture",
+    icon: <FaRocket />,
+    trivixa: true,
+    freelancers: false,
+    templates: false,
   },
   {
-    benefit: "Dedicated placement support",
-    firstVITE: true,
-    others: false,
-    youtube: false,
+    feature: "Enterprise-Grade Security",
+    icon: <FaShieldAlt />,
+    trivixa: true,
+    freelancers: false,
+    templates: false,
   },
   {
-    benefit: "3x more visibility with verified certification ",
-    firstVITE: true,
-    others: false,
-    youtube: false,
+    feature: "Latest Tech Stack (React/Next/AI)",
+    icon: <FaCode />,
+    trivixa: true,
+    freelancers: true, // Some freelancers use new tech
+    templates: false,
   },
   {
-    benefit: "Direct job & internship opportunities",
-    firstVITE: true,
-    others: false,
-    youtube: false,
+    feature: "24/7 Post-Launch Support",
+    icon: <FaHeadset />,
+    trivixa: true,
+    freelancers: false,
+    templates: false,
   },
   {
-    benefit: "Industry-led curriculum & hands-on projects",
-    firstVITE: true,
-    others: false,
-    youtube: false,
+    feature: "On-Time Delivery Guarantee",
+    icon: <FaClock />,
+    trivixa: true,
+    freelancers: false,
+    templates: true, // Templates are instant
   },
   {
-    benefit: "Live doubt-clearing sessions",
-    firstVITE: true,
-    others: false,
-    youtube: false,
+    feature: "Dedicated Project Manager",
+    icon: <FaCheckCircle />,
+    trivixa: true,
+    freelancers: false,
+    templates: false,
   },
   {
-    benefit: "Courses in Hindi, English & more",
-    firstVITE: true,
-    others: false,
-    youtube: false,
-  },
-  {
-    benefit: "4 Million+ trusted learners",
-    firstVITE: true,
-    others: false,
-    youtube: false,
+    feature: "SEO & Performance Optimization",
+    icon: <FaCheckCircle />,
+    trivixa: true,
+    freelancers: false,
+    templates: false,
   },
 ];
 
-const renderIcon = (value) => {
-  const iconClass =
-    "text-xl mx-auto transition-transform duration-300 hover:scale-110";
-
-  if (value === true)
-    return (
-      <FaCheckCircle
-        className={`text-green-500 dark:text-green-400 ${iconClass}`}
-      />
-    );
-  if (value === false)
-    return (
-      <FaTimesCircle
-        className={`text-red-500 dark:text-red-400 ${iconClass}`}
-      />
-    );
+const WhyChooseTrivixa = () => {
   return (
-    <span className="text-gray-400 dark:text-gray-600 text-center">—</span>
-  );
-};
-
-const WhyLearnWithFirstVITE = () => {
-  const [comparisonData, setComparisonData] = useState(data);
-  const [isVisible, setIsVisible] = useState(false);
-  const componentRef = React.useRef(null);
-
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      {
-        threshold: 0.1, // Trigger when 10% of the component is visible
-        rootMargin: "0px 0px -50px 0px", // Adjust this to control when the animation triggers
-      }
-    );
-
-    if (componentRef.current) {
-      observer.observe(componentRef.current);
-    }
-
-    return () => {
-      if (componentRef.current) {
-        observer.unobserve(componentRef.current);
-      }
-    };
-  }, []);
-
-  const toggleValue = (rowIndex, column) => {
-    const cell = document.querySelector(
-      `[data-row="${rowIndex}"][data-column="${column}"] .flip-icon`
-    );
-    if (cell) {
-      cell.classList.add("flip");
-      setTimeout(() => cell.classList.remove("flip"), 500);
-    }
-
-    setTimeout(() => {
-      setComparisonData((prevData) => {
-        const newData = [...prevData];
-        newData[rowIndex] = {
-          ...newData[rowIndex],
-          [column]: !newData[rowIndex][column],
-        };
-        return newData;
-      });
-    }, 150);
-  };
-
-  const handleCellClick = (e, rowIndex, column) => {
-    // Prevent toggling when clicking on the benefit column
-    if (column === "benefit") return;
-    toggleValue(rowIndex, column);
-  };
-  return (
-    <div
-      ref={componentRef}
-      className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-opacity duration-1000 ${
-        isVisible ? "opacity-100 visible" : "opacity-0"
-      }`}
-    >
-      <div className="text-center mb-12">
-        <h2 className="text-lg-mobile text-xl-tablet text-xl-desktop font-bold text-black dark:text-white text-thin-bold">
-          Why Learn with FirstVITE?
-        </h2>
-        <p className="mt-4 text-xs-mobile text-sm-tablet text-sm-desktop text-thin text-black dark:text-white">
-          Compare our platform with others and see why we stand out
-        </p>
+    <section className="relative py-24 px-6 bg-[#0a0f2d] overflow-hidden">
+      {/* Background Elements to match Banner */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+        <div className="absolute top-[20%] right-[-5%] w-96 h-96 bg-purple-600/20 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-[20%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[100px]"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
       </div>
 
-      <div className="w-full">
-        {/* Desktop view - Table layout */}
-        <div className="hidden md:block w-full">
-          <div className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-md dark:shadow-none overflow-hidden hover:shadow-lg dark:hover:shadow-lg transition-all duration-300">
-            <div className="w-full overflow-x-auto">
-              <table className="w-full table-fixed border-collapse text-black dark:text-white">
-                <thead>
-                  <tr className="bg-gray-200 dark:bg-gray-700 text-black dark:text-white text-thin text-xs-mobile text-sm-tablet text-sm-desktop">
-                    <th className="w-1/2 px-4 py-3 text-left">Benefits</th>
-                    <th className="w-1/6 px-4 py-3">FirstVITE</th>
-                    <th className="w-1/6 px-4 py-3">Other Platforms</th>
-                    <th className="w-1/6 px-4 py-3">YouTube</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center text-thin text-xs-mobile text-sm-tablet text-sm-desktop">
-                  {comparisonData.map((row, idx) => (
-                    <tr
-                      key={idx}
-                      className={`${
-                        idx % 2 === 0
-                          ? "bg-white dark:bg-gray-800"
-                          : "bg-gray-50 dark:bg-gray-700"
-                      } hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer`}
-                    >
-                      <td
-                        className="w-1/2 px-4 py-3 text-left font-medium text-thin-bold"
-                        onClick={(e) => handleCellClick(e, idx, "benefit")}
-                      >
-                        {row.benefit}
-                      </td>
-                      <td
-                        className="w-1/6 px-4 py-3 text-center"
-                        onClick={(e) => handleCellClick(e, idx, "firstVITE")}
-                        data-row={idx}
-                        data-column="firstVITE"
-                      >
-                        <div
-                          className="flip-icon-container"
-                          style={{ "--delay": idx % 3 }}
-                        >
-                          {renderIcon(row.firstVITE)}
-                        </div>
-                      </td>
-                      <td
-                        className="w-1/6 px-4 py-3 text-center"
-                        onClick={(e) => handleCellClick(e, idx, "others")}
-                        data-row={idx}
-                        data-column="others"
-                      >
-                        <div
-                          className="flip-icon-container"
-                          style={{ "--delay": (idx % 3) + 1 }}
-                        >
-                          {renderIcon(row.others)}
-                        </div>
-                      </td>
-                      <td
-                        className="w-1/6 px-4 py-3 text-center"
-                        onClick={(e) => handleCellClick(e, idx, "youtube")}
-                        data-row={idx}
-                        data-column="youtube"
-                      >
-                        <div
-                          className="flip-icon-container"
-                          style={{ "--delay": (idx % 3) + 2 }}
-                        >
-                          {renderIcon(row.youtube)}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header Section */}
+        <div className="text-center mb-16 space-y-4">
+          <motion.span
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[#F47C26] text-xs font-bold uppercase tracking-wider"
+          >
+            Why Choose Us
+          </motion.span>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-5xl font-extrabold text-white"
+          >
+            Not Just Another{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+              IT Agency
+            </span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-400 max-w-2xl mx-auto text-lg"
+          >
+            See how Trivixa stacks up against freelancers and template-based
+            solutions. We build assets, not liabilities.
+          </motion.p>
+        </div>
+
+        {/* --- Desktop Grid View --- */}
+        <div className="hidden md:block">
+          <div className="grid grid-cols-4 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+            {/* Table Header */}
+            <div className="col-span-1 p-6 border-b border-r border-white/10 flex items-center bg-white/5">
+              <span className="text-lg font-bold text-white">Features</span>
             </div>
+            <div className="col-span-1 p-6 border-b border-white/10 flex flex-col items-center justify-center bg-[#F47C26]/10 relative">
+              <div className="absolute top-0 left-0 w-full h-1 bg-[#F47C26]"></div>
+              <span className="text-xl font-bold text-white">Trivixa</span>
+              <span className="text-xs text-[#F47C26] uppercase tracking-wide mt-1">
+                Best Choice
+              </span>
+            </div>
+            <div className="col-span-1 p-6 border-b border-white/10 flex items-center justify-center">
+              <span className="text-lg font-semibold text-gray-400">
+                Freelancers
+              </span>
+            </div>
+            <div className="col-span-1 p-6 border-b border-white/10 flex items-center justify-center">
+              <span className="text-lg font-semibold text-gray-400">
+                DIY / Templates
+              </span>
+            </div>
+
+            {/* Table Body */}
+            {comparisonData.map((item, index) => (
+              <React.Fragment key={index}>
+                {/* Feature Name */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="col-span-1 p-6 border-b border-r border-white/10 flex items-center gap-3 text-gray-300 hover:bg-white/5 transition-colors"
+                >
+                  <span className="text-[#F47C26] text-xl">{item.icon}</span>
+                  <span className="font-medium">{item.feature}</span>
+                </motion.div>
+
+                {/* Trivixa Column */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 + 0.1 }}
+                  className="col-span-1 p-6 border-b border-white/10 flex items-center justify-center bg-[#F47C26]/5"
+                >
+                  <StatusIcon status={item.trivixa} type="success" />
+                </motion.div>
+
+                {/* Freelancers Column */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: index * 0.05 + 0.2 }}
+                  className="col-span-1 p-6 border-b border-white/10 flex items-center justify-center"
+                >
+                  <StatusIcon status={item.freelancers} type="neutral" />
+                </motion.div>
+
+                {/* Templates Column */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: index * 0.05 + 0.3 }}
+                  className="col-span-1 p-6 border-b border-white/10 flex items-center justify-center"
+                >
+                  <StatusIcon status={item.templates} type="danger" />
+                </motion.div>
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
-        {/* Mobile view - Card layout */}
+        {/* --- Mobile Card View --- */}
         <div className="md:hidden space-y-6">
-          {comparisonData.map((row, idx) => (
-            <div
-              key={idx}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-transform duration-300 hover:scale-[1.02]"
+          {comparisonData.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-6 relative overflow-hidden"
             >
-              <div className="p-4 space-y-4">
-                <h3 className="text-base font-semibold text-black dark:text-white">
-                  {row.benefit}
-                </h3>
+              {/* Feature Header */}
+              <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+                <span className="text-[#F47C26] text-2xl">{item.icon}</span>
+                <h3 className="text-xl font-bold text-white">{item.feature}</h3>
+              </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
-                    <span className="text-sm font-medium text-gray-800 dark:text-white">
-                      FirstVITE
-                    </span>
-                    {renderIcon(row.firstVITE)}
-                  </div>
-
-                  <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
-                    <span className="text-sm font-medium text-gray-800 dark:text-white">
-                      Other Platforms
-                    </span>
-                    {renderIcon(row.others)}
-                  </div>
-
-                  <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
-                    <span className="text-sm font-medium text-gray-800 dark:text-white">
-                      YouTube
-                    </span>
-                    {renderIcon(row.youtube)}
-                  </div>
+              {/* Comparison Rows */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 rounded-lg bg-[#F47C26]/10 border border-[#F47C26]/20">
+                  <span className="text-white font-semibold">Trivixa</span>
+                  <StatusIcon status={item.trivixa} type="success" />
+                </div>
+                <div className="flex justify-between items-center p-3 rounded-lg bg-white/5">
+                  <span className="text-gray-400">Freelancers</span>
+                  <StatusIcon status={item.freelancers} type="neutral" />
+                </div>
+                <div className="flex justify-between items-center p-3 rounded-lg bg-white/5">
+                  <span className="text-gray-400">Templates</span>
+                  <StatusIcon status={item.templates} type="danger" />
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
-export default WhyLearnWithFirstVITE;
+// Helper Component for Icons
+const StatusIcon = ({ status, type }) => {
+  if (status) {
+    return (
+      <div className="relative flex items-center justify-center w-8 h-8">
+        <div
+          className={`absolute inset-0 rounded-full blur-sm opacity-50 ${
+            type === "success" ? "bg-green-500" : "bg-gray-500"
+          }`}
+        ></div>
+        <FaCheckCircle
+          className={`relative z-10 text-2xl ${
+            type === "success"
+              ? "text-green-400 drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]"
+              : "text-gray-400"
+          }`}
+        />
+      </div>
+    );
+  }
+  return <FaTimesCircle className="text-xl text-gray-600/50" />;
+};
+
+export default WhyChooseTrivixa;

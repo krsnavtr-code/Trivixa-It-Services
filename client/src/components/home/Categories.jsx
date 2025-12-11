@@ -1,19 +1,29 @@
-import "../Banner.css";
-import "../../styles/typography.css";
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FaImage, FaArrowRight, FaLayerGroup, FaCode } from "react-icons/fa";
+import { motion } from "framer-motion";
 import { getCategories as getCategoriesFromApi } from "../../api/categoryApi";
 import { getCoursesByCategory } from "../../api/courseApi";
-import { FaImage, FaArrowRight } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { getCardBgColor } from "../../utils/gradients";
 
 // Helper function to get the full image URL
 const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
-  // If it's already a full URL, return as is
   if (imagePath.startsWith("http")) return imagePath;
-  // Otherwise, prepend the API base URL
   return `${import.meta.env.VITE_API_BASE_URL.replace("/api", "")}${imagePath}`;
+};
+
+// --- Animations ---
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
 const Categories = () => {
@@ -21,12 +31,11 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // --- Data Fetching Logic (Kept Intact) ---
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-
-        // Fetch only categories marked to show on home page
         const response = await getCategoriesFromApi({
           showOnHome: true,
           limit: 6,
@@ -34,23 +43,20 @@ const Categories = () => {
           fields: "_id,name,slug,courseCount,image,description,showOnHome",
         });
 
-        // Extract the categories array from the response
-        // The API might return either an array directly or a paginated response with a 'data' property
         const categoriesData = Array.isArray(response)
           ? response
           : response.data || [];
 
-        // Create a map to remove duplicates by ID
+        // Deduplicate
         const uniqueCategoriesMap = new Map();
         categoriesData.forEach((cat) => {
           if (cat && cat._id && !uniqueCategoriesMap.has(cat._id)) {
             uniqueCategoriesMap.set(cat._id, cat);
           }
         });
-
         const uniqueCategories = Array.from(uniqueCategoriesMap.values());
 
-        // Fetch course counts for categories that don't have it
+        // Fetch counts if missing
         const categoriesWithCount = await Promise.all(
           uniqueCategories.map(async (category) => {
             if (
@@ -64,10 +70,6 @@ const Categories = () => {
                   courseCount: Array.isArray(courses) ? courses.length : 0,
                 };
               } catch (err) {
-                console.error(
-                  `Error fetching courses for category ${category.name}:`,
-                  err
-                );
                 return { ...category, courseCount: 0 };
               }
             }
@@ -75,7 +77,6 @@ const Categories = () => {
           })
         );
 
-        // Sort by course count and limit to 6 categories
         const sortedCategories = categoriesWithCount
           .sort((a, b) => (b.courseCount || 0) - (a.courseCount || 0))
           .slice(0, 6);
@@ -83,7 +84,7 @@ const Categories = () => {
         setCategories(sortedCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
-        setError("Failed to load categories. Please try again later.");
+        setError("Failed to load expertise domains.");
       } finally {
         setLoading(false);
       }
@@ -92,24 +93,19 @@ const Categories = () => {
     fetchCategories();
   }, []);
 
-  // Memoized CategoryImage component to prevent unnecessary re-renders
+  // --- Sub-Component: Category Image ---
   const CategoryImage = React.memo(({ category }) => {
     const [imageError, setImageError] = useState(false);
     const [imageUrl, setImageUrl] = useState(null);
 
     useEffect(() => {
-      // Reset error state when category changes
       setImageError(false);
-      // Only process if we have an image and no error
       if (category?.image) {
         const url = getImageUrl(category.image);
-        // Create a new Image object to check if it loads successfully
         const img = new Image();
         img.onload = () => setImageUrl(url);
         img.onerror = () => setImageError(true);
         img.src = url;
-
-        // Cleanup function
         return () => {
           img.onload = null;
           img.onerror = null;
@@ -120,47 +116,38 @@ const Categories = () => {
     }, [category?.image]);
 
     return (
-      <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-white/30 dark:bg-black/30 backdrop-blur-sm flex items-center justify-center">
+      <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:border-[#F47C26]/50 transition-colors duration-300">
         {!imageError && imageUrl ? (
           <img
             src={imageUrl}
-            alt={category?.name || "Category"}
-            className="w-full h-full object-cover"
+            alt={category?.name}
+            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
             onError={() => setImageError(true)}
             loading="lazy"
           />
         ) : (
-          <div className="flex items-center justify-center w-full h-full text-gray-400">
-            <FaImage className="text-2xl" />
-          </div>
+          <FaCode className="text-xl text-gray-500 group-hover:text-[#F47C26] transition-colors" />
         )}
       </div>
     );
   });
 
+  // --- Render: Loading State ---
   if (loading) {
     return (
-      <section className="py-16 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-black dark:text-white">
-              Online Learning Categories
-            </h2>
-            <p className="mt-4 text-xs sm:text-sm lg:text-base text-black dark:text-white">
-              Choose from a wide range of online courses, grouped by subject to
-              match your learning goals
-            </p>
+      <section className="py-20 bg-[#0a0f2d] relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-16">
+            <div className="h-8 w-64 bg-white/10 mx-auto rounded mb-4 animate-pulse"></div>
+            <div className="h-4 w-96 bg-white/5 mx-auto rounded animate-pulse"></div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden animate-pulse"
+                className="h-32 bg-white/5 border border-white/10 rounded-2xl animate-pulse relative overflow-hidden"
               >
-                <div className="p-6">
-                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]"></div>
               </div>
             ))}
           </div>
@@ -169,77 +156,127 @@ const Categories = () => {
     );
   }
 
+  // --- Render: Error State ---
   if (error) {
     return (
-      <section className="py-16 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-red-500 mb-4">{error}</div>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-black rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Try Again
-          </button>
-        </div>
-      </section>
+      <div className="py-20 bg-[#0a0f2d] text-center">
+        <p className="text-red-400 mb-4">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
     );
   }
 
+  // --- Render: Main Content ---
   return (
-    <section className="py-16 bg-white dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-lg-mobile text-xl-tablet text-xl-desktop font-bold text-black dark:text-white text-thin-bold">
-            Online Learning Categories
-          </h2>
-          <p className="mt-4 text-xs sm:text-sm lg:text-base text-black dark:text-white">
-            Choose from a wide range of online courses, grouped by subject to
-            match your learning goals
-          </p>
+    <section className="relative py-24 bg-[#0a0f2d] overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
+      <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        {/* Header */}
+        <div className="text-center mb-16 space-y-4">
+          <motion.span
+            initial={{ opacity: 0, y: -10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider"
+          >
+            Our Expertise
+          </motion.span>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-3xl md:text-5xl font-extrabold text-white"
+          >
+            Solutions by{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
+              Domain
+            </span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-400 max-w-2xl mx-auto"
+          >
+            Navigate our specialized technical domains to find the perfect
+            solution for your digital transformation.
+          </motion.p>
         </div>
 
+        {/* Categories Grid */}
         {categories.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {categories.map((category) => (
-              <Link
-                key={category._id}
-                to={`/courses/category/${category.name
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")}`}
-                className={`block p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${getCardBgColor(
-                  category
-                )}`}
-              >
-                <div className="flex items-center space-x-4">
-                  <CategoryImage category={category} />
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-black dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                      {category.name}
-                    </h3>
-                    <p className="text-black dark:text-white">
-                      {category.courseCount || 0} courses
-                    </p>
+              <motion.div key={category._id} variants={cardVariants}>
+                <Link
+                  to={`/courses/category/${category.name
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")}`}
+                  className="group relative block p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl transition-all duration-300 hover:bg-white/[0.07] hover:border-[#F47C26]/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-[#F47C26]/10"
+                >
+                  <div className="flex items-center gap-5">
+                    <CategoryImage category={category} />
+
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-white group-hover:text-[#F47C26] transition-colors duration-300 truncate">
+                        {category.name}
+                      </h3>
+
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-xs text-gray-400 flex items-center gap-1">
+                          <FaLayerGroup className="text-[10px]" />
+                          {category.courseCount || 0} Projects
+                        </span>
+
+                        {/* Hidden arrow that appears on hover */}
+                        <span className="text-[#F47C26] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                          <FaArrowRight className="text-sm" />
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </Link>
+
+                  {/* Decorative corner glow */}
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-white/5 to-transparent rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <div className="text-center py-8">
-            <p className="text-black dark:text-white">
-              No categories found.
-            </p>
+          <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
+            <p className="text-gray-400">No domains currently available.</p>
           </div>
         )}
 
-        <div className="mt-12 text-center">
+        {/* Footer Action */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-16 text-center"
+        >
           <Link
             to="/categories"
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-300"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-white/5 border border-white/20 text-white font-semibold rounded-xl hover:bg-white/10 hover:scale-105 transition-all duration-300"
           >
-            View All Categories
+            Explore All Services <FaArrowRight className="text-sm" />
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

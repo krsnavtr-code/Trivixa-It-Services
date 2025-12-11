@@ -2,136 +2,41 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import {
-  FaSun,
-  FaMoon,
   FaSearch,
   FaUser,
   FaTimes,
   FaBars,
   FaSignInAlt,
-  FaUserPlus,
-  FaCreditCard,
-  FaCopy,
   FaCheck,
   FaExclamationCircle,
-  FaExclamationTriangle,
+  FaChevronRight,
+  FaSignOutAlt,
+  FaGraduationCap,
 } from "react-icons/fa";
+import { FiSun, FiMoon } from "react-icons/fi";
 import CourseMenu from "./CourseMenu";
 import { toast } from "react-hot-toast";
 import { debounce } from "lodash";
 import api from "../api/axios";
 import PaymentForm from "./PaymentForm";
-import { FiSun, FiMoon } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Navbar() {
   const { authUser, isAuthenticated, isAdmin, isApproved, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
-  const [copiedIndex, setCopiedIndex] = useState(null);
-  const dropdownRef = useRef(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Check if the click was outside the dropdown and not on the payment button
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        !event.target.closest("[data-payment-button]")
-      ) {
-        setShowPaymentDropdown(false);
-      }
-    };
-
-    // Use 'click' instead of 'mousedown' for better reliability
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
+  // Theme State
   const [theme, setTheme] = useState(
-    localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
+    localStorage.getItem("theme") ? localStorage.getItem("theme") : "dark" // Default to dark for Trivixa theme
   );
+
   const navigate = useNavigate();
   const location = useLocation();
-  const courseMenuRef = useRef(null);
 
-  const handlePaymentClick = () => {
-    // if (!isAuthenticated) {
-    //   toast.error("Please log in to make a payment");
-    //   navigate("/login", { state: { from: location.pathname } });
-    //   return;
-    // }
-    setShowPaymentForm(true);
-  };
-
-  // Clean up event listeners on unmount
-  useEffect(() => {
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      // Cleanup any other event listeners if needed
-    };
-  }, []);
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const toggleProfileMenu = () => {
-    setIsProfileMenuOpen(!isProfileMenuOpen);
-  };
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Close profile menu if click is outside
-      const profileMenu = document.getElementById("user-menu");
-      const profileButton = document.querySelector('[aria-label="User menu"]');
-
-      if (
-        profileMenu &&
-        profileButton &&
-        !profileMenu.contains(event.target) &&
-        !profileButton.contains(event.target)
-      ) {
-        setIsProfileMenuOpen(false);
-      }
-
-      // Close mobile menu if click is outside
-      const mobileMenu = document.querySelector(".mobile-menu-container");
-      const menuButton = document.querySelector('[aria-label="Toggle menu"]');
-
-      if (
-        mobileMenu &&
-        menuButton &&
-        isMobileMenuOpen &&
-        !mobileMenu.contains(event.target) &&
-        !menuButton.contains(event.target)
-      ) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    // Close modals when clicking outside
-    const handleModalClick = (event) => {
-      const modals = document.querySelectorAll("dialog[open]");
-      modals.forEach((modal) => {
-        if (!modal.contains(event.target) && event.target !== modal) {
-          modal.close();
-        }
-      });
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("click", handleModalClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("click", handleModalClick);
-    };
-  }, [isMobileMenuOpen]);
+  // Search State
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState({
     courses: [],
@@ -142,721 +47,452 @@ function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef(null);
   const searchRef = useRef(null);
-  const element = document.documentElement;
+
+  // --- Theme Effect ---
   useEffect(() => {
+    const element = document.documentElement;
     if (theme === "dark") {
       element.classList.add("dark");
       localStorage.setItem("theme", "dark");
-      document.body.classList.add("dark");
     } else {
       element.classList.remove("dark");
       localStorage.setItem("theme", "light");
-      document.body.classList.remove("dark");
     }
   }, [theme]);
 
-  // Handle search input change with debounce
-  const handleSearch = debounce(async (query) => {
-    const trimmedQuery = query.trim();
-    if (!trimmedQuery) {
-      setSearchResults({ courses: [], categories: [] });
-      return;
-    }
+  // --- Scroll Effect ---
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    try {
-      setIsSearching(true);
-      // Search courses using the API endpoint
-      const response = await api.get("/courses", {
-        params: {
-          search: trimmedQuery,
-          limit: 10, // Limit the number of results for better performance
-        },
-      });
-
-      // The backend returns courses directly or in a data property
-      const courses = response?.data?.data || response?.data || [];
-
-      setSearchResults({
-        courses: Array.isArray(courses) ? courses : [],
-        categories: [],
-      });
-    } catch (error) {
-      console.error("Search error:", error);
-      // Only show error if it's not a 404 or 500
-      if (error.response?.status !== 404 && error.response?.status !== 500) {
-        toast.error(
-          "Error fetching search results. Using local search instead."
-        );
-      }
-      // Fall back to client-side search if the API call fails
-      handleClientSideSearch(trimmedQuery);
-    } finally {
-      setIsSearching(false);
-    }
-  }, 500); // Debounce to reduce API calls
-
-  // Fallback client-side search if the API endpoint is not available
-  const handleClientSideSearch = async (query) => {
-    try {
-      // Get all courses with a limit to avoid loading too much data
-      const response = await api.get("/courses", { params: { limit: 50 } });
-      const allCourses = Array.isArray(response?.data)
-        ? response?.data
-        : response?.data?.data || [];
-
-      if (!allCourses?.length) {
+  // --- Search Logic (Preserved) ---
+  const handleSearch = useCallback(
+    debounce(async (query) => {
+      const trimmedQuery = query.trim();
+      if (!trimmedQuery) {
         setSearchResults({ courses: [], categories: [] });
         return;
       }
 
-      // Simple case-insensitive search on multiple fields
-      const searchLower = query.toLowerCase();
-      const filtered = allCourses.filter((course) => {
-        if (!course) return false;
-        return (
-          (course?.title && course.title.toLowerCase().includes(searchLower)) ||
-          (course?.description &&
-            course.description.toLowerCase().includes(searchLower)) ||
-          (course?.instructor &&
-            course.instructor.toLowerCase().includes(searchLower)) ||
-          (course?.category?.name &&
-            course.category.name.toLowerCase().includes(searchLower))
-        );
-      });
-
-      setSearchResults({
-        courses: filtered,
-        categories: [],
-      });
-    } catch (error) {
-      console.error("Client-side search error:", error);
-      // Only show error if it's not a 404
-      if (error.response?.status !== 404) {
-        toast.error("Error fetching courses. Please try again later.");
+      try {
+        setIsSearching(true);
+        const response = await api.get("/courses", {
+          params: { search: trimmedQuery, limit: 5 }, // Limit 5 for cleaner UI
+        });
+        const courses = response?.data?.data || response?.data || [];
+        setSearchResults({
+          courses: Array.isArray(courses) ? courses : [],
+          categories: [],
+        });
+      } catch (error) {
+        console.error("Search error:", error);
+        handleClientSideSearch(trimmedQuery);
+      } finally {
+        setIsSearching(false);
       }
+    }, 500),
+    []
+  );
+
+  const handleClientSideSearch = async (query) => {
+    try {
+      const response = await api.get("/courses", { params: { limit: 20 } });
+      const allCourses = Array.isArray(response?.data)
+        ? response?.data
+        : response?.data?.data || [];
+      const searchLower = query.toLowerCase();
+      const filtered = allCourses.filter(
+        (course) =>
+          course?.title?.toLowerCase().includes(searchLower) ||
+          course?.category?.name?.toLowerCase().includes(searchLower)
+      );
+      setSearchResults({ courses: filtered, categories: [] });
+    } catch (error) {
       setSearchResults({ courses: [], categories: [] });
     }
   };
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-    if (query.trim()) {
-      handleSearch(query);
-    } else {
-      setSearchResults({ courses: [], categories: [] });
-    }
+    if (query.trim()) handleSearch(query);
+    else setSearchResults({ courses: [], categories: [] });
   };
 
-  // Handle search result click
-  const handleResultClick = (type, item) => {
-    if (!item) return;
-
-    if (type === "course") {
-      // Check if the course has a slug, otherwise use _id
-      const courseId = item.slug || item._id;
-      console.log("Navigating to course:", { courseId, item });
-      if (courseId) {
-        // Try both /course/:id and /courses/:id to see which one works
-        const path = `/course/${courseId}`;
-        console.log("Navigating to path:", path);
-        navigate(path);
-        resetSearch();
-      }
-    } else if (type === "category" && item._id) {
-      console.log("Navigating to category:", item._id);
-      navigate(`/courses/category/${item._id}`);
+  const handleResultClick = (item) => {
+    const courseId = item.slug || item._id;
+    if (courseId) {
+      navigate(`/course/${courseId}`);
       resetSearch();
     }
   };
 
-  // Reset search state
   const resetSearch = () => {
     setSearchQuery("");
     setSearchResults({ courses: [], categories: [] });
     setShowResults(false);
+    setIsSearchOpen(false);
   };
 
-  // Handle search submit
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    const query = searchQuery.trim();
-    if (query) {
-      // If there are search results, navigate to the first one
-      if (searchResults.courses.length > 0) {
-        handleResultClick("course", searchResults.courses[0]);
-      } else {
-        // Otherwise, navigate to search results page
-        navigate(`/search?q=${encodeURIComponent(query)}`);
-        resetSearch();
-      }
-    }
-  };
-
-  // Close search results when clicking outside
+  // --- Click Outside Handlers ---
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // Close Search
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowResults(false);
-        // Don't close search if clicking on the search icon
-        if (!event.target.closest(".search-icon-container")) {
-          setIsSearchOpen(false);
-        }
+        if (!event.target.closest(".search-toggle-btn")) setIsSearchOpen(false);
+      }
+
+      // Close Profile Menu
+      if (!event.target.closest(".profile-menu-container")) {
+        setIsProfileMenuOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Focus the search input when search is opened
   useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
+    if (isSearchOpen && searchInputRef.current) searchInputRef.current.focus();
   }, [isSearchOpen]);
 
-  // Handle scroll effect
-  const handleScroll = useCallback(() => {
-    const navbar = document.getElementById("main-navbar");
-    if (!navbar) return;
-
-    if (window.scrollY > 10) {
-      navbar.classList.add(
-        "shadow-lg",
-        "bg-white/80",
-        "dark:bg-gray-800/80",
-        "backdrop-blur-sm"
-      );
-      navbar.classList.remove("bg-white", "dark:bg-gray-900");
-    } else {
-      navbar.classList.remove(
-        "shadow-lg",
-        "bg-white/80",
-        "dark:bg-gray-800/80",
-        "backdrop-blur-sm"
-      );
-      navbar.classList.add("bg-white", "dark:bg-gray-900");
-    }
-  }, []);
-
-  // Add scroll event listener
-  useEffect(() => {
-    const navbar = document.getElementById("main-navbar");
-    if (!navbar) return;
-
-    // Initial check
-    handleScroll();
-
-    // Add scroll event listener
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [handleScroll]);
-
-  // Navigation items
+  // --- Navigation Data ---
   const navItems = [
-    // { to: "/", label: "Home" },
     { to: "/services", label: "Services" },
-    { to: "/free-courses", label: "Buy at ₹0" },
-    // { to: "/about", label: "About" },
+    { to: "/free-courses", label: "Free Resources" },
     { to: "/contact", label: "Contact" },
-    { to: "/blog", label: "Blog" },
-    { to: "/lms", lmscolors: true },
-    ...(isAdmin ? [{ to: "/admin", label: "Admin" }] : []),
+    { to: "/blog", label: "Insights" },
+    ...(isAdmin
+      ? [{ to: "/admin", label: "Admin Panel", isPrimary: true }]
+      : []),
   ];
-
-  const renderNavItems = (className = "") => (
-    <div className="flex items-center gap-2">
-      {/* Home */}
-      <Link
-        to="/"
-        className={`hover-underline px-2 py-1.5 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap ${
-          false
-            ? "text-black dark:text-white hover:bg-orange-50 dark:hover:bg-orange-900/30"
-            : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-        } ${className}`}
-      >
-        Home
-      </Link>
-
-      {/* Course Menu */}
-      <CourseMenu className={className} />
-
-      {/* Other navigation items */}
-      {navItems.map((item) => (
-        <Link
-          key={item.to}
-          to={item.to}
-          className={`hover-underline px-2 py-1.5 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap ${
-            item.lmscolors
-              ? "text-black dark:text-white hover:bg-orange-50 dark:hover:bg-orange-900/30"
-              : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-          } ${className}`}
-        >
-          {item.label}
-        </Link>
-      ))}
-    </div>
-  );
 
   return (
     <>
-      {/* Nabvar */}
-      <div
-        className="z-50 transition-all duration-300 bg-white dark:bg-gray-900 h-12 sticky top-0 left-0 right-0"
-        id="main-navbar"
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled
+            ? "bg-[#05081a]/90 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20"
+            : "bg-transparent border-b border-transparent"
+        }`}
       >
-        {/* Desktop Navbar */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-12">
-            {/* Mobile menu togol button */}
-            <div className="flex items-center">
-              <button
-                type="button"
-                className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-                onClick={toggleMobileMenu}
-                aria-expanded={isMobileMenuOpen}
-                aria-label="Toggle menu"
-              >
-                <span className="sr-only">Open main menu</span>
-                <FaBars
-                  className={`block h-6 w-6 ${
-                    isMobileMenuOpen ? "hidden" : "block"
-                  }`}
-                  aria-hidden="true"
-                />
-                <FaTimes
-                  className={`h-6 w-6 ${isMobileMenuOpen ? "block" : "hidden"}`}
-                  aria-hidden="true"
-                />
-              </button>
-              <div className="flex-shrink-0">
-                <Link to="/" className="group inline-block">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo Section */}
+            <div className="flex-shrink-0 flex items-center gap-4">
+              <Link to="/" className="group flex items-center gap-2">
+                <div className="relative">
+                  {/* Fallback to text if image fails or for SEO, though you use image */}
                   <img
                     src="/images/trivixa-fix-size-brand-logo.png"
-                    alt="Trivixa Logo"
-                    className="h-10 w-auto rounded transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-1 group-hover:shadow-lg dark:group-hover:shadow-blue-500/30"
+                    alt="Trivixa"
+                    className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                   />
-                </Link>
+                </div>
+              </Link>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-1">
+              <Link
+                to="/"
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
+                  location.pathname === "/"
+                    ? "text-[#F47C26]"
+                    : "text-gray-300 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                Home
+              </Link>
+
+              {/* Course Menu Wrapper to Apply Styles */}
+              <div className="course-menu-wrapper text-gray-300 hover:text-white">
+                <CourseMenu />
               </div>
 
-              {/* Search */}
-              <div className="relative" ref={searchRef}>
-                <div className="flex items-center">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSearchOpen(!isSearchOpen);
-                      if (!isSearchOpen) {
-                        setTimeout(() => {
-                          searchInputRef.current?.focus();
-                        }, 0);
-                      }
-                    }}
-                    aria-label="Search"
-                    className="group p-2 ml-6 rounded-full text-gray-600 dark:text-gray-300 bg-transparent transition-all duration-300 ease-out hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:shadow-md hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <FaSearch
-                      className="w-4 h-4 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110"
-                    />
-                  </button>
-                </div>
-
-                {/* Search Dropdown */}
-                <div
-                  className={`absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-200 ease-in-out transform ${
-                    isSearchOpen
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 -translate-y-2 pointer-events-none"
+              {navItems.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
+                    item.isPrimary
+                      ? "text-[#F47C26] bg-[#F47C26]/10 border border-[#F47C26]/20 hover:bg-[#F47C26] hover:text-white"
+                      : location.pathname === item.to
+                      ? "text-[#F47C26]"
+                      : "text-gray-300 hover:text-white hover:bg-white/5"
                   }`}
-                  style={{ zIndex: 50 }}
                 >
-                  <form onSubmit={handleSearchSubmit} className="relative">
-                    <div className="relative">
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Actions Section */}
+            <div className="flex items-center gap-3">
+              {/* Search Bar */}
+              <div className="relative" ref={searchRef}>
+                <div
+                  className={`flex items-center transition-all duration-300 ${
+                    isSearchOpen ? "w-64" : "w-10"
+                  }`}
+                >
+                  {isSearchOpen ? (
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSearch(searchQuery);
+                      }}
+                      className="w-full relative"
+                    >
                       <input
                         ref={searchInputRef}
                         type="text"
                         value={searchQuery}
                         onChange={handleSearchChange}
                         onFocus={() => setShowResults(true)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Escape") {
-                            setShowResults(false);
-                            setIsSearchOpen(false);
-                          }
-                        }}
-                        className="w-full px-4 py-2 pl-10 pr-8 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="Search courses..."
-                        aria-label="Search courses"
-                        autoComplete="on"
+                        className="w-full h-10 pl-4 pr-10 bg-white/5 border border-white/10 rounded-full text-sm text-white focus:outline-none focus:border-[#F47C26] transition-all"
+                        placeholder="Search..."
                       />
-                      <FaSearch className="absolute left-3 top-3 text-gray-400" />
-                      {searchQuery && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSearchQuery("");
-                            setSearchResults({ courses: [], categories: [] });
-                            searchInputRef.current?.focus();
-                          }}
-                          className="absolute right-2 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                          aria-label="Clear search"
-                        >
-                          <FaTimes className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
+                      <button
+                        type="button"
+                        onClick={resetSearch}
+                        className="absolute right-3 top-2.5 text-gray-400 hover:text-white"
+                      >
+                        <FaTimes />
+                      </button>
+                    </form>
+                  ) : (
+                    <button
+                      onClick={() => setIsSearchOpen(true)}
+                      className="search-toggle-btn w-10 h-10 flex items-center justify-center rounded-full text-gray-300 hover:text-[#F47C26] hover:bg-white/5 transition-all"
+                    >
+                      <FaSearch />
+                    </button>
+                  )}
+                </div>
 
-                    {/* Search Results */}
-                    {showResults && searchQuery.trim() && (
-                      <div className="mt-1 bg-white dark:bg-gray-800 rounded-b-lg shadow-lg border-t border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto">
+                {/* Search Results Dropdown */}
+                <AnimatePresence>
+                  {showResults && searchQuery.trim() && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute right-0 top-14 w-80 bg-[#0a0f2d] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50"
+                    >
+                      <div className="p-3 border-b border-white/10 bg-white/5">
+                        <p className="text-xs font-bold text-[#F47C26] uppercase tracking-wider">
+                          Results
+                        </p>
+                      </div>
+                      <div className="max-h-80 overflow-y-auto custom-scrollbar">
                         {isSearching ? (
-                          <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                          <div className="p-6 text-center text-gray-400 text-sm">
                             Searching...
                           </div>
                         ) : searchResults.courses.length === 0 ? (
-                          <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                            No courses found
+                          <div className="p-6 text-center text-gray-400 text-sm">
+                            No results found
                           </div>
                         ) : (
-                          <>
-                            {searchResults.courses.length > 0 && (
-                              <div className="border-b border-gray-200 dark:border-gray-700">
-                                <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                  Courses
-                                </div>
-                                {searchResults.courses.map((course) => (
-                                  <button
-                                    key={course._id}
-                                    onClick={() => {
-                                      handleResultClick("course", course);
-                                      setIsSearchOpen(false);
-                                    }}
-                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center"
-                                  >
-                                    <div className="ml-3">
-                                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                        {course.title}
-                                      </div>
-                                    </div>
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          </>
+                          searchResults.courses.map((course) => (
+                            <button
+                              key={course._id}
+                              onClick={() => handleResultClick(course)}
+                              className="w-full text-left p-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 group"
+                            >
+                              <h4 className="text-sm font-semibold text-white group-hover:text-[#F47C26] transition-colors line-clamp-1">
+                                {course.title}
+                              </h4>
+                              {course.category && (
+                                <span className="text-xs text-gray-500">
+                                  {course.category.name}
+                                </span>
+                              )}
+                            </button>
+                          ))
                         )}
                       </div>
-                    )}
-                  </form>
-                </div>
-              </div>
-            </div>
-
-            {/* Right */}
-            <div className="flex items-center space-x-2">
-              {/* Desktop menu */}
-              <div className="hidden md:flex md:items-center xl:ml-8 lg:ml-6">
-                <div className="flex-shrink-0">{renderNavItems()}</div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              {/* Theme Toggle */}
+              {/* Theme Toggle (Styled) */}
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                aria-label={
-                  theme === "dark"
-                    ? "Switch to light mode"
-                    : "Switch to dark mode"
-                }
-                className="relative flex items-center justify-between w-12 h-6 rounded-full bg-gray-300 dark:bg-gray-700 p-1 transition-colors duration-300"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-gray-300 hover:bg-white/5 hover:text-yellow-400 transition-all"
               >
-                {/* Sliding Circle */}
-                <span
-                  className={`absolute top-1 h-4 w-4 rounded-full bg-white dark:bg-gray-900 shadow-md transition-transform duration-300 ${
-                    theme === "dark" ? "translate-x-6" : "translate-x-0"
-                  }`}
-                />
-
-                {/* Icons */}
-                <FiSun className="z-10 w-3 h-3 text-yellow-600" />
-                <FiMoon className="z-10 w-3 h-3 text-gray-700 dark:text-gray-200" />
+                {theme === "dark" ? <FiMoon /> : <FiSun />}
               </button>
 
-              {/* Payment Dropdown */}
-              {/* <div className="relative hidden lg:block md:block">
-                <button
-                  className="flex items-center px-1 py-1 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  onClick={() => setShowPaymentDropdown(!showPaymentDropdown)}
-                  data-payment-button="true"
-                >
-                  Pay Now
-                  <svg
-                    className="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-                {showPaymentDropdown && (
-                  <div
-                    ref={dropdownRef}
-                    className="absolute right-0 z-10 w-64 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
-                  >
-                    <div className="px-3 py-2 border-b border-gray-100">
-                      <button
-                        onClick={handlePaymentClick}
-                        className="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-indigo-700 transition-colors bg-indigo-50 rounded-md hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
-                        role="menuitem"
-                      >
-                        <span>
-                          Pay Using{" "}
-                          <span className="text-orange-600">RazorPay</span>
-                        </span>
-                        <svg
-                          className="w-4 h-4 ml-2 text-indigo-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2.5}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div> */}
-
-              {/* User menu */}
+              {/* Auth Section */}
               {isAuthenticated ? (
-                <div className="relative">
+                <div className="relative profile-menu-container">
                   <button
-                    type="button"
-                    className="flex items-center focus:outline-none"
-                    onClick={toggleProfileMenu}
-                    aria-label="User menu"
-                    aria-haspopup="true"
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                    className="flex items-center gap-2 focus:outline-none"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
-                      <FaUser className="text-gray-600 dark:text-gray-300" />
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#F47C26] to-purple-600 p-[2px]">
+                      <div className="w-full h-full rounded-full bg-[#05081a] flex items-center justify-center">
+                        <span className="font-bold text-white text-sm">
+                          {authUser?.name?.charAt(0) || <FaUser />}
+                        </span>
+                      </div>
                     </div>
                   </button>
 
-                  {isProfileMenuOpen && (
-                    <div
-                      id="user-menu"
-                      className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50"
-                      role="menu"
-                      aria-orientation="vertical"
-                      aria-labelledby="user-menu"
-                    >
-                      <Link
-                        to="/my-learning"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                        role="menuitem"
-                        onClick={() => setIsProfileMenuOpen(false)}
+                  <AnimatePresence>
+                    {isProfileMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        className="absolute right-0 top-14 w-64 bg-[#0a0f2d] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50"
                       >
-                        My Learning
-                      </Link>
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                        role="menuitem"
-                        onClick={() => setIsProfileMenuOpen(false)}
-                      >
-                        My Profile
-                      </Link>
-                      {/* LMS Approved or Not */}
-                      {!isApproved && (
-                        <div className="px-4 py-2 flex items-center gap-2 text-sm text-yellow-600 dark:text-yellow-400">
-                          <FaExclamationCircle />
-                          LMS Not Approved
+                        <div className="p-4 border-b border-white/10 bg-white/5">
+                          <p className="text-white font-semibold truncate">
+                            {authUser?.name}
+                          </p>
+                          <p className="text-xs text-gray-400 truncate">
+                            {authUser?.email}
+                          </p>
+
+                          {/* Verification Badge */}
+                          <div
+                            className={`mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium border ${
+                              isApproved
+                                ? "bg-green-500/10 text-green-400 border-green-500/20"
+                                : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                            }`}
+                          >
+                            {isApproved ? (
+                              <FaCheck className="text-[10px]" />
+                            ) : (
+                              <FaExclamationCircle className="text-[10px]" />
+                            )}
+                            {isApproved
+                              ? "Verified Account"
+                              : "Pending Approval"}
+                          </div>
                         </div>
-                      )}
-                      {isApproved && (
-                        <div className="px-4 py-2 flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                          <FaCheck />
-                          LMS Approved
+
+                        <div className="p-2">
+                          <Link
+                            to="/profile"
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white rounded-lg transition-colors"
+                            onClick={() => setIsProfileMenuOpen(false)}
+                          >
+                            <FaUser className="text-[#F47C26]" /> Profile
+                          </Link>
+                          <Link
+                            to="/my-learning"
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white rounded-lg transition-colors"
+                            onClick={() => setIsProfileMenuOpen(false)}
+                          >
+                            <FaGraduationCap className="text-[#F47C26]" /> My
+                            Learning
+                          </Link>
+                          <button
+                            onClick={() => {
+                              logout();
+                              setIsProfileMenuOpen(false);
+                              navigate("/");
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                          >
+                            <FaSignOutAlt /> Sign Out
+                          </button>
                         </div>
-                      )}
-                      <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                      <button
-                        onClick={() => {
-                          logout();
-                          setIsProfileMenuOpen(false);
-                          navigate("/");
-                        }}
-                        className="w-full text-left px-2 py-1 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
-                        role="menuitem"
-                      >
-                        Sign out
-                      </button>
-                    </div>
-                  )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               ) : (
-                <div className="flex items-center">
-                  <Link
-                    to="/login"
-                    state={{ from: location }}
-                    className="flex items-center px-1 py-1 text-sm font-medium rounded-md text-black dark:text-white gap-1 transition-colors duration-200"
-                  >
-                    Login
-                    <FaSignInAlt className="mr-0.5" />
-                  </Link>
-                </div>
+                <Link
+                  to="/login"
+                  state={{ from: location }}
+                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#F47C26] to-[#d5671f] text-white text-sm font-bold rounded-full shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  <FaSignInAlt /> Login
+                </Link>
               )}
+
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden p-2 text-gray-300 hover:text-white focus:outline-none"
+              >
+                {isMobileMenuOpen ? (
+                  <FaTimes className="text-xl" />
+                ) : (
+                  <FaBars className="text-xl" />
+                )}
+              </button>
             </div>
           </div>
         </div>
+      </nav>
 
-        {/* Mobile menu */}
-        <div
-          className={`mobile-menu-container md:hidden fixed inset-0 top-16 bg-white dark:bg-gray-900 shadow-lg z-40 overflow-y-auto transition-all duration-300 ease-in-out transform ${
-            isMobileMenuOpen
-              ? "translate-x-0 opacity-100 visible"
-              : "-translate-x-full opacity-0 invisible"
-          }`}
-        >
-          <div className="flex flex-col h-full">
-            <div className="flex-1 px-4 py-3 space-y-1">
-              {/* Home */}
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ type: "tween", duration: 0.3 }}
+            className="fixed inset-0 z-40 lg:hidden bg-[#05081a] pt-24 pb-6 px-6 overflow-y-auto"
+          >
+            <div className="flex flex-col space-y-4">
               <Link
                 to="/"
-                className={`block px-4 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${
-                  location.pathname === "/"
-                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-                }`}
-                onClick={toggleMobileMenu}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-lg font-medium text-white border-b border-white/10 pb-2"
               >
                 Home
               </Link>
-
-              {/* Bottom Action Buttons */}
-              <div className="pt-1 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                {/* SMART Board */}
-                {/* <Link
-                  to="/lms"
-                  className={`block px-4 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${
-                    location.pathname === "/"
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-                  }`}
-                  onClick={toggleMobileMenu}
-                >
-                  SMART <span className=" text-orange-500">Board</span>
-                </Link> */}
-
-                {/* Movile Payment menu */}
-                {/* <button
-                  className={`block px-4 flex items-center w-full py-3 text-base font-medium rounded-lg transition-colors duration-200 ${
-                    location.pathname === "/"
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-                  }`}
-                  onClick={() => setShowPaymentDropdown(!showPaymentDropdown)}
-                  data-payment-button="true"
-                >
-                  Pay Now
-                  <svg
-                    className="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-                {showPaymentDropdown && (
-                  <div
-                    ref={dropdownRef}
-                    className="absolute  left-0 z-50 w-64 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
-                  >
-                    <div className="px-3 py-2 border-b border-gray-100">
-                      <button
-                        onClick={handlePaymentClick}
-                        className="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-indigo-700 transition-colors bg-indigo-50 rounded-md hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
-                        role="menuitem"
-                      >
-                        <span>
-                          Pay Using{" "}
-                          <span className="text-orange-600">RazorPay</span>
-                        </span>
-                        <svg
-                          className="w-4 h-4 ml-2 text-indigo-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2.5}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                )}   */}
+              <div className="text-gray-300 border-b border-white/10 pb-2">
+                <CourseMenu
+                  isMobile={true}
+                  onItemClick={() => setIsMobileMenuOpen(false)}
+                />
               </div>
-
-              {/* Course Menu - Mobile Version */}
-              <div className="mobile-course-menu">
-                <CourseMenu isMobile={true} onItemClick={toggleMobileMenu} />
-              </div>
-
-              {/* Other Navigation Items */}
               {navItems.map((item) => (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`block px-4 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${
-                    location.pathname === item.to
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-                  }`}
-                  onClick={toggleMobileMenu}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-between text-lg font-medium text-gray-300 hover:text-[#F47C26] border-b border-white/10 pb-2 transition-colors"
                 >
-                  {item.label}
+                  {item.label} <FaChevronRight className="text-xs opacity-50" />
                 </Link>
               ))}
-            </div>
-          </div>
-        </div>
 
-        {/* Payment Form Modal */}
-        {showPaymentForm && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black bg-opacity-50">
-            <PaymentForm onClose={() => setShowPaymentForm(false)} />
-          </div>
+              {!isAuthenticated && (
+                <Link
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-[#F47C26] text-white font-bold rounded-xl"
+                >
+                  <FaSignInAlt /> Login Now
+                </Link>
+              )}
+            </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
+
+      {/* Payment Modal */}
+      {showPaymentForm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <PaymentForm onClose={() => setShowPaymentForm(false)} />
+        </div>
+      )}
     </>
   );
 }

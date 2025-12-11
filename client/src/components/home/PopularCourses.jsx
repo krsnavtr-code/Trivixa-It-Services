@@ -1,38 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaStar, FaRegStar, FaRegClock, FaUserGraduate } from "react-icons/fa";
+import {
+  FaStar,
+  FaRegClock,
+  FaArrowRight,
+  FaCode,
+  FaExternalLinkAlt,
+} from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "../../api/axios";
-import { getCardBgColor } from "../../utils/gradients";
 
 // Base URL for API requests
 const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
-// CourseCard component for displaying individual course
-const CourseCard = ({ course }) => {
+// --- Modern Project Card Component ---
+const ProjectCard = ({ course, index }) => {
   const [imageState, setImageState] = useState({
     url: "",
     error: false,
     loading: true,
   });
 
+  // Keep your existing robust image loading logic
   useEffect(() => {
     let isMounted = true;
 
     const loadImage = async () => {
       if (!course?.thumbnail) {
-        if (isMounted) {
+        if (isMounted)
           setImageState({
             url: "/images/course-placeholder.jpg",
             error: false,
             loading: false,
           });
-        }
         return;
       }
 
       let url = course.thumbnail;
-
-      // If it's not already a full URL, construct it
       if (
         !url.startsWith("http") &&
         !url.startsWith("https") &&
@@ -40,252 +44,167 @@ const CourseCard = ({ course }) => {
       ) {
         const cleanPath = url.replace(/^\/+/, "");
         const baseUrl = API_BASE_URL || "";
-        url = `${baseUrl}/${cleanPath}`.replace(/([^:]\/)\/+/g, "$1"); // Remove duplicate slashes
+        url = `${baseUrl}/${cleanPath}`.replace(/([^:]\/)\/+/g, "$1");
       }
 
-      // Set loading state
-      if (isMounted) {
-        setImageState({
-          url: url,
-          error: false,
-          loading: true,
-        });
-      }
+      if (isMounted) setImageState({ url, error: false, loading: true });
 
-      // Create a new image to test loading
       const img = new Image();
-
-      const handleLoad = () => {
-        if (isMounted) {
-          setImageState({
-            url: url,
-            error: false,
-            loading: false,
-          });
-        }
-      };
-
-      const handleError = () => {
-        if (isMounted) {
-          setImageState({
-            url: "/images/course-placeholder.jpg",
-            error: true,
-            loading: false,
-          });
-        }
-      };
-
-      img.onload = handleLoad;
-      img.onerror = handleError;
+      img.onload = () =>
+        isMounted && setImageState({ url, error: false, loading: false });
+      img.onerror = () =>
+        isMounted &&
+        setImageState({
+          url: "/images/course-placeholder.jpg",
+          error: true,
+          loading: false,
+        });
       img.src = url;
-
-      // Set a longer timeout for slow connections
-      const timeoutId = setTimeout(() => {
-        if (isMounted) {
-          // Only show error if the image hasn't loaded yet
-          const imgElement = new Image();
-          imgElement.onload = () => {};
-          imgElement.onerror = () => {
-            if (isMounted) {
-              setImageState({
-                url: "/images/course-placeholder.jpg",
-                error: true,
-                loading: false,
-              });
-            }
-          };
-          imgElement.src = url;
-        }
-      }, 5000); // Increased to 5 seconds
-
-      return () => {
-        isMounted = false;
-        img.onload = null;
-        img.onerror = null;
-        clearTimeout(timeoutId);
-      };
     };
 
     loadImage();
-
     return () => {
       isMounted = false;
     };
-  }, [course?._id, course?.thumbnail]); // Only re-run if course ID or thumbnail changes
+  }, [course?._id, course?.thumbnail]);
 
-  // Render star ratings
+  // Render Stars (Adapted for IT as "Client Rating")
   const renderStars = (rating) => {
-    const stars = [];
-    const fullStars = Math.floor(rating || 0);
-    const hasHalfStar = rating % 1 >= 0.5;
-
-    for (let i = 1; i <= 5; i++) {
-      if (i <= fullStars) {
-        stars.push(<FaStar key={i} className="text-yellow-400" />);
-      } else if (i === fullStars + 1 && hasHalfStar) {
-        stars.push(<FaStar key={i} className="text-yellow-400" />);
-      } else {
-        stars.push(<FaRegStar key={i} className="text-yellow-400" />);
-      }
-    }
-    return stars;
+    return (
+      <div className="flex gap-1">
+        {[...Array(5)].map((_, i) => (
+          <FaStar
+            key={i}
+            className={`text-xs ${
+              i < Math.floor(rating || 5) ? "text-[#F47C26]" : "text-gray-600"
+            }`}
+          />
+        ))}
+      </div>
+    );
   };
 
-  // Get background color class
-  const bgColor = getCardBgColor(course);
-
   return (
-    <div
-      className={`${bgColor} rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02]`}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      whileHover={{ y: -10 }}
+      className="group relative bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-xl hover:shadow-[#F47C26]/20 transition-all duration-300 flex flex-col h-full"
     >
-      <Link to={`/course/${course.slug || course._id}`}>
-        <div className="relative pb-9/16">
-          <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-            {imageState.loading ? (
-              <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                <div className="animate-pulse rounded-full h-12 w-12 border-4 border-t-blue-500 border-gray-300 dark:border-gray-600"></div>
-              </div>
-            ) : imageState.error || !course.thumbnail ? (
-              <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                <div className="text-center p-4">
-                  <div className="text-gray-500 dark:text-gray-400">
-                    No image available
-                  </div>
-                  {process.env.NODE_ENV === "development" &&
-                    course.thumbnail && (
-                      <div className="text-xs mt-2 text-gray-400 break-all max-w-xs">
-                        {course.thumbnail}
-                      </div>
-                    )}
-                </div>
-              </div>
-            ) : (
-              <div className="w-full h-[200px] bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-                <img
-                  src={imageState.url}
-                  alt={course.title || "Course image"}
-                  className="max-w-full max-h-full object-contain transition-opacity duration-300"
-                  style={{ opacity: imageState.loading ? 0 : 1 }}
-                  loading="lazy"
-                  onError={() => {
-                    setImageState({
-                      url: "/images/course-placeholder.jpg",
-                      error: true,
-                      loading: false,
-                    });
-                  }}
-                />
-              </div>
-            )}
-            {/* Hidden debug info - only shown in development */}
-            {process.env.NODE_ENV === "development" && (
-              <div className="hidden">
-                <div>Image URL: {course.thumbnail}</div>
-                <div>Processed URL: {imageState.url}</div>
-                <div>Course ID: {course._id}</div>
-                <div>Loading: {imageState.loading ? "true" : "false"}</div>
-                <div>Error: {imageState.error ? "true" : "false"}</div>
-              </div>
-            )}
-          </div>
+      <Link
+        to={`/course/${course.slug || course._id}`}
+        className="block h-full flex flex-col"
+      >
+        {/* Image Container */}
+        <div className="relative h-52 overflow-hidden bg-gray-900/50">
+          {imageState.loading ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-[#F47C26] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <img
+              src={imageState.url}
+              alt={course.title}
+              className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+            />
+          )}
+
+          {/* Overlay Gradient on Hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f2d] via-transparent to-transparent opacity-60"></div>
+
+          {/* Featured Badge */}
           {course.isFeatured && (
-            <div className="absolute top-2 right-2 bg-yellow-400 text-xs font-bold px-2 py-1 rounded">
-              Featured
+            <div className="absolute top-3 right-3 bg-[#F47C26] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg uppercase tracking-wider">
+              Featured Project
             </div>
           )}
         </div>
 
-        <div className="p-4">
-          <h3 className="font-bold text-black dark:text-white text-lg mb-2 line-clamp-2 mb-0 h-14">
+        {/* Content */}
+        <div className="p-6 flex flex-col flex-grow relative">
+          {/* Floating Category Tag */}
+          <div className="absolute -top-4 left-6">
+            <span className="bg-[#1a2d5c] border border-blue-500/30 text-blue-300 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-2">
+              <FaCode className="text-xs" /> {course.level || "Web App"}
+            </span>
+          </div>
+
+          <h3 className="text-xl font-bold text-white mt-2 mb-3 line-clamp-2 leading-tight group-hover:text-[#F47C26] transition-colors">
             {course.title}
           </h3>
-          <p className="text-black dark:text-white mt-0 text-sm mb-3 line-clamp-2 h-10">
+
+          <p className="text-gray-400 text-sm line-clamp-2 mb-4 flex-grow">
             {course.shortDescription
               ?.replace(/^<p>/i, "")
               .replace(/<\/p>$/i, "")}
           </p>
-          <div className="flex items-center mb-2">
-            <div className="flex" style={{ color: "#F47C26" }}>
-              {renderStars(course.rating || 4)}
+
+          {/* Footer Details */}
+          <div className="pt-4 border-t border-white/10 flex items-center justify-between mt-auto">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">
+                Client Rating
+              </span>
+              {renderStars(course.rating || 5)}
             </div>
-            {/* <span className="ml-2 text-sm text-black dark:text-gray-400">
-              ({course.enrollmentCount || course.enrolledStudents || 0}{" "}
-              students)
-            </span> */}
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center text-sm text-black dark:text-gray-400">
-              <FaRegClock className="mr-1" />
-              {course.duration || "Self-paced"} Weeks
+
+            <div className="flex items-center gap-2 text-gray-400 text-xs">
+              <FaRegClock />
+              <span>{course.duration || "4"} Weeks Dev</span>
             </div>
-            <span className="text-sm px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 rounded">
-              {course.level || "All Levels"}
-            </span>
           </div>
+
+          {/* Hover Action */}
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#F47C26] to-purple-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
         </div>
       </Link>
-    </div>
+    </motion.div>
   );
 };
 
-const PopularCourses = () => {
+// --- Main Featured Projects Component ---
+const FeaturedProjects = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Keep existing API logic strictly intact
   useEffect(() => {
     const fetchPopularCourses = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        // Set a timeout for the request
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-        // console.log("Fetching featured courses with showOnHome=true");
         const response = await axios.get("/courses", {
           params: {
             showOnHome: "true",
-            limit: 8, // Limit to 6 featured courses
-            sort: "-createdAt", // Show most recently added first
-            isPublished: "true", // Only get published courses
+            limit: 4, // Adjusted to 4 for a clean grid
+            sort: "-createdAt",
+            isPublished: "true",
           },
           signal: controller.signal,
         });
 
-        // Clear the timeout if the request completes
         clearTimeout(timeoutId);
 
-        console.log("Featured courses response:", response);
+        let fetchedCourses = [];
+        if (Array.isArray(response.data)) fetchedCourses = response.data;
+        else if (response.data && Array.isArray(response.data.data))
+          fetchedCourses = response.data.data;
+        else if (response.data && response.data.courses)
+          fetchedCourses = response.data.courses;
 
-        // Handle different response formats
-        let courses = [];
-        if (Array.isArray(response.data)) {
-          courses = response.data;
-        } else if (response.data && Array.isArray(response.data.data)) {
-          courses = response.data.data;
-        } else if (response.data && response.data.courses) {
-          courses = response.data.courses;
-        } else {
-          throw new Error("Invalid response format from server");
-        }
-
-        console.log("Parsed featured courses:", courses);
-
-        // Filter courses that are marked to show on home page
-        // If no courses are marked, show the most recent published courses
-        const featuredCourses = courses.filter(
-          (course) => course.showOnHome !== false // Include if true or undefined
+        const featuredCourses = fetchedCourses.filter(
+          (course) => course.showOnHome !== false
         );
-
-        console.log("Filtered featured courses:", featuredCourses);
-
-        // Set the courses, or an empty array if none found
         setCourses(featuredCourses);
       } catch (err) {
-        console.error("Error fetching featured courses:", err);
-        setError("Failed to load featured courses");
+        console.error("Error fetching projects:", err);
+        setError("Failed to load projects");
       } finally {
         setLoading(false);
       }
@@ -295,61 +214,106 @@ const PopularCourses = () => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-gray-900 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-black dark:text-white text-center">
-            Best E-Learning Courses
-          </h1>
-          <p className="mt-4 text-xl text-center text-black dark:text-white">
-            Practical, skill-based online courses in areas like IT, business,
-            design, and marketing. Learn at your own pace with real-world
-            projects and expert-led content
-          </p>
+    <section className="relative py-20 bg-[#0a0f2d] overflow-hidden min-h-screen">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-[#F47C26] font-bold tracking-[0.2em] uppercase text-sm mb-3"
+          >
+            Portfolio
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-5xl font-extrabold text-white mb-6"
+          >
+            Our Latest{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+              Digital Solutions
+            </span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-gray-400 max-w-2xl mx-auto text-lg"
+          >
+            Explore our curated selection of high-performance e-commerce and
+            enterprise applications.
+          </motion.p>
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, index) => (
-              <div
-                key={index}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden animate-pulse"
-              >
-                <div className="h-48 bg-gray-200 dark:bg-gray-700"></div>
-                <div className="p-4">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
-                  <div className="flex justify-between">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+        {/* Content Grid */}
+        <div className="min-h-[400px]">
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[...Array(4)].map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white/5 border border-white/5 rounded-2xl h-[400px] animate-pulse relative overflow-hidden"
+                >
+                  <div className="h-48 bg-white/5"></div>
+                  <div className="p-6 space-y-4">
+                    <div className="h-6 bg-white/10 rounded w-3/4"></div>
+                    <div className="h-4 bg-white/5 rounded w-full"></div>
+                    <div className="h-4 bg-white/5 rounded w-2/3"></div>
                   </div>
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]"></div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : error ? (
-          <div className="text-center py-8">
-            <p className="text-red-500">{error}</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {courses
-              .map((course) => (
-                <CourseCard key={course._id} course={course} />
               ))}
-          </div>
-        )}
-        <div className="mt-8 text-center">
+            </div>
+          ) : error ? (
+            <div className="text-center py-20 bg-white/5 rounded-3xl border border-red-500/20">
+              <p className="text-red-400 text-lg mb-4">
+                Unable to load projects at this time.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors border border-red-500/20"
+              >
+                Retry Connection
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <AnimatePresence>
+                {courses.map((course, index) => (
+                  <ProjectCard key={course._id} course={course} index={index} />
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+
+        {/* Footer CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-16 text-center"
+        >
           <Link
             to="/courses"
-            className="inline-flex text-white items-center px-6 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-black bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200"
+            className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#F47C26] to-[#d5671f] text-white font-bold rounded-xl overflow-hidden shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300"
           >
-            View All Courses
+            <span className="relative z-10">View Full Portfolio</span>
+            <FaArrowRight className="relative z-10 group-hover:translate-x-1 transition-transform" />
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
           </Link>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </section>
   );
 };
 
-export default PopularCourses;
+export default FeaturedProjects;

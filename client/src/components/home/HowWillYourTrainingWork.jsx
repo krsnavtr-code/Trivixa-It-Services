@@ -1,71 +1,150 @@
 import React from "react";
 import {
-  FaVideo,
-  FaClipboardCheck,
-  FaBullseye,
-  FaComments,
-  FaFileAlt,
-  FaCertificate,
+  FaHandshake,
+  FaDraftingCompass,
+  FaCode,
+  FaBug,
+  FaRocket,
+  FaHeadset,
 } from "react-icons/fa";
+import { motion } from "framer-motion";
 
-const steps = [
+const processSteps = [
   {
-    icon: <FaVideo className="text-3xl text-blue-500 dark:text-blue-400" />,
-    title: "Learn from Experts",
-    desc: "Watch in-depth video lectures designed by industry professionals to master core concepts",
+    id: "01",
+    icon: <FaHandshake />,
+    title: "Discovery & Strategy",
+    desc: "We dive deep into your business goals, target audience, and requirements to blueprint a custom digital strategy.",
   },
   {
-    icon: <FaClipboardCheck className="text-3xl text-blue-500 dark:text-blue-400" />,
-    title: "Test Yourself",
-    desc: "Assess your progress with regular quizzes, assignments, and module-wise tests",
+    id: "02",
+    icon: <FaDraftingCompass />,
+    title: "UI/UX Design",
+    desc: "Our designers create wireframes and high-fidelity prototypes to ensure an intuitive and engaging user experience.",
   },
   {
-    icon: <FaBullseye className="text-3xl text-blue-500 dark:text-blue-400" />,
-    title: "Hands-on practice",
-    desc: "Work on real-world projects and assignments using tools, software, and integrated coding platforms.",
+    id: "03",
+    icon: <FaCode />,
+    title: "Agile Development",
+    desc: "We write clean, scalable code using modern tech stacks, keeping you updated with regular sprint deliverables.",
   },
   {
-    icon: <FaComments className="text-3xl text-blue-500 dark:text-blue-400" />,
-    title: "1:1 doubt solving",
-    desc: "Get personalized support from experts via live doubt-clearing sessions or within 24 hours on our forums.",
+    id: "04",
+    icon: <FaBug />,
+    title: "QA & Testing",
+    desc: "Rigorous testing across devices and scenarios to ensure your product is bug-free, secure, and performance-optimized.",
   },
   {
-    icon: <FaFileAlt className="text-3xl text-blue-500 dark:text-blue-400" />,
-    title: "Take final exam",
-    desc: "Conclude your training with a comprehensive final assessment to test your full understanding",
+    id: "05",
+    icon: <FaRocket />,
+    title: "Deployment & Launch",
+    desc: "We handle the server setup, CI/CD pipelines, and go-live process to ensure a smooth, zero-downtime launch.",
   },
   {
-    icon: <FaCertificate className="text-3xl text-blue-500 dark:text-blue-400" />,
-    title: "Get certified",
-    desc: "Receive a recognized certificate from FirstVITE (NSDC/NIELIT partnered) upon successful course completion",
+    id: "06",
+    icon: <FaHeadset />,
+    title: "Support & Scaling",
+    desc: "Our partnership continues post-launch with 24/7 maintenance, feature updates, and scaling strategies.",
   },
 ];
 
-const HowWillYourTrainingWork = () => {
-  return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-black dark:text-white sm:text-4xl">
-          How will your training work? – with FirstVITE
-        </h2>
-      </div>
+// Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md dark:shadow-none">
-        {steps.map((step, index) => (
-          <div
-            key={index}
-            className="flex flex-col items-start space-y-3 hover:scale-[1.02] transition-transform duration-200"
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
+const OurProcess = () => {
+  return (
+    <section className="relative py-24 bg-[#0a0f2d] overflow-hidden">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <motion.span
+            initial={{ opacity: 0, y: -10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="px-4 py-1.5 rounded-full bg-[#F47C26]/10 border border-[#F47C26]/20 text-[#F47C26] text-xs font-bold uppercase tracking-wider"
           >
-            <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">{step.icon}</div>
-            <h3 className="text-lg font-semibold text-black dark:text-white">
-              {step.title}
-            </h3>
-            <p className="text-sm text-black dark:text-white">{step.desc}</p>
-          </div>
-        ))}
+            How We Work
+          </motion.span>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mt-4 text-3xl md:text-5xl font-extrabold text-white"
+          >
+            From Concept to{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+              Code
+            </span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg"
+          >
+            A transparent, agile workflow designed to deliver high-impact
+            digital solutions on time and within budget.
+          </motion.p>
+        </div>
+
+        {/* Process Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {processSteps.map((step, index) => (
+            <motion.div
+              key={index}
+              variants={itemVariants}
+              className="group relative bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-white/[0.08] hover:border-[#F47C26]/30 transition-all duration-300 hover:-translate-y-2"
+            >
+              {/* Background Number */}
+              <div className="absolute top-4 right-6 text-6xl font-black text-white/5 group-hover:text-[#F47C26]/10 transition-colors duration-300 pointer-events-none select-none">
+                {step.id}
+              </div>
+
+              {/* Icon */}
+              <div className="relative w-14 h-14 mb-6 rounded-xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                <span className="text-2xl text-blue-300 group-hover:text-[#F47C26] transition-colors duration-300">
+                  {step.icon}
+                </span>
+              </div>
+
+              {/* Content */}
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#F47C26] transition-colors duration-300">
+                {step.title}
+              </h3>
+              <p className="text-gray-400 leading-relaxed text-sm">
+                {step.desc}
+              </p>
+
+              {/* Bottom Line Indicator */}
+              <div className="absolute bottom-0 left-0 w-0 h-1 bg-[#F47C26] transition-all duration-500 group-hover:w-full rounded-b-2xl"></div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
-    </div>
+    </section>
   );
 };
 
-export default HowWillYourTrainingWork;
+export default OurProcess;

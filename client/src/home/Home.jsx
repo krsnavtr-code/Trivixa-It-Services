@@ -39,7 +39,7 @@ function Home() {
         <PopularCourses />
 
         {/* Featured Books */}
-        {/* <FeaturedBooks /> */}
+        <FeaturedBooks />
 
         {/* Why learn with FirstVITE? */}
         <WhyLearnWithFirstVITE />
@@ -61,9 +61,6 @@ function Home() {
 
         {/* Contact Section */}
         <ContactSection />
-
-        {/* You can uncomment this if you want to include the Freebook component */}
-        {/* <Freebook /> */}
       </div>
     </>
   );
