@@ -361,8 +361,11 @@ function Navbar() {
   // Navigation items
   const navItems = [
     // { to: "/", label: "Home" },
-    { to: "/github", label: "GitHub" },
-    { to: "/free-courses", label: "Free Projects" },
+    { to: "/services", label: "Services" },
+    { to: "/free-courses", label: "Buy at ₹0" },
+    // { to: "/about", label: "About" },
+    { to: "/contact", label: "Contact" },
+    { to: "/blog", label: "Blog" },
     { to: "/lms", lmscolors: true },
     ...(isAdmin ? [{ to: "/admin", label: "Admin" }] : []),
   ];
