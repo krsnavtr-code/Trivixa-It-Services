@@ -31,7 +31,7 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- Data Fetching Logic (Kept Intact) ---
+  // --- Data Fetching Logic ---
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -116,7 +116,7 @@ const Categories = () => {
     }, [category?.image]);
 
     return (
-      <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:border-[#F47C26]/50 transition-colors duration-300">
+      <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center shrink-0 group-hover:border-[#F47C26]/50 transition-colors duration-300">
         {!imageError && imageUrl ? (
           <img
             src={imageUrl}
@@ -126,7 +126,7 @@ const Categories = () => {
             loading="lazy"
           />
         ) : (
-          <FaCode className="text-xl text-gray-500 group-hover:text-[#F47C26] transition-colors" />
+          <FaCode className="text-xl text-gray-400 dark:text-gray-500 group-hover:text-[#F47C26] transition-colors" />
         )}
       </div>
     );
@@ -135,19 +135,19 @@ const Categories = () => {
   // --- Render: Loading State ---
   if (loading) {
     return (
-      <section className="py-20 bg-[#0a0f2d] relative overflow-hidden">
+      <section className="py-20 bg-gray-50 dark:bg-[#0a0f2d] relative overflow-hidden transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
-            <div className="h-8 w-64 bg-white/10 mx-auto rounded mb-4 animate-pulse"></div>
-            <div className="h-4 w-96 bg-white/5 mx-auto rounded animate-pulse"></div>
+            <div className="h-8 w-64 bg-gray-200 dark:bg-white/10 mx-auto rounded mb-4 animate-pulse"></div>
+            <div className="h-4 w-96 bg-gray-200 dark:bg-white/5 mx-auto rounded animate-pulse"></div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-32 bg-white/5 border border-white/10 rounded-2xl animate-pulse relative overflow-hidden"
+                className="h-32 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl animate-pulse relative overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100 dark:via-white/5 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]"></div>
               </div>
             ))}
           </div>
@@ -159,11 +159,11 @@ const Categories = () => {
   // --- Render: Error State ---
   if (error) {
     return (
-      <div className="py-20 bg-[#0a0f2d] text-center">
-        <p className="text-red-400 mb-4">{error}</p>
+      <div className="py-20 bg-gray-50 dark:bg-[#0a0f2d] text-center transition-colors duration-300">
+        <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="px-6 py-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
+          className="px-6 py-2 bg-red-500/10 border border-red-500/20 text-red-500 dark:text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
         >
           Retry
         </button>
@@ -173,10 +173,10 @@ const Categories = () => {
 
   // --- Render: Main Content ---
   return (
-    <section className="relative py-24 bg-[#0a0f2d] overflow-hidden">
+    <section className="relative py-24 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden transition-colors duration-300">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
-      <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 dark:opacity-10 mix-blend-multiply dark:mix-blend-normal pointer-events-none"></div>
+      <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
@@ -184,7 +184,7 @@ const Categories = () => {
           <motion.span
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider"
+            className="px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-300 text-xs font-bold uppercase tracking-wider"
           >
             Our Expertise
           </motion.span>
@@ -193,7 +193,7 @@ const Categories = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-3xl md:text-5xl font-extrabold text-white"
+            className="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white"
           >
             Solutions by{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
@@ -205,7 +205,7 @@ const Categories = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-gray-400 max-w-2xl mx-auto"
+            className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
           >
             Navigate our specialized technical domains to find the perfect
             solution for your digital transformation.
@@ -227,18 +227,18 @@ const Categories = () => {
                   to={`/courses/category/${category.name
                     .toLowerCase()
                     .replace(/\s+/g, "-")}`}
-                  className="group relative block p-6 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl transition-all duration-300 hover:bg-white/[0.07] hover:border-[#F47C26]/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-[#F47C26]/10"
+                  className="group relative block p-6 bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:bg-white/[0.07] dark:hover:border-[#F47C26]/30 dark:hover:shadow-[#F47C26]/10 hover:-translate-y-1"
                 >
                   <div className="flex items-center gap-5">
                     <CategoryImage category={category} />
 
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-white group-hover:text-[#F47C26] transition-colors duration-300 truncate">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-[#F47C26] transition-colors duration-300 truncate">
                         {category.name}
                       </h3>
 
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-gray-400 flex items-center gap-1">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                           <FaLayerGroup className="text-[10px]" />
                           {category.courseCount || 0} Projects
                         </span>
@@ -252,14 +252,16 @@ const Categories = () => {
                   </div>
 
                   {/* Decorative corner glow */}
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-white/5 to-transparent rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-gray-100/50 to-transparent dark:from-white/5 dark:to-transparent rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </Link>
               </motion.div>
             ))}
           </motion.div>
         ) : (
-          <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
-            <p className="text-gray-400">No domains currently available.</p>
+          <div className="text-center py-12 bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10">
+            <p className="text-gray-500 dark:text-gray-400">
+              No domains currently available.
+            </p>
           </div>
         )}
 
@@ -272,7 +274,7 @@ const Categories = () => {
         >
           <Link
             to="/categories"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-white/5 border border-white/20 text-white font-semibold rounded-xl hover:bg-white/10 hover:scale-105 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-gray-900 dark:bg-white/5 dark:border-white/20 dark:text-white font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 hover:scale-105 transition-all duration-300 shadow-sm dark:shadow-none"
           >
             Explore All Services <FaArrowRight className="text-sm" />
           </Link>

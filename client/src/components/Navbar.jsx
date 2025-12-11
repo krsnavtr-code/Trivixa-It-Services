@@ -203,14 +203,14 @@ function Navbar() {
                 className={`hover-underline px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
                   location.pathname === "/"
                     ? "text-[#F47C26]"
-                    : "text-gray-300"
+                    : "text-black dark:text-white"
                 }`}
               >
                 Home
               </Link>
 
               {/* Course Menu Wrapper to Apply Styles */}
-              <div className="course-menu-wrapper text-gray-300 hover:text-white">
+              <div className="course-menu-wrapper text-black dark:text-white">
                 <CourseMenu />
               </div>
 
@@ -223,7 +223,7 @@ function Navbar() {
                       ? "text-[#F47C26] bg-[#F47C26]/10 border border-[#F47C26]/20 hover:bg-[#F47C26] hover:text-white"
                       : location.pathname === item.to
                       ? "text-[#F47C26]"
-                      : "text-gray-300 "
+                      : "text-black dark:text-white"
                   }`}
                 >
                   {item.label}
@@ -254,13 +254,13 @@ function Navbar() {
                         value={searchQuery}
                         onChange={handleSearchChange}
                         onFocus={() => setShowResults(true)}
-                        className="w-full h-10 pl-4 pr-10 bg-white/5 border border-white/10 rounded-full text-sm text-white focus:outline-none focus:border-[#F47C26] transition-all"
+                        className="w-full h-10 pl-4 pr-10 bg-white/5 border border-white/10 rounded-full text-sm text-black dark:text-white focus:outline-none focus:border-[#F47C26] transition-all"
                         placeholder="Search..."
                       />
                       <button
                         type="button"
                         onClick={resetSearch}
-                        className="absolute right-3 top-2.5 text-gray-400 hover:text-white"
+                        className="absolute right-3 top-2.5 text-black dark:text-white"
                       >
                         <FaTimes />
                       </button>
@@ -268,7 +268,7 @@ function Navbar() {
                   ) : (
                     <button
                       onClick={() => setIsSearchOpen(true)}
-                      className="search-toggle-btn w-10 h-10 flex items-center justify-center rounded-full text-gray-300 hover:text-[#F47C26] hover:bg-white/5 transition-all"
+                      className="search-toggle-btn w-10 h-10 flex items-center justify-center rounded-full text-black dark:text-white hover:text-[#F47C26] hover:bg-white/5 transition-all"
                     >
                       <FaSearch />
                     </button>
@@ -305,7 +305,7 @@ function Navbar() {
                               onClick={() => handleResultClick(course)}
                               className="w-full text-left p-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 group"
                             >
-                              <h4 className="text-sm font-semibold text-white group-hover:text-[#F47C26] transition-colors line-clamp-1">
+                              <h4 className="text-sm font-semibold text-black dard:text-white group-hover:text-[#F47C26] transition-colors line-clamp-1">
                                 {course.title}
                               </h4>
                               {course.category && (
@@ -325,7 +325,7 @@ function Navbar() {
               {/* Theme Toggle (Styled) */}
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-gray-300 hover:bg-white/5 hover:text-yellow-400 transition-all"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-black dark:text-white hover:bg-white/5 hover:text-yellow-400 transition-all"
               >
                 {theme === "dark" ? <FiMoon /> : <FiSun />}
               </button>

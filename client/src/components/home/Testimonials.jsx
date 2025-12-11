@@ -66,7 +66,7 @@ const renderStars = (rating) => {
         <FaStar
           key={i}
           className={`text-sm ${
-            i < rating ? "text-[#F47C26]" : "text-gray-600"
+            i < rating ? "text-[#F47C26]" : "text-gray-300 dark:text-gray-600"
           }`}
         />
       ))}
@@ -90,10 +90,10 @@ const cardVariants = {
 
 const Testimonials = () => {
   return (
-    <section className="relative py-24 bg-[#0a0f2d] overflow-hidden">
+    <section className="relative py-24 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden transition-colors duration-300">
       {/* Background Ambience */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-multiply dark:mix-blend-normal pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-200/40 dark:bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
@@ -101,7 +101,7 @@ const Testimonials = () => {
           <motion.span
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[#F47C26] text-xs font-bold uppercase tracking-wider"
+            className="px-4 py-1.5 rounded-full bg-orange-100 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-[#F47C26] text-xs font-bold uppercase tracking-wider"
           >
             Client Success Stories
           </motion.span>
@@ -109,10 +109,10 @@ const Testimonials = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-4 text-3xl md:text-5xl font-extrabold text-white"
+            className="mt-4 text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white"
           >
             Trusted by{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
               Industry Leaders
             </span>
           </motion.h2>
@@ -120,7 +120,7 @@ const Testimonials = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg"
+            className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg"
           >
             Don't just take our word for it. See what founders, CTOs, and
             Product Managers have to say about working with Trivixa.
@@ -139,25 +139,25 @@ const Testimonials = () => {
             <motion.div
               key={item.id}
               variants={cardVariants}
-              className="group relative flex flex-col p-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl hover:bg-white/[0.07] hover:border-[#F47C26]/30 transition-all duration-300 hover:-translate-y-2"
+              className="group relative flex flex-col p-8 bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-none dark:hover:bg-white/[0.07] dark:hover:border-[#F47C26]/30 transition-all duration-300 hover:-translate-y-2"
             >
               {/* Quote Icon Background */}
-              <div className="absolute top-6 right-8 text-4xl text-white/5 group-hover:text-[#F47C26]/20 transition-colors duration-500">
+              <div className="absolute top-6 right-8 text-4xl text-gray-100 dark:text-white/5 group-hover:text-orange-50 dark:group-hover:text-[#F47C26]/20 transition-colors duration-500">
                 <FaQuoteRight />
               </div>
 
               {/* Content */}
               <div className="flex-grow mb-6 relative z-10">
                 <div className="mb-4">{renderStars(item.rating)}</div>
-                <p className="text-gray-300 leading-relaxed italic">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed italic">
                   "{item.content}"
                 </p>
               </div>
 
               {/* User Profile */}
-              <div className="flex items-center gap-4 pt-6 border-t border-white/10">
+              <div className="flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-white/10">
                 <div className="relative">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border border-white/20 group-hover:border-[#F47C26] transition-colors">
+                  <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-white/20 group-hover:border-[#F47C26] transition-colors">
                     <img
                       src={item.image}
                       alt={item.name}
@@ -169,10 +169,10 @@ const Testimonials = () => {
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold text-sm group-hover:text-[#F47C26] transition-colors">
+                  <h4 className="text-gray-900 dark:text-white font-bold text-sm group-hover:text-[#F47C26] transition-colors">
                     {item.name}
                   </h4>
-                  <p className="text-gray-500 text-xs uppercase tracking-wide font-semibold">
+                  <p className="text-gray-500 dark:text-gray-500 text-xs uppercase tracking-wide font-semibold">
                     {item.role}
                   </p>
                 </div>
@@ -188,12 +188,12 @@ const Testimonials = () => {
           transition={{ delay: 0.5 }}
           className="mt-16 text-center"
         >
-          <p className="text-gray-400 mb-4">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             Want to be our next success story?
           </p>
           <a
             href="/contact"
-            className="inline-block border-b border-[#F47C26] text-[#F47C26] font-bold pb-1 hover:text-white hover:border-white transition-all"
+            className="inline-block border-b border-[#F47C26] text-[#F47C26] font-bold pb-1 hover:text-gray-900 dark:hover:text-white hover:border-gray-900 dark:hover:border-white transition-all"
           >
             Start a Conversation
           </a>

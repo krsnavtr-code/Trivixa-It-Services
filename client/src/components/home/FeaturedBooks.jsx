@@ -9,7 +9,7 @@ import {
 import { motion } from "framer-motion";
 
 const FeaturedResources = () => {
-  // Mock Data relevant to Trivixa (IT Agency)
+  // Mock Data
   const resources = [
     {
       id: 1,
@@ -57,6 +57,21 @@ const FeaturedResources = () => {
     },
   ];
 
+  // Helper for Badge Styles (Light/Dark compatible)
+  const getLevelBadgeStyle = (level) => {
+    switch (level) {
+      case "Beginner":
+        return "bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/30";
+      case "Intermediate":
+        return "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/30";
+      case "Expert":
+      case "Advanced":
+        return "bg-red-100 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30";
+      default:
+        return "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-500/10 dark:text-gray-400 dark:border-gray-500/30";
+    }
+  };
+
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -70,7 +85,12 @@ const FeaturedResources = () => {
           <FaStar key={i} className="text-[#F47C26] text-xs opacity-50" />
         );
       } else {
-        stars.push(<FaRegStar key={i} className="text-gray-600 text-xs" />);
+        stars.push(
+          <FaRegStar
+            key={i}
+            className="text-gray-300 dark:text-gray-600 text-xs"
+          />
+        );
       }
     }
     return stars;
@@ -93,10 +113,10 @@ const FeaturedResources = () => {
   };
 
   return (
-    <section className="relative py-24 bg-[#0a0f2d] overflow-hidden">
+    <section className="relative py-24 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden transition-colors duration-300">
       {/* Background Ambience */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#F47C26]/5 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-multiply dark:mix-blend-normal pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#F47C26]/5 dark:bg-[#F47C26]/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
@@ -104,7 +124,7 @@ const FeaturedResources = () => {
           <motion.span
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300 text-xs font-bold uppercase tracking-wider"
+            className="px-4 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 text-xs font-bold uppercase tracking-wider"
           >
             Knowledge Hub
           </motion.span>
@@ -112,7 +132,7 @@ const FeaturedResources = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-4 text-3xl md:text-5xl font-extrabold text-white"
+            className="mt-4 text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white"
           >
             Master the{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
@@ -123,7 +143,7 @@ const FeaturedResources = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg"
+            className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg"
           >
             Premium courses and resources curated by Trivixa's top engineers and
             designers.
@@ -142,28 +162,28 @@ const FeaturedResources = () => {
             <motion.div
               key={item.id}
               variants={cardVariants}
-              className="group relative bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-[#F47C26]/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/50"
+              className="group relative bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 dark:hover:border-[#F47C26]/30"
             >
               {/* Image Container */}
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-800">
                 <img
                   src={item.image}
                   alt={item.title}
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />
 
-                {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f2d] via-transparent to-transparent opacity-80"></div>
+                {/* Overlay Gradient (Subtle in light, darker in dark) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 dark:from-[#0a0f2d] dark:opacity-80"></div>
 
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex gap-2">
-                  <span className="bg-[#0a0f2d]/80 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded border border-white/10">
+                  <span className="bg-white/90 dark:bg-[#0a0f2d]/80 backdrop-blur-md text-gray-900 dark:text-white text-[10px] font-bold px-2 py-1 rounded border border-white/20 dark:border-white/10">
                     {item.category}
                   </span>
                 </div>
 
                 {/* Wishlist Button */}
-                <button className="absolute top-3 right-3 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-md transition-colors">
+                <button className="absolute top-3 right-3 p-2 bg-white/50 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 rounded-full text-white backdrop-blur-md transition-colors shadow-sm">
                   <FaHeart className="text-sm" />
                 </button>
               </div>
@@ -172,35 +192,33 @@ const FeaturedResources = () => {
               <div className="p-5">
                 <div className="flex justify-between items-start mb-2">
                   <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                      item.level === "Beginner"
-                        ? "border-green-500/30 text-green-400 bg-green-500/10"
-                        : item.level === "Intermediate"
-                        ? "border-yellow-500/30 text-yellow-400 bg-yellow-500/10"
-                        : "border-red-500/30 text-red-400 bg-red-500/10"
-                    }`}
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded border ${getLevelBadgeStyle(
+                      item.level
+                    )}`}
                   >
                     {item.level}
                   </span>
                   <div className="flex items-center gap-1">
                     {renderStars(item.rating)}
-                    <span className="text-[10px] text-gray-500 ml-1">
+                    <span className="text-[10px] text-gray-500 dark:text-gray-500 ml-1">
                       ({item.rating})
                     </span>
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-white mb-1 line-clamp-2 group-hover:text-[#F47C26] transition-colors">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 line-clamp-2 group-hover:text-[#F47C26] transition-colors">
                   {item.title}
                 </h3>
-                <p className="text-gray-500 text-xs mb-4">by {item.author}</p>
+                <p className="text-gray-500 dark:text-gray-500 text-xs mb-4">
+                  by {item.author}
+                </p>
 
-                <div className="pt-4 border-t border-white/10 flex justify-between items-center">
-                  <span className="text-xl font-bold text-white">
+                <div className="pt-4 border-t border-gray-100 dark:border-white/10 flex justify-between items-center">
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">
                     {item.price}
                   </span>
-                  <button className="px-4 py-2 bg-white/5 hover:bg-[#F47C26] text-white text-xs font-bold rounded-lg border border-white/10 hover:border-[#F47C26] transition-all duration-300 flex items-center gap-2 group/btn">
-                    Enroll{" "}
+                  <button className="px-4 py-2 bg-gray-100 dark:bg-white/5 hover:bg-[#F47C26] text-gray-900 dark:text-white hover:text-white text-xs font-bold rounded-lg border border-gray-200 dark:border-white/10 hover:border-[#F47C26] transition-all duration-300 flex items-center gap-2 group/btn">
+                    Enroll
                     <FaArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 </div>
