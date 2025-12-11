@@ -1,291 +1,361 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import SEO from "../components/SEO";
-import { FaBookOpen, FaGraduationCap, FaUsers, FaAward } from "react-icons/fa";
+import {
+  FaRocket,
+  FaLightbulb,
+  FaUsers,
+  FaShieldAlt,
+  FaCode,
+  FaLinkedinIn,
+  FaTwitter,
+} from "react-icons/fa";
+import { motion } from "framer-motion";
 
 export default function About() {
+  // Animation Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  };
+
+  const teamMembers = [
+    {
+      name: "Sachin Sharma",
+      role: "SEO Strategist",
+      bio: "Driving organic growth and digital visibility for enterprise clients.",
+      image: "/images/team-1.jpg",
+    },
+    {
+      name: "Krishna Avtar",
+      role: "Lead Full Stack Dev",
+      bio: "Architecting scalable cloud solutions and robust backend systems.",
+      image: "/images/team-5.jpg",
+    },
+    {
+      name: "Ritik Kumar",
+      role: "Tech Content Lead",
+      bio: "Translating complex code logic into compelling user narratives.",
+      image: "/images/team-3.jpg",
+    },
+    {
+      name: "Sudev Mohan",
+      role: "UI/UX Designer",
+      bio: "Crafting intuitive digital experiences that delight users.",
+      image: "/images/team-4.jpg",
+    },
+    {
+      name: "Kiran Rawat",
+      role: "Digital Marketing",
+      bio: "Executing data-driven campaigns to maximize ROI.",
+      image: "/images/team-2.jpg",
+    },
+    {
+      name: "Mohit Rajput",
+      role: "Frontend Developer",
+      bio: "Specializing in React.js and modern interactive interfaces.",
+      image: "/images/team-6.jpg",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <SEO 
-        title="About Us | FirstVITE - Empowering Minds Through Education"
-        description="Learn about FirstVITE's mission to provide accessible, high-quality education. Discover our story, values, and the team behind our innovative e-learning platform."
-        keywords="about FirstVITE, e-learning platform, online education, learn online, FirstVITE mission, education technology, online courses, professional development"
+    <div className="min-h-screen bg-[#0a0f2d] overflow-hidden text-white relative">
+      <SEO
+        title="About Us | Trivixa IT Solutions"
+        description="Learn about Trivixa's mission to drive digital transformation. Discover our story, values, and the expert team behind our innovative IT solutions."
+        keywords="about Trivixa, IT agency, software development, digital transformation, web development team"
         og={{
-          title: 'About FirstVITE - Empowering Learners Worldwide',
-          description: 'Discover how FirstVITE is transforming education through accessible, high-quality online learning experiences for students everywhere.',
-          type: 'website'
+          title: "About Trivixa - Innovating Digital Futures",
+          description:
+            "We are a team of architects, developers, and strategists building the future of tech.",
+          type: "website",
         }}
       />
-      {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            About Us – FirstVITE
-          </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto">
-            Empowering minds through knowledge and learning resources
-          </p>
+
+      {/* --- Background Ambience --- */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none fixed"></div>
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#F47C26]/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      {/* --- Hero Section --- */}
+      <section className="relative py-24 px-6">
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[#F47C26] text-xs font-bold uppercase tracking-wider mb-6 inline-block">
+              Our Story
+            </span>
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+              We Are{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
+                Trivixa
+              </span>
+            </h1>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              Bridging the gap between complex business challenges and elegant
+              digital solutions. We don't just write code; we engineer growth.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* Our Story */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      {/* --- Narrative Section --- */}
+      <section className="py-16 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
+          >
+            {/* Left Column: Text */}
+            <div className="space-y-10">
+              <motion.div variants={itemVariants}>
+                <h2 className="text-3xl font-bold mb-4">
+                  Innovating the Future
+                </h2>
+                <div className="w-16 h-1 bg-[#F47C26] mb-6"></div>
+                <p className="text-gray-400 leading-relaxed text-lg">
+                  Trivixa began with a clear purpose: to deliver
+                  enterprise-grade IT solutions that are accessible, scalable,
+                  and future-proof. Backed by a passionate team of architects
+                  and developers, we are committed to driving digital
+                  transformation for businesses of all sizes.
+                </p>
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <h3 className="text-xl font-bold mb-3 text-white">
+                  Our Mission
+                </h3>
+                <p className="text-gray-400 leading-relaxed">
+                  To empower organizations with technology that automates
+                  workflows, enhances user engagement, and unlocks new revenue
+                  streams.
+                </p>
+              </motion.div>
+
+              <motion.div
+                variants={itemVariants}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4"
+              >
+                <div className="flex items-center gap-3">
+                  <FaCode className="text-[#F47C26]" />{" "}
+                  <span>Modern Tech Stack</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <FaRocket className="text-[#F47C26]" />{" "}
+                  <span>Agile Delivery</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <FaShieldAlt className="text-[#F47C26]" />{" "}
+                  <span>Secure Architecture</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <FaUsers className="text-[#F47C26]" />{" "}
+                  <span>Client-Centric</span>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right Column: Visual Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              <motion.div variants={itemVariants} className="space-y-4 mt-8">
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl">
+                  <h4 className="text-4xl font-bold text-[#F47C26] mb-1">5+</h4>
+                  <p className="text-sm text-gray-400">Years Experience</p>
+                </div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl">
+                  <h4 className="text-4xl font-bold text-blue-400 mb-1">
+                    100+
+                  </h4>
+                  <p className="text-sm text-gray-400">Projects Shipped</p>
+                </div>
+              </motion.div>
+              <motion.div variants={itemVariants} className="space-y-4">
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl">
+                  <h4 className="text-4xl font-bold text-purple-400 mb-1">
+                    50+
+                  </h4>
+                  <p className="text-sm text-gray-400">Happy Clients</p>
+                </div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl">
+                  <h4 className="text-4xl font-bold text-green-400 mb-1">
+                    24/7
+                  </h4>
+                  <p className="text-sm text-gray-400">Active Support</p>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* --- Core Values Grid --- */}
+      <section className="py-20 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-              Empowering Learners. Shaping Futures.
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Our Core Values
             </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <p className="text-lg text-black dark:text-white max-w-4xl mx-auto">
-              We believe that education should be accessible, practical, and
-              aligned with real-world needs. As a leading e-learning platform,
-              we offer high-quality certification programs, degree courses, and
-              career development tools — designed for students, graduates, and
-              working professionals seeking to stay competitive in today’s
-              fast-changing world.
+            <p className="text-gray-400">
+              The principles that guide every line of code we write.
             </p>
           </div>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-              Who We Are
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <p className="text-lg text-black dark:text-white max-w-4xl mx-auto">
-              Our journey began with a clear purpose: to bridge the gap between
-              theoretical education and industry requirements. Backed by a
-              passionate team of academic experts, corporate trainers, and
-              technology professionals, we are committed to delivering a
-              future-ready learning experience.
-            </p>
-            <p className="text-lg text-black dark:text-white max-w-4xl mx-auto mt-5">
-              We work in collaboration with recognized universities, global
-              educators, and experienced mentors to develop relevant,
-              career-focused content that supports learners at every stage of
-              their professional journey.
-            </p>
-          </div>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-              What We Offer
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <p className="text-lg text-black dark:text-white max-w-4xl mx-auto">
-              We provide a wide range of{" "}
-              <strong>online programs and skill-based training,</strong>{" "}
-              including:
-            </p>
-            <ul className="list-disc list-inside font-bold text-lg text-black dark:text-white max-w-4xl mx-auto">
-              <li>Professional Certifications & Short-Term Courses</li>
-              <li>Corporate Training & Skill Development Modules</li>
-            </ul>
-            <p className="text-lg text-black dark:text-white max-w-4xl mx-auto mt-5">
-              Every course is designed to be{" "}
-              <strong>
-                flexible, mobile-friendly, and globally recognized,
-              </strong>{" "}
-              allowing learners to study at their own pace and convenience.
-            </p>
-          </div>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-              Our Vision
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <p className="text-lg text-black dark:text-white max-w-4xl mx-auto">
-              To become a trusted learning destination for individuals and
-              professionals seeking to build skills, grow careers, and embrace
-              lifelong learning through modern education.
-            </p>
-          </div>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-              Our Mission
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <ul className="list-disc list-none list-inside text-lg text-black dark:text-white max-w-4xl mx-auto">
-              <li>
-                Make{" "}
-                <strong>quality education accessible and affordable</strong>
-              </li>
-              <li>
-                Promote{" "}
-                <strong>career-centric, industry-relevant skills</strong>
-              </li>
-              <li>
-                Offer flexible programs that suit different learning needs
-              </li>
-              <li>
-                Empower learners to{" "}
-                <strong> achieve career success and personal growth</strong>
-              </li>
-            </ul>
-          </div>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-              Focused on Learner Success
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <p className="text-lg text-black dark:text-white max-w-4xl mx-auto">
-              Each learner’s journey is unique, and our platform is designed to
-              support that:
-            </p>
-            <ul className="list-disc list-none list-inside text-lg text-black dark:text-white max-w-4xl mx-auto">
-              <li>Interactive Learning Modules</li>
-              <li>Live Webinars & Mentorship Sessions</li>
-              <li>Placement Assistance & Interview Prep</li>
-              <li>Progress Tracking & Certification</li>
-            </ul>
-          </div>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-              Trusted by Thousands
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <p className="text-lg text-black dark:text-white max-w-4xl mx-auto">
-              With a growing base of satisfied learners across India and beyond,
-              we have built a platform that is trusted by students, working
-              professionals, and even corporate clients. Whether you're looking
-              to upskill, change careers, or prepare for the future, we’re here
-              to guide you every step of the way.
-            </p>
-          </div>
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-              Let’s Learn, Grow & Succeed Together
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8"></div>
-            <p className="text-lg text-black dark:text-white max-w-4xl mx-auto">
-              Education is more than just a certificate — it's a pathway to
-              opportunity. Begin your learning journey with us today and take
-              one step closer to achieving your professional and personal goals.
-            </p>
-          </div>
-          {/* Features */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
-                icon: <FaBookOpen className="text-4xl text-blue-600 mb-4" />,
-                title: "Wide Selection",
-                description:
-                  "Thousands of books across various subjects and disciplines.",
+                icon: <FaLightbulb />,
+                title: "Innovation",
+                desc: "We don't follow trends; we build solutions that set them.",
               },
               {
-                icon: (
-                  <FaGraduationCap className="text-4xl text-blue-600 mb-4" />
-                ),
-                title: "Expert Educators",
-                description:
-                  "Learn from industry professionals and experienced educators.",
+                icon: <FaUsers />,
+                title: "Collaboration",
+                desc: "We work as an extension of your team, not just a vendor.",
               },
               {
-                icon: <FaUsers className="text-4xl text-blue-600 mb-4" />,
-                title: "Community",
-                description: "Join a growing community of passionate learners.",
+                icon: <FaShieldAlt />,
+                title: "Integrity",
+                desc: "Transparent pricing, clear communication, and secure code.",
               },
               {
-                icon: <FaAward className="text-4xl text-blue-600 mb-4" />,
-                title: "Quality Content",
-                description:
-                  "Carefully curated content to ensure the best learning experience.",
+                icon: <FaRocket />,
+                title: "Excellence",
+                desc: "We are obsessed with performance, speed, and quality.",
               },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md text-center"
+            ].map((val, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white/5 border border-white/10 p-8 rounded-2xl hover:bg-white/[0.08] transition-all duration-300 group"
               >
-                <div className="flex justify-center">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-2 text-black dark:text-white">
-                  {feature.title}
-                </h3>
-                <p className="text-black dark:text-white">
-                  {feature.description}
+                <div className="text-3xl text-blue-400 mb-4 group-hover:text-[#F47C26] transition-colors">
+                  {val.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3">{val.title}</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  {val.desc}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
-          {/* Team Section */}
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-black dark:text-white mb-4">
-              Our Team
+        </div>
+      </section>
+
+      {/* --- Team Section --- */}
+      <section className="py-20 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Meet The Minds
             </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-12"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  name: "Sachin Sharma",
-                  role: "SEO Expert",
-                  bio: "Experienced SEO strategist helping educational platforms rank higher and reach the right audience.",
-                  image: "/images/team-1.jpg",
-                },
-                {
-                  name: "Krishna Avtar",
-                  role: "Developer",
-                  bio: "Full-stack developer with a strong focus on building scalable and secure learning platforms.",
-                  image: "/images/team-5.jpg",
-                },
-                {
-                  name: "Ritik Kumar",
-                  role: "Content Writer",
-                  bio: "Crafts compelling educational content that simplifies complex concepts for learners of all ages.",
-                  image: "/images/team-3.jpg",
-                },
-                {
-                  name: "Sudev Mohan",
-                  role: "Designer",
-                  bio: "Passionate UI/UX designer focused on creating intuitive and visually appealing e-learning interfaces.",
-                  image: "/images/team-4.jpg",
-                },
-                {
-                  name: "Kiran Rawat",
-                  role: "SEO Team",
-                  bio: "Optimizes website visibility through data-driven SEO practices tailored for the education sector.",
-                  image: "/images/team-2.jpg",
-                },
-                {
-                  name: "Mohit Rajput",
-                  role: "Content Writer",
-                  bio: "Specializes in writing impactful content that enhances user engagement in digital education platforms.",
-                  image: "/images/team-6.jpg",
-                },
-              ].map((member, index) => (
-                <div
-                  key={index}
-                  className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md"
-                >
+            <div className="w-20 h-1 bg-[#F47C26] mx-auto mb-6"></div>
+            <p className="text-gray-400">
+              The architects, designers, and strategists behind Trivixa.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {teamMembers.map((member, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:border-[#F47C26]/30 transition-all duration-300"
+              >
+                {/* Image Container */}
+                <div className="relative h-72 overflow-hidden">
+                  <div className="absolute inset-0 bg-[#0a0f2d]/20 group-hover:bg-transparent transition-colors z-10"></div>
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-64 object-cover"
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    // Add error handling for images
+                    onError={(e) => {
+                      e.target.src =
+                        "https://via.placeholder.com/400x500/0a0f2d/ffffff?text=Trivixa+Member";
+                    }}
                   />
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-black dark:text-white">
-                      {member.name}
-                    </h3>
-                    <p className="text-blue-600 mb-3">{member.role}</p>
-                    <p className="text-black dark:text-white">{member.bio}</p>
+
+                  {/* Social Overlay */}
+                  <div className="absolute bottom-0 left-0 w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20 bg-gradient-to-t from-black/90 to-transparent flex gap-4 justify-center">
+                    <a href="#" className="text-white hover:text-[#F47C26]">
+                      <FaLinkedinIn />
+                    </a>
+                    <a href="#" className="text-white hover:text-[#F47C26]">
+                      <FaTwitter />
+                    </a>
                   </div>
                 </div>
-              ))}
+
+                {/* Content */}
+                <div className="p-6 text-center">
+                  <h3 className="text-xl font-bold text-white mb-1 group-hover:text-[#F47C26] transition-colors">
+                    {member.name}
+                  </h3>
+                  <p className="text-blue-400 text-sm font-medium mb-3 uppercase tracking-wide">
+                    {member.role}
+                  </p>
+                  <p className="text-gray-400 text-sm leading-relaxed">
+                    {member.bio}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* --- CTA Section --- */}
+      <section className="py-20 px-6 relative z-10">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-r from-[#F47C26] to-[#d5671f] rounded-3xl p-12 text-center shadow-2xl shadow-orange-500/20 relative overflow-hidden"
+          >
+            {/* Texture */}
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+
+            <div className="relative z-10">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Ready to Digitalize Your Vision?
+              </h2>
+              <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
+                Partner with Trivixa and let's build technology that drives real
+                business results.
+              </p>
+              <Link
+                to="/contact"
+                className="inline-flex items-center gap-2 bg-white text-[#d5671f] font-bold py-3.5 px-8 rounded-xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-lg"
+              >
+                Start Your Project <FaRocket />
+              </Link>
             </div>
-          </div>
-          {/* CTA Section */}
-          <div className="mt-20 bg-blue-900 rounded-xl p-8 text-center">
-            <h2 className="text-2xl font-bold text-white dark:text-white mb-4">
-              Ready to start learning?
-            </h2>
-            <p className="text-white dark:text-white mb-6 max-w-2xl mx-auto">
-              Join thousands of students who are already advancing their careers
-              with our courses.
-            </p>
-            <Link
-              to="/courses"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300"
-            >
-              Browse Courses
-            </Link>
-          </div>
-          <p className="text-center text-lg text-black dark:text-white mt-12">
-            Welcome to FirstVITE — your partner in skill-building and success.
+          </motion.div>
+
+          <p className="text-center text-gray-500 mt-12 text-sm">
+            Trivixa IT Solutions — Engineering Excellence Since 2019.
           </p>
         </div>
       </section>
