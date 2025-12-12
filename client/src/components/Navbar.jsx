@@ -15,7 +15,6 @@ import {
 } from "react-icons/fa";
 import { FiSun, FiMoon } from "react-icons/fi";
 import CourseMenu from "./CourseMenu";
-import { toast } from "react-hot-toast";
 import { debounce } from "lodash";
 import api from "../api/axios";
 import PaymentForm from "./PaymentForm";
@@ -28,10 +27,8 @@ function Navbar() {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Theme State
-  const [theme, setTheme] = useState(
-    localStorage.getItem("theme") ? localStorage.getItem("theme") : "dark" // Default to dark for Trivixa theme
-  );
+  // Theme State - Default to 'light' or 'dark' based on system or local storage
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -69,7 +66,7 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // --- Search Logic (Preserved) ---
+  // --- Search Logic ---
   const handleSearch = useCallback(
     debounce(async (query) => {
       const trimmedQuery = query.trim();
@@ -81,7 +78,7 @@ function Navbar() {
       try {
         setIsSearching(true);
         const response = await api.get("/courses", {
-          params: { search: trimmedQuery, limit: 5 }, // Limit 5 for cleaner UI
+          params: { search: trimmedQuery, limit: 5 },
         });
         const courses = response?.data?.data || response?.data || [];
         setSearchResults({
@@ -141,13 +138,10 @@ function Navbar() {
   // --- Click Outside Handlers ---
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Close Search
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowResults(false);
         if (!event.target.closest(".search-toggle-btn")) setIsSearchOpen(false);
       }
-
-      // Close Profile Menu
       if (!event.target.closest(".profile-menu-container")) {
         setIsProfileMenuOpen(false);
       }
@@ -176,7 +170,7 @@ function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-[#fff] dark:bg-[#05081a]/90 backdrop-blur-md border-b border-white/10 shadow-lg shadow-black/20"
+            ? "bg-white/90 dark:bg-[#05081a]/90 backdrop-blur-md border-b border-gray-200 dark:border-white/10 shadow-sm dark:shadow-lg dark:shadow-black/20"
             : "bg-transparent border-b border-transparent"
         }`}
       >
@@ -186,11 +180,10 @@ function Navbar() {
             <div className="flex-shrink-0 flex items-center gap-4">
               <Link to="/" className="group flex items-center gap-2">
                 <div className="relative">
-                  {/* Fallback to text if image fails or for SEO, though you use image */}
                   <img
                     src="/images/trivixa-fix-size-brand-logo.png"
                     alt="Trivixa"
-                    className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                    className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 rounded-[8px] border border-gray-200 dark:border-gray-700"
                   />
                 </div>
               </Link>
@@ -203,14 +196,14 @@ function Navbar() {
                 className={`hover-underline px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
                   location.pathname === "/"
                     ? "text-[#F47C26]"
-                    : "text-black dark:text-white"
+                    : "text-gray-700 dark:text-gray-200 hover:text-[#F47C26] dark:hover:text-[#F47C26]"
                 }`}
               >
                 Home
               </Link>
 
-              {/* Course Menu Wrapper to Apply Styles */}
-              <div className="course-menu-wrapper text-black dark:text-white">
+              {/* Course Menu Wrapper */}
+              <div className="course-menu-wrapper text-gray-700 dark:text-white">
                 <CourseMenu />
               </div>
 
@@ -223,7 +216,7 @@ function Navbar() {
                       ? "text-[#F47C26] bg-[#F47C26]/10 border border-[#F47C26]/20 hover:bg-[#F47C26] hover:text-white"
                       : location.pathname === item.to
                       ? "text-[#F47C26]"
-                      : "text-black dark:text-white"
+                      : "text-gray-700 dark:text-gray-200 hover:text-[#F47C26] dark:hover:text-[#F47C26]"
                   }`}
                 >
                   {item.label}
@@ -254,13 +247,13 @@ function Navbar() {
                         value={searchQuery}
                         onChange={handleSearchChange}
                         onFocus={() => setShowResults(true)}
-                        className="w-full h-10 pl-4 pr-10 bg-white/5 border border-white/10 rounded-full text-sm text-black dark:text-white focus:outline-none focus:border-[#F47C26] transition-all"
+                        className="w-full h-10 pl-4 pr-10 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#F47C26] focus:ring-1 focus:ring-[#F47C26] transition-all"
                         placeholder="Search..."
                       />
                       <button
                         type="button"
                         onClick={resetSearch}
-                        className="absolute right-3 top-2.5 text-black dark:text-white"
+                        className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
                       >
                         <FaTimes />
                       </button>
@@ -268,7 +261,7 @@ function Navbar() {
                   ) : (
                     <button
                       onClick={() => setIsSearchOpen(true)}
-                      className="search-toggle-btn w-10 h-10 flex items-center justify-center rounded-full text-black dark:text-white hover:text-[#F47C26] hover:bg-white/5 transition-all"
+                      className="search-toggle-btn w-10 h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#F47C26] transition-all"
                     >
                       <FaSearch />
                     </button>
@@ -282,20 +275,20 @@ function Navbar() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 top-14 w-80 bg-[#0a0f2d] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50"
+                      className="absolute right-0 top-14 w-80 bg-white dark:bg-[#0a0f2d] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl dark:shadow-2xl overflow-hidden z-50"
                     >
-                      <div className="p-3 border-b border-white/10 bg-white/5">
+                      <div className="p-3 border-b border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
                         <p className="text-xs font-bold text-[#F47C26] uppercase tracking-wider">
                           Results
                         </p>
                       </div>
                       <div className="max-h-80 overflow-y-auto custom-scrollbar">
                         {isSearching ? (
-                          <div className="p-6 text-center text-gray-400 text-sm">
+                          <div className="p-6 text-center text-gray-500 dark:text-gray-400 text-sm">
                             Searching...
                           </div>
                         ) : searchResults.courses.length === 0 ? (
-                          <div className="p-6 text-center text-gray-400 text-sm">
+                          <div className="p-6 text-center text-gray-500 dark:text-gray-400 text-sm">
                             No results found
                           </div>
                         ) : (
@@ -303,13 +296,13 @@ function Navbar() {
                             <button
                               key={course._id}
                               onClick={() => handleResultClick(course)}
-                              className="w-full text-left p-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 group"
+                              className="w-full text-left p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border-b border-gray-100 dark:border-white/5 last:border-0 group"
                             >
-                              <h4 className="text-sm font-semibold text-black dard:text-white group-hover:text-[#F47C26] transition-colors line-clamp-1">
+                              <h4 className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-[#F47C26] transition-colors line-clamp-1">
                                 {course.title}
                               </h4>
                               {course.category && (
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
                                   {course.category.name}
                                 </span>
                               )}
@@ -322,10 +315,10 @@ function Navbar() {
                 </AnimatePresence>
               </div>
 
-              {/* Theme Toggle (Styled) */}
+              {/* Theme Toggle */}
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-black dark:text-white hover:bg-white/5 hover:text-yellow-400 transition-all"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 hover:text-yellow-500 dark:hover:text-yellow-400 transition-all"
               >
                 {theme === "dark" ? <FiMoon /> : <FiSun />}
               </button>
@@ -338,8 +331,8 @@ function Navbar() {
                     className="flex items-center gap-2 focus:outline-none"
                   >
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#F47C26] to-purple-600 p-[2px]">
-                      <div className="w-full h-full rounded-full bg-[#05081a] flex items-center justify-center">
-                        <span className="font-bold text-white text-sm">
+                      <div className="w-full h-full rounded-full bg-white dark:bg-[#05081a] flex items-center justify-center">
+                        <span className="font-bold text-gray-800 dark:text-white text-sm uppercase">
                           {authUser?.name?.charAt(0) || <FaUser />}
                         </span>
                       </div>
@@ -352,13 +345,13 @@ function Navbar() {
                         initial={{ opacity: 0, scale: 0.95, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                        className="absolute right-0 top-14 w-64 bg-[#0a0f2d] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50"
+                        className="absolute right-0 top-14 w-64 bg-white dark:bg-[#0a0f2d] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl dark:shadow-2xl overflow-hidden z-50"
                       >
-                        <div className="p-4 border-b border-white/10 bg-white/5">
-                          <p className="text-white font-semibold truncate">
+                        <div className="p-4 border-b border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
+                          <p className="text-gray-900 dark:text-white font-semibold truncate">
                             {authUser?.name}
                           </p>
-                          <p className="text-xs text-gray-400 truncate">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                             {authUser?.email}
                           </p>
 
@@ -366,8 +359,8 @@ function Navbar() {
                           <div
                             className={`mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium border ${
                               isApproved
-                                ? "bg-green-500/10 text-green-400 border-green-500/20"
-                                : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+                                ? "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20"
+                                : "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/20"
                             }`}
                           >
                             {isApproved ? (
@@ -384,14 +377,14 @@ function Navbar() {
                         <div className="p-2">
                           <Link
                             to="/profile"
-                            className="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white rounded-lg transition-colors"
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors"
                             onClick={() => setIsProfileMenuOpen(false)}
                           >
                             <FaUser className="text-[#F47C26]" /> Profile
                           </Link>
                           <Link
                             to="/my-learning"
-                            className="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white rounded-lg transition-colors"
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors"
                             onClick={() => setIsProfileMenuOpen(false)}
                           >
                             <FaGraduationCap className="text-[#F47C26]" /> My
@@ -403,7 +396,7 @@ function Navbar() {
                               setIsProfileMenuOpen(false);
                               navigate("/");
                             }}
-                            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
                           >
                             <FaSignOutAlt /> Sign Out
                           </button>
@@ -425,7 +418,7 @@ function Navbar() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 text-gray-300 hover:text-white focus:outline-none"
+                className="lg:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
               >
                 {isMobileMenuOpen ? (
                   <FaTimes className="text-xl" />
@@ -446,17 +439,17 @@ function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "tween", duration: 0.3 }}
-            className="fixed inset-0 z-40 lg:hidden bg-[#05081a] pt-24 pb-6 px-6 overflow-y-auto"
+            className="fixed inset-0 z-40 lg:hidden bg-white dark:bg-[#05081a] pt-24 pb-6 px-6 overflow-y-auto shadow-2xl"
           >
             <div className="flex flex-col space-y-4">
               <Link
                 to="/"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-lg font-medium text-white border-b border-white/10 pb-2"
+                className="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-white/10 pb-2"
               >
                 Home
               </Link>
-              <div className="text-gray-300 border-b border-white/10 pb-2">
+              <div className="text-gray-600 dark:text-gray-300 border-b border-gray-200 dark:border-white/10 pb-2">
                 <CourseMenu
                   isMobile={true}
                   onItemClick={() => setIsMobileMenuOpen(false)}
@@ -467,7 +460,7 @@ function Navbar() {
                   key={item.to}
                   to={item.to}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-lg font-medium text-gray-300 hover:text-[#F47C26] border-b border-white/10 pb-2 transition-colors"
+                  className="flex items-center justify-between text-lg font-medium text-gray-600 dark:text-gray-300 hover:text-[#F47C26] dark:hover:text-[#F47C26] border-b border-gray-200 dark:border-white/10 pb-2 transition-colors"
                 >
                   {item.label} <FaChevronRight className="text-xs opacity-50" />
                 </Link>
@@ -477,7 +470,7 @@ function Navbar() {
                 <Link
                   to="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-[#F47C26] text-white font-bold rounded-xl"
+                  className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-[#F47C26] text-white font-bold rounded-xl shadow-lg"
                 >
                   <FaSignInAlt /> Login Now
                 </Link>
@@ -489,7 +482,7 @@ function Navbar() {
 
       {/* Payment Modal */}
       {showPaymentForm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 dark:bg-black/80 backdrop-blur-sm">
           <PaymentForm onClose={() => setShowPaymentForm(false)} />
         </div>
       )}
