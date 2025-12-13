@@ -18,7 +18,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Unauthorized from "./pages/Unauthorized";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import CoursesByCategory from "./pages/user/CoursesByCategory";
+import ServicesByCategory from "./pages/user/ServicesByCategory.jsx";
 import AllCategories from "./pages/user/AllCategories";
 import CourseDetail from "./pages/user/CourseDetail";
 import CategoryForm from "./components/admin/categories/CategoryForm";
@@ -183,10 +183,19 @@ function App() {
 
           {/* Public course routes */}
           <Route
-            path="/courses"
+            path="/services"
             element={
               <MainLayout>
-                <CoursesByCategory />
+                <ServicesByCategory />
+              </MainLayout>
+            }
+          />
+
+          <Route
+            path="/services/category/:categoryName"
+            element={
+              <MainLayout>
+                <ServicesByCategory />
               </MainLayout>
             }
           />
@@ -196,15 +205,6 @@ function App() {
             element={
               <MainLayout>
                 <FreeCourses />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/courses/category/:categoryName"
-            element={
-              <MainLayout>
-                <CoursesByCategory />
               </MainLayout>
             }
           />

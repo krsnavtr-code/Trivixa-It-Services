@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import Course from "../model/course.model.js";
+import Course from "../model/services.model.js";
 import { validationResult } from 'express-validator';
 import { generateCoursePdf } from '../utils/pdfGenerator.js';
 

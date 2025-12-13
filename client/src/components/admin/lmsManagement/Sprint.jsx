@@ -3,7 +3,7 @@ import { Form, Input, Button, Select, Table, Space, Modal, message, DatePicker, 
 import dayjs from 'dayjs';
 import { PlusOutlined, EditOutlined, DeleteOutlined, UnorderedListOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import Sessions from './Sessions';
-import { getCourses } from '../../../api/courseApi';
+import { getCourses } from "../../../api/servicesApi";
 import { 
   createSprint, 
   getSprintsByCourse, 

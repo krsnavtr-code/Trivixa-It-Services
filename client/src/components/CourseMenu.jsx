@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getCategories } from "../api/categoryApi";
-import { getCoursesByCategory } from "../api/courseApi";
+import { getServicesByCategory } from "../api/servicesApi";
 import {
   FaChevronDown,
   FaChevronRight,
@@ -106,7 +106,7 @@ const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
           category: categoryId,
         };
 
-        const response = await getCoursesByCategory(categoryId, params);
+        const response = await getServicesByCategory(categoryId, params);
         const courses = Array.isArray(response)
           ? response
           : response?.data || [];

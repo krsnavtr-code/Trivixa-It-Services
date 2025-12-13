@@ -9,7 +9,7 @@ import {
     uploadCourseImage,
     generatePdf,
     deletePdf
-} from '../controller/course.controller.js';
+} from '../controller/services.controller.js';
 import { isAdmin } from '../middleware/admin.js';
 import multer from 'multer';
 import path from 'path';

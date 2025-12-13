@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { FaSearch, FaEdit, FaTrash, FaFilePdf, FaDownload, FaPaperPlane } from 'react-icons/fa';
-import { getCourses, deleteCourse, getCategoriesForForm } from '../../../api/courseApi';
+import {
+  getCourses,
+  deleteCourse,
+  getCategoriesForForm,
+} from "../../../api/servicesApi";
 import api from '../../../api/axios';
 import SendCoursePdfModal from './SendCoursePdfModal';
 

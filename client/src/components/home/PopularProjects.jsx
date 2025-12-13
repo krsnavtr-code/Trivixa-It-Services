@@ -182,7 +182,7 @@ const FeaturedProjects = () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-        const response = await axios.get("/courses", {
+        const response = await axios.get("/services", {
           params: {
             showOnHome: "true",
             limit: 4,
@@ -306,7 +306,7 @@ const FeaturedProjects = () => {
           className="mt-16 text-center"
         >
           <Link
-            to="/courses"
+            to="/services"
             className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#F47C26] to-[#d5671f] text-white font-bold rounded-xl overflow-hidden shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300"
           >
             <span className="relative z-10">View Full Portfolio</span>

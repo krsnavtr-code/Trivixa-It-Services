@@ -117,14 +117,14 @@ const Banner = () => {
             variants={itemVariants}
             className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start"
           >
-            <Link to="/courses" className="group">
+            <Link to="/services" className="group">
               <button className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#F47C26] to-[#d5671f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transform hover:-translate-y-1 transition-all duration-300">
                 Get Started
                 <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
 
-            <Link to="/services">
+            <Link to="/categories">
               <button className="w-full sm:w-auto px-8 py-4 bg-gray-100 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-200 dark:hover:bg-white/10 transition-all duration-300">
                 <FaPlayCircle className="text-gray-500 dark:text-gray-400" />
                 Explore Services

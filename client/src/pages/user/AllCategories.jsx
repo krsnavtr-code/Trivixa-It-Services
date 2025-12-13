@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getCategories as getCategoriesFromApi } from "../../api/categoryApi";
-import { getCoursesByCategory } from "../../api/courseApi";
+import { getServicesByCategory } from "../../api/servicesApi";
 import {
   FaArrowRight,
   FaLayerGroup,
@@ -63,7 +63,7 @@ const AllCategories = () => {
           categoriesData.map(async (category) => {
             if (!category || !category._id) return null;
             try {
-              const courses = await getCoursesByCategory(category._id);
+              const courses = await getServicesByCategory(category._id);
               return {
                 ...category,
                 courseCount: Array.isArray(courses) ? courses.length : 0,

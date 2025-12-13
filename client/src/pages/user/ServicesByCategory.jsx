@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import SEO from "../../components/SEO";
-import { getCoursesByCategory } from "../../api/courseApi";
+import { getServicesByCategory } from "../../api/servicesApi";
 import { getCategories } from "../../api/categoryApi";
 import { toast } from "react-hot-toast";
 import { getImageUrl } from "../../utils/imageUtils";
@@ -30,7 +30,7 @@ const getCategoryIcon = (name) => {
   return <FaCode />; // Default
 };
 
-const CoursesByCategory = () => {
+const ServicesByCategory = () => {
   const { categoryName } = useParams();
   const [courses, setCourses] = useState([]);
   const [category, setCategory] = useState(null);
@@ -82,7 +82,7 @@ const CoursesByCategory = () => {
 
           if (categoryData) {
             setCategory(categoryData);
-            const coursesResponse = await getCoursesByCategory(
+            const coursesResponse = await getServicesByCategory(
               categoryData._id
             );
             const coursesData = Array.isArray(coursesResponse)
@@ -93,7 +93,7 @@ const CoursesByCategory = () => {
           }
         }
 
-        const allCoursesResponse = await getCoursesByCategory();
+        const allCoursesResponse = await getServicesByCategory();
         const allCourses = Array.isArray(allCoursesResponse)
           ? allCoursesResponse
           : allCoursesResponse.data || [];
@@ -409,4 +409,4 @@ const ServiceCard = ({ course }) => {
   );
 };
 
-export default CoursesByCategory;
+export default ServicesByCategory;

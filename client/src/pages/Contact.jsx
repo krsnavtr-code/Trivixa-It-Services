@@ -14,7 +14,7 @@ import {
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { submitContactForm } from "../api/contactApi";
-import { getCourses } from "../api/courseApi";
+import { getCourses } from "../api/servicesApi";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 

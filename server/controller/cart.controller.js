@@ -1,5 +1,5 @@
 import Cart from '../model/Cart.js';
-import Course from '../model/course.model.js';
+import Course from '../model/services.model.js';
 import { NotFoundError } from '../middleware/error.js';
 
 // Get user's cart

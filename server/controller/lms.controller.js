@@ -1,6 +1,6 @@
 import Enrollment from '../model/enrollment.model.js';
 import Lesson from '../model/lesson.model.js';
-import Course from '../model/course.model.js';
+import Course from '../model/services.model.js';
 import User from '../model/User.js';
 import { validationResult } from 'express-validator';
 

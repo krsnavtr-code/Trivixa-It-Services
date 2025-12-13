@@ -10,7 +10,7 @@ import {
   getCourseById,
   getCategoriesForForm,
   uploadCourseImage,
-} from "../../../api/courseApi";
+} from "../../../api/servicesApi";
 import userApi from "../../../api/userApi";
 
 // Error boundary for the file upload component

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card, Select, Typography, Divider, List, Button, Space, Tag, Spin, Empty, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { getCourses } from '../../../api/courseApi';
+import { getCourses } from "../../../api/servicesApi";
 import { getSprintsByCourse } from '../../../api/sprintApi';
 import { getSessionsBySprint } from '../../../api/sessionApi';
 import { createTask, getTasksBySession } from '../../../api/taskApi';

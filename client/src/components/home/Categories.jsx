@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaImage, FaArrowRight, FaLayerGroup, FaCode } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { getCategories as getCategoriesFromApi } from "../../api/categoryApi";
-import { getCoursesByCategory } from "../../api/courseApi";
+import { getServicesByCategory } from "../../api/servicesApi";
 
 // Helper function to get the full image URL
 const getImageUrl = (imagePath) => {
@@ -64,7 +64,7 @@ const Categories = () => {
               category.courseCount === null
             ) {
               try {
-                const courses = await getCoursesByCategory(category._id);
+                const courses = await getServicesByCategory(category._id);
                 return {
                   ...category,
                   courseCount: Array.isArray(courses) ? courses.length : 0,
@@ -224,7 +224,7 @@ const Categories = () => {
             {categories.map((category) => (
               <motion.div key={category._id} variants={cardVariants}>
                 <Link
-                  to={`/courses/category/${category.name
+                  to={`/services/category/${category.name
                     .toLowerCase()
                     .replace(/\s+/g, "-")}`}
                   className="group relative block p-6 bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:bg-white/[0.07] dark:hover:border-[#F47C26]/30 dark:hover:shadow-[#F47C26]/10 hover:-translate-y-1"
@@ -276,7 +276,7 @@ const Categories = () => {
             to="/categories"
             className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-gray-900 dark:bg-white/5 dark:border-white/20 dark:text-white font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 hover:scale-105 transition-all duration-300 shadow-sm dark:shadow-none"
           >
-            Explore All Services <FaArrowRight className="text-sm" />
+            Explore by Category <FaArrowRight className="text-sm" />
           </Link>
         </motion.div>
       </div>

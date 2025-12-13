@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getCategories } from "../../api/categoryApi";
-import { getCourses, deleteCourse } from "../../api/courseApi";
+import { getCourses, deleteCourse } from "../../api/servicesApi";
 import userApi from "../../api/userApi";
 import { toast } from "react-hot-toast";
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate, Navigate } from "react-router-dom";
 import SEO from "../../components/SEO";
 import axios from "axios";
-import { getCourseById } from "../../api/courseApi";
+import { getCourseById } from "../../api/servicesApi";
 import { submitContactForm } from "../../api/contactApi";
 import { enrollInCourse } from "../../api/enrollmentApi";
 import { toast } from "react-hot-toast";

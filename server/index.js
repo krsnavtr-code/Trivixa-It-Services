@@ -14,7 +14,7 @@ import userRoutes from "./routes/userRoutes.js";
 import profileRoute from "./route/profile.route.js";
 import cartRoute from "./route/cart.route.js";
 import categoryRoute from "./route/category.route.js";
-import courseRoute from "./route/course.route.js";
+import servicesRoute from "./route/services.route.js";
 import contactRoute from "./route/contactRoutes.js";
 import enrollmentRoute from "./routes/enrollmentRoutes.js";
 import faqRoute from "./route/faq.route.js";
@@ -339,7 +339,7 @@ app.get('/api/test-categories', async (req, res) => {
 // Public routes first
 app.use("/api/books", bookRoute);
 app.use("/api/categories", categoryRoute);
-app.use("/api/courses", courseRoute);
+app.use("/api/services", servicesRoute);
 app.use("/api/contacts", contactRoute);
 app.use("/api/faqs", faqRoute);
 app.use("/api/blog", blogRoutes);

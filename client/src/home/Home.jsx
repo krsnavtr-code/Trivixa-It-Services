@@ -2,7 +2,7 @@ import React from 'react';
 import SEO from '../components/SEO';
 import Banner from '../components/Banner';
 import Categories from '../components/home/Categories';
-import PopularCourses from '../components/home/PopularCourses';
+import PopularCourses from '../components/home/PopularProjects';
 import FeaturedBooks from '../components/home/FeaturedBooks';
 import Stats from '../components/home/Stats';
 import Testimonials from '../components/home/Testimonials';

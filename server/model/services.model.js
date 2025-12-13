@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Lesson from "./lesson.model.js";
 
 const curriculumItemSchema = new mongoose.Schema({
     week: {
