@@ -164,7 +164,7 @@ const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
             isOpen ? "text-[#F47C26] bg-white/5" : "text-black dark:text-white"
           }`}
         >
-          Services{" "}
+          Menu{" "}
           <FaChevronDown
             className={`text-xs transition-transform duration-300 ${
               isOpen ? "rotate-180" : ""

@@ -86,13 +86,22 @@ const MainLayout = ({ children }) => {
     location.pathname.startsWith("/reset-password") ||
     location.pathname.startsWith("/jobfair");
 
+  // Determine if we should show the navbar and apply the top margin
+  const showNavbar = !isAdminRoute && !isLMSRoute && !isAuthRoute;
+
   return (
     <div className="dark:bg-slate-900 dark:text-white min-h-screen flex flex-col">
       <ScrollToTop />
-      {!isAdminRoute && !isLMSRoute && !isAuthRoute && <Navbar />}
-      <main className="flex-grow bg-gray-50 dark:bg-gray-900">{children}</main>
-      {!isAdminRoute && !isLMSRoute && !isAuthRoute && <Footer />}
-      {!isAdminRoute && !isLMSRoute && !isAuthRoute && <ChatButton />}
+      {showNavbar && <Navbar />}
+      <main
+        className={`flex-grow bg-gray-50 dark:bg-gray-900 ${
+          showNavbar ? "pt-14" : "pt-0"
+        }`}
+      >
+        {children}
+      </main>
+      {showNavbar && <Footer />}
+      {showNavbar && <ChatButton />}
     </div>
   );
 };
