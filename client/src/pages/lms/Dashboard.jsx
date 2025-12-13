@@ -103,7 +103,7 @@ const Dashboard = () => {
   }, [enrollments.length]); // Only re-run when enrollments change
 
   const handleContinueLearning = (courseId) => {
-    navigate(`/lms/courses/${courseId}`);
+    navigate(`/lms/services/${courseId}`);
   };
 
   const renderEnrollmentCard = (enrollment) => {
@@ -231,7 +231,7 @@ const Dashboard = () => {
                 </span>
                 <Button
                   type="primary"
-                  onClick={() => navigate(`/lms/courses/${course.id}/enroll`)}
+                  onClick={() => navigate(`/lms/services/${course.id}/enroll`)}
                 >
                   Enroll Now
                 </Button>
@@ -408,7 +408,10 @@ const Dashboard = () => {
                 description="You haven't enrolled in any courses yet"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               >
-                <Button type="primary" onClick={() => navigate("/lms/courses")}>
+                <Button
+                  type="primary"
+                  onClick={() => navigate("/lms/services")}
+                >
                   Browse Courses
                 </Button>
               </Empty>

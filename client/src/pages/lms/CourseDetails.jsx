@@ -148,7 +148,7 @@ const CourseDetails = () => {
   const handleSprintClick = (sprint, e) => {
     // Prevent the card click from interfering with button click
     if (e && e.stopPropagation) e.stopPropagation();
-    navigate(`/lms/courses/${courseId}/sprints/${sprint._id}`);
+    navigate(`/lms/services/${courseId}/sprints/${sprint._id}`);
   };
 
   const getSprintStatus = (sprint) => {

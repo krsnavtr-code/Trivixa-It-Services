@@ -30,9 +30,11 @@ const Career = () => {
         setLoading(true);
         // Fetch all open job listings
         const [jobsRes, appliedRes, coursesRes] = await Promise.all([
-          axios.get('/api/careers?status=Open'),
-          user ? axios.get(`/api/users/${user.id}/applications`) : Promise.resolve({ data: [] }),
-          axios.get('/api/courses')
+          axios.get("/api/careers?status=Open"),
+          user
+            ? axios.get(`/api/users/${user.id}/applications`)
+            : Promise.resolve({ data: [] }),
+          axios.get("/api/services"),
         ]);
 
         setJobListings(jobsRes.data);

@@ -363,7 +363,7 @@ const SubMenuContent = ({ category, courses, isLoading, onItemClick }) => {
         </Link>
       ))}
       <Link
-        to={`/courses/category/${
+        to={`/services/category/${
           category.slug || category.name.toLowerCase().replace(/\s+/g, "-")
         }`}
         onClick={onItemClick}

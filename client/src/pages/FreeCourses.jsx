@@ -42,7 +42,7 @@ const FreeCourses = () => {
         const response = await axios.get(
           `${
             import.meta.env.VITE_API_URL
-          }/api/courses?category=${categoryId}&isPublished=true`
+          }/api/services?category=${categoryId}&isPublished=true`
         );
 
         const coursesData = Array.isArray(response.data) ? response.data : [];

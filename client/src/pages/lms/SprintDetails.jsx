@@ -216,7 +216,7 @@ const SprintDetails = () => {
       <Button
         type="text"
         icon={<ArrowLeftOutlined />}
-        onClick={() => navigate(`/lms/courses/${courseId}`)}
+        onClick={() => navigate(`/lms/services/${courseId}`)}
         className="mb-4 text-black dark:text-black"
       >
         Back to Course
@@ -418,35 +418,47 @@ const SprintDetails = () => {
                           >
                             <div className="space-y-4">
                               {currentQuestions.map((question, index) => (
-                                <div key={index} className="p-4 border rounded-lg">
+                                <div
+                                  key={index}
+                                  className="p-4 border rounded-lg"
+                                >
                                   <div className="font-medium mb-2">
                                     {index + 1}. {question.question}
                                   </div>
                                   <div className="space-y-2">
-                                    {question.options?.map((option, optIndex) => {
-                                      // Handle both string and object options
-                                      const optionText = typeof option === 'object' ? option.text : option;
-                                      const isCorrect = typeof option === 'object' 
-                                        ? option.isCorrect 
-                                        : question.correctAnswer === optIndex;
-                                      
-                                      return (
-                                        <div 
-                                          key={optIndex}
-                                          className={`p-2 rounded ${
-                                            isCorrect
-                                              ? 'bg-green-50 text-green-700 border border-green-200' 
-                                              : 'bg-gray-50'
-                                          }`}
-                                        >
-                                          {String.fromCharCode(65 + optIndex)}. {optionText}
-                                        </div>
-                                      );
-                                    })}
+                                    {question.options?.map(
+                                      (option, optIndex) => {
+                                        // Handle both string and object options
+                                        const optionText =
+                                          typeof option === "object"
+                                            ? option.text
+                                            : option;
+                                        const isCorrect =
+                                          typeof option === "object"
+                                            ? option.isCorrect
+                                            : question.correctAnswer ===
+                                              optIndex;
+
+                                        return (
+                                          <div
+                                            key={optIndex}
+                                            className={`p-2 rounded ${
+                                              isCorrect
+                                                ? "bg-green-50 text-green-700 border border-green-200"
+                                                : "bg-gray-50"
+                                            }`}
+                                          >
+                                            {String.fromCharCode(65 + optIndex)}
+                                            . {optionText}
+                                          </div>
+                                        );
+                                      }
+                                    )}
                                   </div>
                                   {question.explanation && (
                                     <div className="mt-2 p-2 bg-blue-50 text-blue-700 rounded text-sm">
-                                      <strong>Explanation:</strong> {question.explanation}
+                                      <strong>Explanation:</strong>{" "}
+                                      {question.explanation}
                                     </div>
                                   )}
                                 </div>
@@ -636,7 +648,7 @@ const SprintDetails = () => {
                                   ? (e) => {
                                       e.stopPropagation();
                                       navigate(
-                                        `/lms/courses/${courseId}/sprints/${sprintId}/sessions/${session._id}/tasks/${task._id}`
+                                        `/lms/services/${courseId}/sprints/${sprintId}/sessions/${session._id}/tasks/${task._id}`
                                       );
                                     }
                                   : undefined

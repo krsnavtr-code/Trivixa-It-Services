@@ -26,7 +26,7 @@ const ContactFormModal = ({ isOpen, onClose }) => {
     if (isOpen) {
       const loadCourses = async () => {
         try {
-          const response = await fetch("/api/courses");
+          const response = await fetch("/api/services");
           if (response.ok) {
             const data = await response.json();
             setCourses(Array.isArray(data) ? data : data.data || []);

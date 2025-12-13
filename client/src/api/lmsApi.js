@@ -7,7 +7,7 @@ import axios from './axios';
  */
 export const enrollInCourse = async (courseId) => {
   try {
-    const response = await axios.post(`/lms/courses/${courseId}/enroll`);
+    const response = await axios.post(`/lms/services/${courseId}/enroll`);
     return response.data;
   } catch (error) {
     console.error('Error enrolling in course:', error);
@@ -66,7 +66,7 @@ export const getMyEnrollments = async () => {
  */
 export const getCourseContent = async (courseId) => {
   try {
-    const response = await axios.get(`/lms/courses/${courseId}/content`);
+    const response = await axios.get(`/lms/services/${courseId}/content`);
     return response.data;
   } catch (error) {
     console.error('Error fetching course content:', error);
@@ -82,7 +82,7 @@ export const getCourseContent = async (courseId) => {
  */
 export const updateLessonProgress = async (courseId, lessonId) => {
   try {
-    const response = await axios.post(`/lms/courses/${courseId}/lessons/${lessonId}/progress`);
+    const response = await axios.post(`/lms/services/${courseId}/lessons/${lessonId}/progress`);
     return response.data;
   } catch (error) {
     console.error('Error updating lesson progress:', error);
@@ -97,7 +97,7 @@ export const updateLessonProgress = async (courseId, lessonId) => {
  */
 export const generateCertificate = async (courseId) => {
   try {
-    const response = await axios.post(`/lms/courses/${courseId}/certificate`);
+    const response = await axios.post(`/lms/services/${courseId}/certificate`);
     return response.data;
   } catch (error) {
     console.error('Error generating certificate:', error);
@@ -112,7 +112,7 @@ export const generateCertificate = async (courseId) => {
  */
 export const getCourseProgress = async (courseId) => {
   try {
-    const response = await axios.get(`/lms/courses/${courseId}/progress`);
+    const response = await axios.get(`/lms/services/${courseId}/progress`);
     return response.data;
   } catch (error) {
     console.error('Error fetching course progress:', error);

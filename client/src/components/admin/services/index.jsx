@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import CoursesList from './CoursesList';
-import CourseForm from './CourseForm';
+import CoursesList from "./servicesList";
+import CourseForm from "./CourseForm";
 
 const AdminCourses = () => {
   return (
@@ -11,7 +11,7 @@ const AdminCourses = () => {
           <Route index element={<CoursesList />} />
           <Route path="new" element={<CourseForm />} />
           <Route path="edit/:id" element={<CourseForm isEdit={true} />} />
-          <Route path="*" element={<Navigate to="/admin/courses" replace />} />
+          <Route path="*" element={<Navigate to="/admin/services" replace />} />
         </Routes>
       </div>
     </div>

@@ -75,7 +75,7 @@ const lmsService = {
   // Update course progress
   updateCourseProgress: async (courseId, data) => {
     try {
-      const response = await api.put(`/courses/${courseId}/progress`, data);
+      const response = await api.put(`/services/${courseId}/progress`, data);
       return response.data;
     } catch (error) {
       console.error('Error updating course progress:', error);

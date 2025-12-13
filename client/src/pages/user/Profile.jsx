@@ -116,7 +116,7 @@ const Profile = () => {
   };
 
   const handleCourseClick = (courseId) => {
-    navigate(`/lms/courses/${courseId}`);
+    navigate(`/lms/services/${courseId}`);
   };
 
   if (!authUser) {
@@ -408,7 +408,7 @@ const Profile = () => {
                   to get started!
                 </p>
                 <button
-                  onClick={() => navigate("/courses")}
+                  onClick={() => navigate("/services")}
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                 >
                   Browse Courses

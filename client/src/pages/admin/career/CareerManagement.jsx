@@ -37,7 +37,7 @@ const CareerManagement = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await api.get('/courses');
+      const res = await api.get("/services");
       setCourses(res.data);
     } catch (err) {
       console.error(err);

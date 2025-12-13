@@ -263,7 +263,7 @@ const TaskTest = () => {
             <Button
               onClick={() =>
                 navigate(
-                  `/lms/courses/${courseId}/sprints/${sprintId}/sessions/${sessionId}`
+                  `/lms/services/${courseId}/sprints/${sprintId}/sessions/${sessionId}`
                 )
               }
               className="text-blue-600 font-bold border-2 border-blue-600"
@@ -273,7 +273,9 @@ const TaskTest = () => {
           </div>
         </div>
 
-        <h2 className="text-xl font-semibold text-black mt-10 mb-4">Review Your Answers</h2>
+        <h2 className="text-xl font-semibold text-black mt-10 mb-4">
+          Review Your Answers
+        </h2>
         {task.questions.map((q, i) => (
           <QuestionCard
             key={i}
@@ -308,7 +310,7 @@ const TaskTest = () => {
           icon={<ArrowLeftOutlined />}
           onClick={() =>
             navigate(
-              `/lms/courses/${courseId}/sprints/${sprintId}/sessions/${sessionId}`
+              `/lms/services/${courseId}/sprints/${sprintId}/sessions/${sessionId}`
             )
           }
         >
@@ -353,15 +355,15 @@ const TaskTest = () => {
             loading={submitting}
             onClick={() =>
               Modal.confirm({
-                title: 'Submit Test?',
-                content: 'Once submitted, you cannot change answers.',
+                title: "Submit Test?",
+                content: "Once submitted, you cannot change answers.",
                 onOk: handleSubmit,
                 okButtonProps: {
-                  className: 'text-white bg-green-600 hover:bg-green-700'
+                  className: "text-white bg-green-600 hover:bg-green-700",
                 },
-                okText: 'Submit',
-                cancelText: 'Cancel',
-                okType: 'success'
+                okText: "Submit",
+                cancelText: "Cancel",
+                okType: "success",
               })
             }
             className="text-green-600 font-bold border-2 border-green-600"

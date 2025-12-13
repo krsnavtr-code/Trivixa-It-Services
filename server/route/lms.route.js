@@ -14,18 +14,18 @@ const router = express.Router();
 router.use(protect);
 
 // Enroll in a course
-router.post('/courses/:courseId/enroll', enrollInCourse);
+router.post('/services/:courseId/enroll', enrollInCourse);
 
 // Get user's enrollments
 router.get('/my-courses', getMyEnrollments);
 
 // Get course content
-router.get('/courses/:courseId/content', getCourseContent);
+router.get('/services/:courseId/content', getCourseContent);
 
 // Update lesson progress
-router.post('/courses/:courseId/lessons/:lessonId/progress', updateLessonProgress);
+router.post('/services/:courseId/lessons/:lessonId/progress', updateLessonProgress);
 
 // Generate certificate
-router.post('/courses/:courseId/certificate', generateCertificate);
+router.post('/services/:courseId/certificate', generateCertificate);
 
 export default router;

@@ -77,7 +77,7 @@ function Navbar() {
 
       try {
         setIsSearching(true);
-        const response = await api.get("/courses", {
+        const response = await api.get("/services", {
           params: { search: trimmedQuery, limit: 5 },
         });
         const courses = response?.data?.data || response?.data || [];
@@ -97,7 +97,7 @@ function Navbar() {
 
   const handleClientSideSearch = async (query) => {
     try {
-      const response = await api.get("/courses", { params: { limit: 20 } });
+      const response = await api.get("/services", { params: { limit: 20 } });
       const allCourses = Array.isArray(response?.data)
         ? response?.data
         : response?.data?.data || [];
