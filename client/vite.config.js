@@ -59,7 +59,7 @@ export default defineConfig(({ command }) => ({
             'react-beautiful-dnd',
             'framer-motion',
             '@ant-design/compatible',
-            'antd/dist/antd.css'
+            'antd'
           ],
         },
       },
