@@ -324,66 +324,77 @@ function Navbar() {
             PART 2: BOTTOM NAV RAIL (Links)
             Colors: White (Light) / #0B2545 (Dark) with Brand Highlights
            ================================================================================= */}
-        <div
-          className={`hidden md:block w-full border-b border-gray-200 dark:border-white/5 transition-all duration-500 z-40 ${
-            isScrolled
-              ? "bg-white/80 dark:bg-[#0B2545]/80 backdrop-blur-xl h-10 rounded-b-[60%] overflow-hidden"
-              : "bg-white dark:bg-[#0B2545] h-12"
-          }`}
-        >
-          <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
-            <nav
-              className="flex items-center gap-1 p-1 rounded-full"
-              onMouseLeave={() => setHoveredNav(null)}
-            >
-              {/* Category Dropdown Trigger */}
-              <div className="relative group px-4 py-1.5 cursor-pointer flex items-center gap-2 text-sm font-semibold text-[#0B2545] dark:text-white hover:text-[#F47C26] transition-colors border-r border-gray-200 dark:border-white/10 pr-6 mr-2">
-                <span className="w-2 h-2 rounded-full bg-[#F47C26] animate-pulse"></span>
-                Explore
-                <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                  <CourseMenu />
-                </div>
-              </div>
-
-              {navItems.map((item) => {
-                const isActive = location.pathname === item.to;
-                return (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onMouseEnter={() => setHoveredNav(item.to)}
-                    className={`relative px-3 py-1 text-sm font-medium transition-colors duration-200 z-10 ${
-                      isActive
-                        ? "text-[#F47C26]"
-                        : "text-[#0B2545] dark:text-gray-300 hover:text-[#0B2545] dark:hover:text-white"
-                    }`}
+        <div className="relative">
+          <div
+            className={`hidden md:block w-full border-b border-gray-200 dark:border-white/5 transition-all duration-500 z-40 ${
+              isScrolled
+                ? "bg-white/80 dark:bg-[#0B2545]/80 backdrop-blur-xl h-10 rounded-b-[60%] overflow-visible"
+                : "bg-white dark:bg-[#0B2545] h-12"
+            }`}
+          >
+            <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
+              <nav
+                className="flex items-center gap-1 p-1 rounded-full"
+                onMouseLeave={() => setHoveredNav(null)}
+              >
+                {/* Category Dropdown Trigger */}
+                <div
+                  className="relative group px-4 py-1.5 cursor-pointer flex items-center gap-2 text-sm font-semibold text-[#0B2545] dark:text-white hover:text-[#F47C26] transition-colors border-r border-gray-200 dark:border-white/10 pr-6 mr-2"
+                  style={{ zIndex: 60 }}
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#F47C26] animate-pulse"></span>
+                  Explore
+                  <div
+                    className="absolute top-full left-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2"
+                    style={{
+                      zIndex: 50,
+                      pointerEvents: "auto",
+                    }}
                   >
-                    {item.label}
+                    <CourseMenu />
+                  </div>
+                </div>
 
-                    {/* Active Indicator */}
-                    {isActive && (
-                      <motion.div
-                        layoutId="active-dot"
-                        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#F47C26] rounded-full mb-1"
-                      />
-                    )}
+                {navItems.map((item) => {
+                  const isActive = location.pathname === item.to;
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onMouseEnter={() => setHoveredNav(item.to)}
+                      className={`relative px-3 py-1 text-sm font-medium transition-colors duration-200 z-10 ${
+                        isActive
+                          ? "text-[#F47C26]"
+                          : "text-[#0B2545] dark:text-gray-300 hover:text-[#0B2545] dark:hover:text-white"
+                      }`}
+                    >
+                      {item.label}
 
-                    {/* Spotlight Hover Effect */}
-                    {hoveredNav === item.to && (
-                      <motion.div
-                        layoutId="nav-spotlight"
-                        className="absolute inset-0 bg-[#0B2545]/5 dark:bg-white/10 rounded-lg -z-10"
-                        transition={{
-                          type: "spring",
-                          stiffness: 350,
-                          damping: 30,
-                        }}
-                      />
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
+                      {/* Active Indicator */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="active-dot"
+                          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#F47C26] rounded-full mb-1"
+                        />
+                      )}
+
+                      {/* Spotlight Hover Effect */}
+                      {hoveredNav === item.to && (
+                        <motion.div
+                          layoutId="nav-spotlight"
+                          className="absolute inset-0 bg-[#0B2545]/5 dark:bg-white/10 rounded-lg -z-10"
+                          transition={{
+                            type: "spring",
+                            stiffness: 350,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
           </div>
         </div>
       </header>

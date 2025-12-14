@@ -135,7 +135,7 @@ const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
 
   // --- Render ---
   return (
-    <div className={isMobile ? "w-full" : "relative"}>
+    <div className={isMobile ? "w-full" : "relative"} style={{ zIndex: 9999 }}>
       <motion.div
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
@@ -143,8 +143,14 @@ const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
         className={`${
           isMobile
             ? "w-full mt-2 space-y-1"
-            : "absolute left-0 top-0 w-[700px] bg-white dark:bg-[#0a0f2d] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl dark:shadow-black/50 z-50 flex overflow-hidden origin-top-left ring-1 ring-black/5"
+            : "fixed left-0 top-[calc(100%+0px)] w-[700px] bg-white dark:bg-[#0a0f2d] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl dark:shadow-black/50 z-[9999] flex overflow-hidden origin-top-left ring-1 ring-black/5"
         }`}
+        style={{
+          position: isMobile ? "relative" : "fixed",
+          willChange: "transform",
+          backfaceVisibility: "hidden",
+          transformOrigin: "top left",
+        }}
       >
         {/* Loading / Error State */}
         {isLoading && !isMobile && (
