@@ -6,6 +6,7 @@ import {
   FaArrowRight,
   FaCode,
   FaExternalLinkAlt,
+  FaLayerGroup,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "../../api/axios";
@@ -71,13 +72,13 @@ const ProjectCard = ({ course, index }) => {
   // Render Stars
   const renderStars = (rating) => {
     return (
-      <div className="flex gap-1">
+      <div className="flex gap-0.5">
         {[...Array(5)].map((_, i) => (
           <FaStar
             key={i}
-            className={`text-xs ${
+            className={`text-[10px] ${
               i < Math.floor(rating || 5)
-                ? "text-[#F47C26]"
+                ? "text-yellow-400"
                 : "text-gray-300 dark:text-gray-600"
             }`}
           />
@@ -93,15 +94,14 @@ const ProjectCard = ({ course, index }) => {
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
       whileHover={{ y: -10 }}
-      // Updated: Light mode gets white bg + shadow, Dark mode gets glass + border
-      className="group relative bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl shadow-gray-200/50 dark:shadow-none hover:shadow-2xl hover:shadow-[#F47C26]/10 transition-all duration-300 flex flex-col h-full"
+      className="group relative h-full"
     >
       <Link
         to={`/course/${course.slug || course._id}`}
-        className="block h-full flex flex-col"
+        className="block h-full flex flex-col bg-white dark:bg-[#0a0f2d] border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-gray-200/50 dark:hover:shadow-[#F47C26]/10 transition-all duration-500"
       >
         {/* Image Container */}
-        <div className="relative h-52 overflow-hidden bg-gray-100 dark:bg-gray-900/50">
+        <div className="relative h-64 overflow-hidden bg-gray-100 dark:bg-gray-900/50">
           {imageState.loading ? (
             <div className="w-full h-full flex items-center justify-center">
               <div className="w-8 h-8 border-2 border-[#F47C26] border-t-transparent rounded-full animate-spin"></div>
@@ -110,57 +110,78 @@ const ProjectCard = ({ course, index }) => {
             <img
               src={imageState.url}
               alt={course.title}
-              className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+              className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
             />
           )}
 
-          {/* Overlay Gradient: Lighter in light mode, Darker in dark mode */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 dark:from-[#0a0f2d] dark:opacity-80"></div>
+          {/* Overlay Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 dark:opacity-80 transition-opacity duration-300 group-hover:opacity-90"></div>
 
-          {/* Featured Badge */}
-          {course.isFeatured && (
-            <div className="absolute top-3 right-3 bg-[#F47C26] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg uppercase tracking-wider">
-              Featured Project
+          {/* Top Badges */}
+          <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+            <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1">
+              <FaCode className="text-[#F47C26]" /> {course.level || "Solution"}
+            </span>
+            {course.isFeatured && (
+              <span className="bg-[#F47C26] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
+                Featured
+              </span>
+            )}
+          </div>
+
+          {/* Floating Action Button (Appears on Hover) */}
+          <div className="absolute bottom-4 right-4 translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 delay-75">
+            <div className="w-12 h-12 bg-white text-[#F47C26] rounded-full flex items-center justify-center shadow-lg hover:bg-[#F47C26] hover:text-white transition-colors">
+              <FaArrowRight />
             </div>
-          )}
+          </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 flex flex-col flex-grow relative">
-          {/* Floating Category Tag */}
-          <div className="absolute -top-4 left-6">
-            <span className="bg-white dark:bg-[#1a2d5c] border border-gray-200 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-2">
-              <FaCode className="text-xs" /> {course.level || "Web App"}
-            </span>
+        <div className="p-6 flex flex-col flex-grow relative bg-white dark:bg-[#0a0f2d] z-10">
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold text-[#F47C26] uppercase tracking-widest mb-1">
+                {course.category?.name || "Development"}
+              </span>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight group-hover:text-[#F47C26] transition-colors">
+                {course.title}
+              </h3>
+            </div>
           </div>
 
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mt-2 mb-3 line-clamp-2 leading-tight group-hover:text-[#F47C26] transition-colors">
-            {course.title}
-          </h3>
-
-          <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-4 flex-grow">
+          <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2 mb-6 flex-grow leading-relaxed">
             {course.shortDescription
               ?.replace(/^<p>/i, "")
-              .replace(/<\/p>$/i, "")}
+              .replace(/<\/p>$/i, "") ||
+              "A robust, scalable solution tailored for modern business needs."}
           </p>
 
-          {/* Footer Details */}
+          {/* Tech Stack / Stats Footer */}
           <div className="pt-4 border-t border-gray-100 dark:border-white/10 flex items-center justify-between mt-auto">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase text-gray-400 dark:text-gray-500 font-bold tracking-wider">
-                Client Rating
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-2">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="w-6 h-6 rounded-full bg-gray-100 dark:bg-white/10 border-2 border-white dark:border-[#0a0f2d] flex items-center justify-center text-[8px] font-bold text-gray-500 dark:text-gray-300"
+                  >
+                    {i === 1 ? "R" : i === 2 ? "N" : "JS"}
+                  </div>
+                ))}
+              </div>
+              <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">
+                + Stack
               </span>
+            </div>
+
+            <div className="flex flex-col items-end gap-0.5">
+              <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">
+                <FaRegClock /> {course.duration || "4"} Weeks
+              </div>
               {renderStars(course.rating || 5)}
             </div>
-
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
-              <FaRegClock />
-              <span>{course.duration || "4"} Weeks Dev</span>
-            </div>
           </div>
-
-          {/* Hover Action */}
-          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#F47C26] to-purple-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
         </div>
       </Link>
     </motion.div>
@@ -217,42 +238,56 @@ const FeaturedProjects = () => {
   }, []);
 
   return (
-    <section className="relative py-20 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden min-h-screen transition-colors duration-300">
-      {/* Background Ambience */}
+    <section className="relative py-32 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden min-h-screen transition-colors duration-300">
+      {/* --- Background --- */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-multiply dark:mix-blend-normal pointer-events-none"></div>
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 dark:bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-400/10 dark:bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
-        <div className="text-center mb-16">
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="text-[#F47C26] font-bold tracking-[0.2em] uppercase text-sm mb-3"
-          >
-            Portfolio
-          </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6"
-          >
-            Our Latest{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-              Digital Solutions
-            </span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
+        <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
+          <div className="max-w-2xl">
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="px-3 py-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-[#F47C26] text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2"
+            >
+              <span className="w-2 h-2 rounded-full bg-[#F47C26] animate-pulse"></span>
+              Selected Works
+            </motion.span>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mt-6 text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-tight"
+            >
+              Featured <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
+                Deployments
+              </span>
+            </motion.h2>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg"
+            className="hidden md:block"
           >
-            Explore our curated selection of high-performance e-commerce and
-            enterprise applications.
-          </motion.p>
+            <p className="text-gray-500 dark:text-gray-400 text-right max-w-xs text-sm mb-4">
+              A curated selection of our most impactful digital solutions,
+              engineered for scale and performance.
+            </p>
+            <Link
+              to="/services"
+              className="inline-flex items-center gap-2 text-sm font-bold text-[#F47C26] hover:text-[#d5671f] transition-colors float-right group"
+            >
+              View Full Portfolio{" "}
+              <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </motion.div>
         </div>
 
         {/* Content Grid */}
@@ -262,9 +297,9 @@ const FeaturedProjects = () => {
               {[...Array(4)].map((_, index) => (
                 <div
                   key={index}
-                  className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 rounded-2xl h-[400px] animate-pulse relative overflow-hidden shadow-lg dark:shadow-none"
+                  className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 rounded-3xl h-[450px] animate-pulse relative overflow-hidden shadow-lg dark:shadow-none"
                 >
-                  <div className="h-48 bg-gray-200 dark:bg-white/5"></div>
+                  <div className="h-64 bg-gray-200 dark:bg-white/5"></div>
                   <div className="p-6 space-y-4">
                     <div className="h-6 bg-gray-200 dark:bg-white/10 rounded w-3/4"></div>
                     <div className="h-4 bg-gray-200 dark:bg-white/5 rounded w-full"></div>
@@ -298,12 +333,15 @@ const FeaturedProjects = () => {
           )}
         </div>
 
-        {/* Footer CTA */}
+        {/* Diagram Context: Visualizing project impact metrics */}
+        <div className="mt-16 flex justify-center opacity-80 h-0 w-0 overflow-hidden"></div>
+
+        {/* Footer CTA (Mobile Only) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mt-16 text-center"
+          className="mt-16 text-center md:hidden"
         >
           <Link
             to="/services"
@@ -311,7 +349,6 @@ const FeaturedProjects = () => {
           >
             <span className="relative z-10">View Full Portfolio</span>
             <FaArrowRight className="relative z-10 group-hover:translate-x-1 transition-transform" />
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
           </Link>
         </motion.div>
       </div>

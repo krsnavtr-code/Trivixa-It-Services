@@ -1,201 +1,148 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaMapMarkerAlt,
   FaPhone,
   FaEnvelope,
   FaPaperPlane,
   FaCheck,
-  FaGlobeAmericas,
 } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
 
-const ContactSection = () => {
-  const [formData, setFormData] = useState({
+export default function ContactSection() {
+  const [form, setForm] = useState({
     name: "",
     email: "",
     subject: "",
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate form submission
+    setLoading(true);
     setTimeout(() => {
-      console.log("Form submitted:", formData);
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-
-      // Reset submission status after 5 seconds
-      setTimeout(() => setIsSubmitted(false), 5000);
+      setLoading(false);
+      setDone(true);
+      setForm({ name: "", email: "", subject: "", message: "" });
+      setTimeout(() => setDone(false), 5000);
     }, 1500);
   };
 
-  const contactInfo = [
-    {
-      icon: <FaMapMarkerAlt />,
-      title: "Our Headquarters",
-      description: "Haibatpur, Gaur City Center, Uttar Pradesh 201016",
-      link: "#",
-      linkText: "View on Map",
-      color: "text-blue-500 dark:text-blue-400",
-      bg: "bg-blue-100 dark:bg-blue-400/10",
-      border: "border-blue-200 dark:border-blue-400/20",
-    },
-    {
-      icon: <FaPhone />,
-      title: "Phone Number",
-      description: "+91 90844 07615",
-      link: "tel:+919084407615",
-      linkText: "Call Now",
-      color: "text-green-600 dark:text-green-400",
-      bg: "bg-green-100 dark:bg-green-400/10",
-      border: "border-green-200 dark:border-green-400/20",
-    },
-    {
-      icon: <FaEnvelope />,
-      title: "Email Address",
-      description: "krishna.trivixa@gmail.com",
-      link: "mailto:krishna.trivixa@gmail.com",
-      linkText: "Send Email",
-      color: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-100 dark:bg-purple-400/10",
-      border: "border-purple-200 dark:border-purple-400/20",
-    },
-  ];
-
   return (
-    <section className="relative py-24 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden transition-colors duration-300">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-multiply dark:mix-blend-normal pointer-events-none"></div>
-      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-orange-400/20 dark:bg-[#F47C26]/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <section className="relative py-28 bg-slate-50 dark:bg-[#0a0f2d] overflow-hidden">
+      {/* Ambient blobs */}
+      <div className="absolute -top-40 -left-40 w-[520px] h-[520px] bg-orange-400/20 blur-[140px] rounded-full" />
+      <div className="absolute -bottom-40 -right-40 w-[520px] h-[520px] bg-indigo-400/20 blur-[140px] rounded-full" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <motion.span
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="px-4 py-1.5 rounded-full bg-orange-100 dark:bg-white/5 border border-orange-200 dark:border-white/10 text-[#F47C26] dark:text-gray-300 text-xs font-bold uppercase tracking-wider"
+            className="inline-block px-5 py-1.5 rounded-full bg-orange-100 dark:bg-white/5 border border-orange-200 dark:border-white/10 text-[#F47C26] text-xs font-bold tracking-widest"
           >
-            Contact Us
+            CONTACT
           </motion.span>
           <motion.h2
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-4 text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white"
+            className="mt-6 text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white"
           >
-            Let's Start a{" "}
+            Let’s Build Something{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
-              Conversation
+              Great
             </span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg"
+            className="mt-4 max-w-2xl mx-auto text-gray-600 dark:text-gray-400"
           >
-            Have a project in mind? Reach out to our team and let's build
-            something extraordinary together.
+            Share your idea with us. Our team will reach out within 24 hours.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contact Information Column */}
-          <div className="space-y-6">
-            {contactInfo.map((item, index) => (
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+          {/* Info Cards */}
+          <div className="lg:col-span-2 space-y-6">
+            {[
+              {
+                icon: <FaMapMarkerAlt />,
+                title: "Office",
+                text: "H-161 BSI Sector-63, Noida",
+              },
+              {
+                icon: <FaPhone />,
+                title: "Phone",
+                text: "+91 9990056799",
+              },
+              {
+                icon: <FaEnvelope />,
+                title: "Email",
+                text: "info@firstvite.com",
+              },
+            ].map((i, idx) => (
               <motion.div
-                key={index}
+                key={idx}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="group bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 p-6 rounded-2xl shadow-lg dark:shadow-none hover:shadow-xl hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-all duration-300 hover:-translate-y-1"
+                transition={{ delay: idx * 0.1 }}
+                className="group flex gap-5 p-6 rounded-2xl bg-white/70 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 hover:shadow-xl transition"
               >
-                <div className="flex items-start space-x-4">
-                  <div
-                    className={`flex-shrink-0 p-4 rounded-xl ${item.bg} ${item.color} border ${item.border} text-xl group-hover:scale-110 transition-transform duration-300`}
-                  >
-                    {item.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-[#F47C26] transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="mt-1 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                      {item.description}
-                    </p>
-                    {index === 0 && (
-                      <div className="mt-2 opacity-80 hover:opacity-100 transition-opacity"></div>
-                    )}
-                    <a
-                      href={item.link}
-                      className={`mt-3 inline-flex items-center text-sm font-semibold ${item.color} hover:brightness-125 transition-all`}
-                    >
-                      {item.linkText}{" "}
-                      <FaGlobeAmericas className="ml-2 text-xs" />
-                    </a>
-                  </div>
+                <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-[#F47C26] to-[#ff9e5e] text-white text-lg shadow-lg group-hover:scale-110 transition">
+                  {i.icon}
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                    {i.title}
+                  </h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {i.text}
+                  </p>
                 </div>
               </motion.div>
             ))}
           </div>
 
-          {/* Contact Form Column */}
+          {/* Form */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-2"
+            className="lg:col-span-3"
           >
-            <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 p-8 md:p-10 rounded-3xl shadow-2xl dark:shadow-none relative overflow-hidden transition-colors duration-300">
-              {/* Decorative Top Border */}
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-[#F47C26] to-purple-500"></div>
+            <div className="relative rounded-3xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 backdrop-blur-xl p-8 md:p-10 shadow-2xl">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#F47C26] via-indigo-500 to-purple-500" />
 
               <AnimatePresence mode="wait">
-                {isSubmitted ? (
+                {done ? (
                   <motion.div
-                    key="success"
+                    key="done"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
-                    className="text-center py-16"
+                    className="text-center py-20"
                   >
-                    <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 shadow-[0_0_30px_rgba(34,197,94,0.2)]">
-                      <FaCheck className="h-8 w-8 text-green-600 dark:text-green-400" />
+                    <div className="mx-auto h-20 w-20 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
+                      <FaCheck className="text-green-600 dark:text-green-400 text-2xl" />
                     </div>
                     <h3 className="mt-6 text-2xl font-bold text-gray-900 dark:text-white">
-                      Message Received!
+                      Message Sent
                     </h3>
-                    <p className="mt-2 text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
-                      Thanks for reaching out. Our team will review your inquiry
-                      and get back to you within 24 hours.
+                    <p className="mt-2 text-gray-600 dark:text-gray-400">
+                      We’ll contact you shortly.
                     </p>
-
-                    <div className="mt-6 opacity-90">
-                      [Image of customer support workflow diagram]
-                    </div>
-
                     <button
-                      onClick={() => setIsSubmitted(false)}
-                      className="mt-8 px-6 py-2 border border-gray-300 dark:border-white/10 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors text-sm"
+                      onClick={() => setDone(false)}
+                      className="mt-8 px-6 py-2 rounded-lg border border-gray-300 dark:border-white/10 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5"
                     >
-                      Send another message
+                      Send another
                     </button>
                   </motion.div>
                 ) : (
@@ -204,109 +151,60 @@ const ContactSection = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    onSubmit={handleSubmit}
+                    onSubmit={onSubmit}
                     className="space-y-6"
                   >
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="name"
-                          className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                        >
-                          Full Name <span className="text-[#F47C26]">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          id="name"
-                          required
-                          value={formData.name}
-                          onChange={handleChange}
-                          className="block w-full px-4 py-3 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-[#F47C26] focus:ring-1 focus:ring-[#F47C26] transition-all"
-                          placeholder="John Doe"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="email"
-                          className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                        >
-                          Email Address{" "}
-                          <span className="text-[#F47C26]">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          id="email"
-                          required
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="block w-full px-4 py-3 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-[#F47C26] focus:ring-1 focus:ring-[#F47C26] transition-all"
-                          placeholder="you@company.com"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="subject"
-                        className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                      >
-                        Subject <span className="text-[#F47C26]">*</span>
-                      </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <input
-                        type="text"
-                        name="subject"
-                        id="subject"
+                        name="name"
+                        value={form.name}
+                        onChange={onChange}
                         required
-                        value={formData.subject}
-                        onChange={handleChange}
-                        className="block w-full px-4 py-3 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-[#F47C26] focus:ring-1 focus:ring-[#F47C26] transition-all"
-                        placeholder="Project Inquiry / Partnership"
+                        placeholder="Full Name"
+                        className="input"
+                      />
+                      <input
+                        name="email"
+                        type="email"
+                        value={form.email}
+                        onChange={onChange}
+                        required
+                        placeholder="Email Address"
+                        className="input"
                       />
                     </div>
+                    <input
+                      name="subject"
+                      value={form.subject}
+                      onChange={onChange}
+                      required
+                      placeholder="Subject"
+                      className="input"
+                    />
+                    <textarea
+                      name="message"
+                      rows={5}
+                      value={form.message}
+                      onChange={onChange}
+                      required
+                      placeholder="Your message"
+                      className="input resize-none"
+                    />
 
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="message"
-                        className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                      >
-                        Your Message <span className="text-[#F47C26]">*</span>
-                      </label>
-                      <textarea
-                        id="message"
-                        name="message"
-                        rows={5}
-                        required
-                        value={formData.message}
-                        onChange={handleChange}
-                        className="block w-full px-4 py-3 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-[#F47C26] focus:ring-1 focus:ring-[#F47C26] transition-all resize-none"
-                        placeholder="Tell us about your project requirements..."
-                      />
-                    </div>
-
-                    <div className="pt-2">
-                      <motion.button
-                        type="submit"
-                        disabled={isSubmitting}
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#F47C26] to-[#d5671f] text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
-                      >
-                        {isSubmitting ? (
-                          <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            <span>Sending...</span>
-                          </div>
-                        ) : (
-                          <>
-                            <FaPaperPlane className="mr-2" />
-                            Send Message
-                          </>
-                        )}
-                      </motion.button>
-                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      disabled={loading}
+                      className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-[#F47C26] to-[#d5671f] shadow-lg shadow-orange-500/30 disabled:opacity-70"
+                    >
+                      {loading ? (
+                        "Sending…"
+                      ) : (
+                        <>
+                          <FaPaperPlane /> Send Message
+                        </>
+                      )}
+                    </motion.button>
                   </motion.form>
                 )}
               </AnimatePresence>
@@ -314,8 +212,27 @@ const ContactSection = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Tailwind input helper */}
+      <style jsx>{`
+        .input {
+          width: 100%;
+          padding: 14px 16px;
+          border-radius: 14px;
+          background: rgba(243, 244, 246, 0.8);
+          border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .dark .input {
+          background: rgba(10, 15, 45, 0.6);
+          border-color: rgba(255, 255, 255, 0.1);
+          color: white;
+        }
+        .input:focus {
+          outline: none;
+          border-color: #f47c26;
+          box-shadow: 0 0 0 1px #f47c26;
+        }
+      `}</style>
     </section>
   );
-};
-
-export default ContactSection;
+}

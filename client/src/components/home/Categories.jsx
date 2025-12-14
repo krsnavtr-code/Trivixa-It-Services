@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaImage, FaArrowRight, FaLayerGroup, FaCode } from "react-icons/fa";
+import {
+  FaArrowRight,
+  FaCode,
+  FaLaptopCode,
+  FaServer,
+  FaMobileAlt,
+  FaDatabase,
+  FaLayerGroup,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 import { getCategories as getCategoriesFromApi } from "../../api/categoryApi";
 import { getServicesByCategory } from "../../api/servicesApi";
 
-// Helper function to get the full image URL
-const getImageUrl = (imagePath) => {
-  if (!imagePath) return null;
-  if (imagePath.startsWith("http")) return imagePath;
-  return `${import.meta.env.VITE_API_BASE_URL.replace("/api", "")}${imagePath}`;
+// --- Icons Helper (Mapping category names to icons) ---
+const getCategoryIcon = (name) => {
+  const n = name.toLowerCase();
+  if (n.includes("web") || n.includes("frontend")) return <FaLaptopCode />;
+  if (n.includes("backend") || n.includes("server")) return <FaServer />;
+  if (n.includes("mobile") || n.includes("app")) return <FaMobileAlt />;
+  if (n.includes("data")) return <FaDatabase />;
+  return <FaCode />;
 };
 
 // --- Animations ---
@@ -21,7 +32,7 @@ const containerVariants = {
   },
 };
 
-const cardVariants = {
+const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
@@ -47,7 +58,6 @@ const Categories = () => {
           ? response
           : response.data || [];
 
-        // Deduplicate
         const uniqueCategoriesMap = new Map();
         categoriesData.forEach((cat) => {
           if (cat && cat._id && !uniqueCategoriesMap.has(cat._id)) {
@@ -56,7 +66,6 @@ const Categories = () => {
         });
         const uniqueCategories = Array.from(uniqueCategoriesMap.values());
 
-        // Fetch counts if missing
         const categoriesWithCount = await Promise.all(
           uniqueCategories.map(async (category) => {
             if (
@@ -84,7 +93,7 @@ const Categories = () => {
         setCategories(sortedCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
-        setError("Failed to load expertise domains.");
+        setError("Failed to load project domains.");
       } finally {
         setLoading(false);
       }
@@ -93,62 +102,17 @@ const Categories = () => {
     fetchCategories();
   }, []);
 
-  // --- Sub-Component: Category Image ---
-  const CategoryImage = React.memo(({ category }) => {
-    const [imageError, setImageError] = useState(false);
-    const [imageUrl, setImageUrl] = useState(null);
-
-    useEffect(() => {
-      setImageError(false);
-      if (category?.image) {
-        const url = getImageUrl(category.image);
-        const img = new Image();
-        img.onload = () => setImageUrl(url);
-        img.onerror = () => setImageError(true);
-        img.src = url;
-        return () => {
-          img.onload = null;
-          img.onerror = null;
-        };
-      } else {
-        setImageError(true);
-      }
-    }, [category?.image]);
-
-    return (
-      <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center shrink-0 group-hover:border-[#F47C26]/50 transition-colors duration-300">
-        {!imageError && imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={category?.name}
-            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-            onError={() => setImageError(true)}
-            loading="lazy"
-          />
-        ) : (
-          <FaCode className="text-xl text-gray-400 dark:text-gray-500 group-hover:text-[#F47C26] transition-colors" />
-        )}
-      </div>
-    );
-  });
-
   // --- Render: Loading State ---
   if (loading) {
     return (
-      <section className="py-20 bg-gray-50 dark:bg-[#0a0f2d] relative overflow-hidden transition-colors duration-300">
+      <section className="py-24 bg-gray-50 dark:bg-[#0a0f2d] relative overflow-hidden transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-16">
-            <div className="h-8 w-64 bg-gray-200 dark:bg-white/10 mx-auto rounded mb-4 animate-pulse"></div>
-            <div className="h-4 w-96 bg-gray-200 dark:bg-white/5 mx-auto rounded animate-pulse"></div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-32 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl animate-pulse relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100 dark:via-white/5 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]"></div>
-              </div>
+                className="h-48 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl animate-pulse"
+              ></div>
             ))}
           </div>
         </div>
@@ -156,129 +120,142 @@ const Categories = () => {
     );
   }
 
-  // --- Render: Error State ---
-  if (error) {
-    return (
-      <div className="py-20 bg-gray-50 dark:bg-[#0a0f2d] text-center transition-colors duration-300">
-        <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-2 bg-red-500/10 border border-red-500/20 text-red-500 dark:text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+  if (error) return null;
 
   // --- Render: Main Content ---
   return (
     <section className="relative py-24 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden transition-colors duration-300">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 dark:opacity-10 mix-blend-multiply dark:mix-blend-normal pointer-events-none"></div>
-      <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-blue-500/5 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      {/* Background: Technical Grid Pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Header */}
-        <div className="text-center mb-16 space-y-4">
-          <motion.span
-            initial={{ opacity: 0, y: -10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-300 text-xs font-bold uppercase tracking-wider"
-          >
-            Our Expertise
-          </motion.span>
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+          <div className="max-w-2xl">
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="text-[#F47C26] font-bold uppercase tracking-widest text-xs"
+            >
+              Our Portfolio
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mt-2 text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight"
+            >
+              Project{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
+                Domains
+              </span>
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mt-4 text-gray-600 dark:text-gray-400 text-lg"
+            >
+              We specialize in building scalable solutions across diverse
+              technical ecosystems. Explore our work by category.
+            </motion.p>
+          </div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white"
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
           >
-            Solutions by{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
-              Domain
-            </span>
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
-          >
-            Navigate our specialized technical domains to find the perfect
-            solution for your digital transformation.
-          </motion.p>
+            <Link
+              to="/categories"
+              className="hidden md:flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white border-b-2 border-[#F47C26] pb-1 hover:text-[#F47C26] transition-colors"
+            >
+              View All Domains <FaArrowRight />
+            </Link>
+          </motion.div>
         </div>
 
-        {/* Categories Grid */}
-        {categories.length > 0 ? (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {categories.map((category) => (
-              <motion.div key={category._id} variants={cardVariants}>
-                <Link
-                  to={`/services/category/${category.name
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
-                  className="group relative block p-6 bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:bg-white/[0.07] dark:hover:border-[#F47C26]/30 dark:hover:shadow-[#F47C26]/10 hover:-translate-y-1"
-                >
-                  <div className="flex items-center gap-5">
-                    <CategoryImage category={category} />
+        {/* Diagram: Showing diversity of project domains */}
+        <div className="flex justify-center mb-12 opacity-80 h-0 w-0 overflow-hidden"></div>
 
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-[#F47C26] transition-colors duration-300 truncate">
+        {/* Grid Section */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {categories.map((category, index) => (
+            <motion.div key={category._id} variants={itemVariants}>
+              <Link
+                to={`/services/category/${category.name
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")}`}
+                className="group relative block h-full"
+              >
+                <div className="h-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-6 transition-all duration-300 hover:border-gray-300 dark:hover:border-[#F47C26]/50 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-black/50 overflow-hidden">
+                  {/* Hover Accent Line */}
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#F47C26] to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></div>
+
+                  <div className="flex flex-col h-full">
+                    {/* Header: Icon & Count */}
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="w-12 h-12 rounded-lg bg-gray-50 dark:bg-white/10 flex items-center justify-center text-2xl text-gray-700 dark:text-gray-300 group-hover:bg-[#F47C26] group-hover:text-white transition-colors duration-300 shadow-sm">
+                        {getCategoryIcon(category.name)}
+                      </div>
+                      <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-black/20 px-3 py-1 rounded-full border border-gray-200 dark:border-white/5">
+                        <FaLayerGroup className="text-[#F47C26]" />
+                        {category.courseCount || 0} Projects
+                      </span>
+                    </div>
+
+                    {/* Content: Title & Desc */}
+                    <div className="mb-6 flex-grow">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-[#F47C26] transition-colors">
                         {category.name}
                       </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                        {category.description ||
+                          `Expert solutions and deployed projects in the field of ${category.name}.`}
+                      </p>
+                    </div>
 
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                          <FaLayerGroup className="text-[10px]" />
-                          {category.courseCount || 0} Projects
-                        </span>
-
-                        {/* Hidden arrow that appears on hover */}
-                        <span className="text-[#F47C26] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                          <FaArrowRight className="text-sm" />
-                        </span>
+                    {/* Footer: Tech Stack Indicators (Visual) */}
+                    <div className="pt-4 border-t border-gray-100 dark:border-white/10 flex items-center justify-between">
+                      <div className="flex -space-x-2 overflow-hidden">
+                        {/* Fake avatars for "Team" or "Tech" visuals */}
+                        <div className="inline-block h-6 w-6 rounded-full bg-blue-100 dark:bg-blue-900 ring-2 ring-white dark:ring-[#0a0f2d] flex items-center justify-center text-[8px] font-bold text-blue-600 dark:text-blue-300">
+                          TS
+                        </div>
+                        <div className="inline-block h-6 w-6 rounded-full bg-yellow-100 dark:bg-yellow-900 ring-2 ring-white dark:ring-[#0a0f2d] flex items-center justify-center text-[8px] font-bold text-yellow-600 dark:text-yellow-300">
+                          JS
+                        </div>
+                        <div className="inline-block h-6 w-6 rounded-full bg-green-100 dark:bg-green-900 ring-2 ring-white dark:ring-[#0a0f2d] flex items-center justify-center text-[8px] font-bold text-green-600 dark:text-green-300">
+                          N
+                        </div>
                       </div>
+
+                      <span className="text-xs font-bold text-[#F47C26] flex items-center gap-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                        View Projects <FaArrowRight />
+                      </span>
                     </div>
                   </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
 
-                  {/* Decorative corner glow */}
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-gray-100/50 to-transparent dark:from-white/5 dark:to-transparent rounded-tr-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-        ) : (
-          <div className="text-center py-12 bg-white dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10">
-            <p className="text-gray-500 dark:text-gray-400">
-              No domains currently available.
-            </p>
-          </div>
-        )}
-
-        {/* Footer Action */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mt-16 text-center"
-        >
+        {/* Mobile View All Button */}
+        <div className="mt-8 text-center md:hidden">
           <Link
             to="/categories"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-white border border-gray-200 text-gray-900 dark:bg-white/5 dark:border-white/20 dark:text-white font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 hover:scale-105 transition-all duration-300 shadow-sm dark:shadow-none"
+            className="inline-block px-6 py-3 bg-[#F47C26] text-white font-bold rounded-lg shadow-lg hover:bg-[#d5671f] transition-colors"
           >
-            Explore by Category <FaArrowRight className="text-sm" />
+            View All Domains
           </Link>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
