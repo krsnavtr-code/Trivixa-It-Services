@@ -16,35 +16,6 @@ export default defineConfig(({ command }) => ({
     splitVendorChunkPlugin(),
   ],
 
-  // Build optimization
-  build: {
-    chunkSizeWarningLimit: 1000, // Increase chunk size warning limit
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          // Split vendor modules into separate chunks
-          react: ['react', 'react-dom', 'react-router-dom'],
-          antd: ['antd', '@ant-design/icons'],
-          form: ['react-hook-form', 'react-quill'],
-          utils: ['lodash', 'date-fns', 'dayjs'],
-          i18n: ['i18next', 'i18next-browser-languagedetector', 'i18next-http-backend'],
-          ui: ['@ant-design/compatible', 'antd', 'antd/dist/antd.css'],
-          // Keep other dependencies in separate chunks
-          vendor: [
-            'axios',
-            'react-hot-toast',
-            'react-slick',
-            'slick-carousel',
-            'react-player',
-            'react-markdown',
-            'react-beautiful-dnd',
-            'framer-motion',
-          ],
-        },
-      },
-    },
-  },
-
   // Optimize dependencies
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'antd'],
@@ -61,7 +32,40 @@ export default defineConfig(({ command }) => ({
       }
     }
   },
-  
+
+  // 🟢 BUILD (Production)
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000, // Increase chunk size warning limit
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split vendor modules into separate chunks
+          react: ['react', 'react-dom', 'react-router-dom'],
+          antd: ['antd', '@ant-design/icons'],
+          form: ['react-hook-form', 'react-quill'],
+          utils: ['lodash', 'date-fns', 'dayjs'],
+          i18n: ['i18next', 'i18next-browser-languagedetector', 'i18next-http-backend'],
+          // Keep other dependencies in separate chunks
+          vendor: [
+            'axios',
+            'react-hot-toast',
+            'react-slick',
+            'slick-carousel',
+            'react-player',
+            'react-markdown',
+            'react-beautiful-dnd',
+            'framer-motion',
+            '@ant-design/compatible',
+            'antd/dist/antd.css'
+          ],
+        },
+      },
+    },
+  },
+
   preview: {
     port: 4173
   }
