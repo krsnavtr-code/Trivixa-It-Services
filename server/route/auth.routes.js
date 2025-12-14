@@ -1,6 +1,6 @@
 import express from 'express';
-import { register, login, getUserProfile, refreshToken, changePassword } from '../controller/authController.js';
-import { updateProfile } from '../controller/user.controller.js';
+import { register, login, getUserProfile, refreshToken, changePassword } from '../controller/auth.controller.js';
+import { updateUser } from '../controller/user.controller.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -12,7 +12,7 @@ router.post('/refresh-token', refreshToken);
 
 // Protected routes
 router.get('/profile', protect, getUserProfile);
-router.put('/profile', protect, updateProfile);
+router.put('/profile', protect, updateUser);
 router.put('/change-password', protect, changePassword);
 
 export default router;

@@ -1,77 +1,84 @@
-import User from "../model/User.js";
-import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
-export const signup = async(req, res) => {
+import User from '../model/User.js';
+
+// Get all users
+export const getAllUsers = async (req, res) => {
     try {
-        const { fullname, email, password, department } = req.body;
-        
-        // Validate required fields for student role
-        if (!department) {
-            return res.status(400).json({
-                success: false,
-                message: 'Department is required for student registration'
-            });
-        }
-        
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ 
-                success: false,
-                message: "User already exists" 
-            });
-        }
-
-        // Create new user - the pre-save hook will hash the password
-        const newUser = new User({
-            fullname,
-            email,
-            password: password, // The pre-save hook will hash this
-            role: 'student', // Default role
-            department
-        });
-
-        await newUser.save();
-
-        // Generate JWT token
-        const token = jwt.sign(
-            { userId: newUser._id, email: newUser.email, role: newUser.role },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN || '1d' }
-        );
-
-        // Set cookie with token
-        res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
-        });
-
-        // Return success response with user data and token
-        res.status(201).json({
-            success: true,
-            token: token,
-            user: {
-                _id: newUser._id,
-                fullname: newUser.fullname,
-                email: newUser.email,
-                role: newUser.role
-            },
-            message: "User registered successfully"
-        });
+        const users = await User.find();
+        res.status(200).json(users);
     } catch (error) {
-        console.log("Error: " + error.message);
-        res.status(500).json({ message: "Internal server error" });
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Error fetching users' });
     }
 };
 
-// Get current authenticated user
-export const getCurrentUser = async (req, res) => {
+// Get user by ID
+export const getUserById = async (req, res) => {
     try {
-        // The user is attached to the request by the auth middleware
-        const user = await User.findById(req.user.userId).select('-password');
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ message: 'Error fetching user' });
+    }
+};
+
+// Create a new user
+export const createUser = async (req, res) => {
+    try {
+        const user = await User.create(req.body);
+        res.status(201).json(user);
+    } catch (error) {
+        console.error('Error creating user:', error);
+        res.status(500).json({ message: 'Error creating user' });
+    }
+};
+
+// Update user
+export const updateUser = async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ message: 'Error updating user' });
+    }
+};
+
+// Delete user
+export const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Error deleting user' });
+    }
+};
+
+// Update user status (active/inactive)
+export const updateUserStatus = async (req, res) => {
+    try {
+        const { isActive } = req.body;
         
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { isActive },
+            { new: true, runValidators: true }
+        );
+
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -81,45 +88,31 @@ export const getCurrentUser = async (req, res) => {
 
         res.status(200).json({
             success: true,
+            message: 'User status updated successfully',
             data: user
         });
     } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('Error updating user status:', error);
         res.status(500).json({
             success: false,
-            message: 'Error fetching user profile',
+            message: 'Error updating user status',
             error: error.message
         });
     }
 };
 
-// Update user profile
-export const updateProfile = async (req, res) => {
+// Update user LMS approval status
+export const updateUserLMSStatus = async (req, res) => {
     try {
-        const { phone, address } = req.body;
-        const userId = req.user.id; // Get user ID from the authenticated request
-
-        // Validate input
-        if (!phone && !address) {
-            return res.status(400).json({
-                success: false,
-                message: 'At least one field (phone or address) is required for update'
-            });
-        }
-
-        // Find the user and update only the provided fields
-        const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            { 
-                $set: { 
-                    ...(phone && { phone }),
-                    ...(address && { address })
-                } 
-            },
+        const { isApproved } = req.body;
+        
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { isApproved },
             { new: true, runValidators: true }
-        ).select('-password');
+        );
 
-        if (!updatedUser) {
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: 'User not found'
@@ -128,96 +121,15 @@ export const updateProfile = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Profile updated successfully',
-            user: updatedUser
+            message: 'User LMS status updated successfully',
+            data: user
         });
     } catch (error) {
-        console.error('Error updating profile:', error);
+        console.error('Error updating user LMS status:', error);
         res.status(500).json({
             success: false,
-            message: 'Error updating profile',
+            message: 'Error updating user LMS status',
             error: error.message
         });
-    }
-};
-
-export const login = async(req, res) => {
-    try {
-        const { email, password } = req.body;
-        
-        // Input validation
-        if (!email || !password) {
-            console.log('Login attempt with missing credentials');
-            return res.status(400).json({ 
-                success: false,
-                message: 'Please provide both email and password' 
-            });
-        }
-
-        console.log(`Login attempt for email: ${email}`);
-        
-        // Find user by email and include password field
-        const user = await User.findOne({ email }).select('+password');
-        
-        if (!user) {
-            console.log('No user found with email:', email);
-            return res.status(400).json({ 
-                success: false,
-                message: 'Invalid email or password' 
-            });
-        }
-
-        // Check password using bcrypt
-        const isMatch = await bcryptjs.compare(password, user.password);
-        
-        if (!isMatch) {
-            console.log('Invalid password for user:', email);
-            return res.status(400).json({ 
-                success: false,
-                message: 'Invalid email or password' 
-            });
-        }
-
-        // Generate JWT token
-        const token = jwt.sign(
-            { 
-                userId: user._id, 
-                email: user.email, 
-                role: user.role || 'student' // Changed default role to match our schema
-            },
-            process.env.JWT_SECRET || 'your_jwt_secret', // Fallback secret for development
-            { 
-                expiresIn: process.env.JWT_EXPIRES_IN || '1d' 
-            }
-        );
-
-        console.log('Login successful for user:', user.email);
-        
-        // Set cookie with token
-        res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
-        });
-
-        // Prepare user data for response (exclude password)
-        const userData = {
-            _id: user._id,
-            fullname: user.fullname,
-            email: user.email,
-            role: user.role || 'student',
-            department: user.department
-        };
-
-        res.status(200).json({
-            success: true,
-            message: 'Login successful',
-            token: token,
-            user: userData
-        });
-    } catch (error) {
-        console.log("Error: " + error.message);
-        res.status(500).json({ message: "Internal server error" });
     }
 };

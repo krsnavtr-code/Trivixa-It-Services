@@ -9,25 +9,25 @@ import { fileURLToPath } from 'url';
 
 // Import routes
 import authRoute from "./route/auth.route.js";
-import userRoutes from "./routes/userRoutes.js";
+import userRoutes from "./route/user.routes.js";
 import profileRoute from "./route/profile.route.js";
 import categoryRoute from "./route/category.route.js";
 import servicesRoute from "./route/services.route.js";
-import contactRoute from "./route/contactRoutes.js";
+import contactRoute from "./route/contact.routes.js";
 import faqRoute from "./route/faq.route.js";
-import uploadRoute from "./route/uploadRoute.js";
-import authRoutes from "./route/authRoutes.js";
-import adminRoutes from "./route/adminRoutes.js";
+import uploadRoute from "./route/upload.route.js";
+import authRoutes from "./route/auth.routes.js";
+import adminRoutes from "./route/admin.routes.js";
 import blogRoutes from "./route/blog.route.js";
-import paymentRoutes from "./routes/paymentRoutes.js";
-import adminPaymentRoutes from "./routes/adminPaymentRoutes.js";
-import pdfRoutes from "./routes/pdfRoutes.js";
+import paymentRoutes from "./route/payment.routes.js";
+import adminPaymentRoutes from "./route/adminPayment.routes.js";
+import pdfRoutes from "./route/pdf.routes.js";
 import pdfRouter from "./route/pdf.route.js";
 import chatRoutes from "./route/chat.route.js";
-import discussionRoutes from "./routes/discussionRoutes.js";
-import externalContactRoutes from "./routes/externalContactRoutes.js";
-import adminEmailRoutes from "./routes/adminEmailRoutes.js";
-import emailRecordRoutes from "./routes/emailRecordRoutes.js";
+import discussionRoutes from "./route/discussion.routes.js";
+import externalContactRoutes from "./route/externalContact.routes.js";
+import adminEmailRoutes from "./route/adminEmail.routes.js";
+import emailRecordRoutes from "./route/emailRecord.routes.js";
 
 // Initialize express app
 const app = express();

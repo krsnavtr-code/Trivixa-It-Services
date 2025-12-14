@@ -5,7 +5,7 @@ import {
   getAllPayments,
   getPaymentById,
   updatePaymentStatus,
-} from '../controllers/adminPaymentController.js';
+} from '../controller/adminPayment.controller.js';
 
 const router = express.Router();
 

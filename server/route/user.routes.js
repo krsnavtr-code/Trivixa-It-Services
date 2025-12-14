@@ -8,7 +8,7 @@ import {
     deleteUser,
     updateUserStatus,
     updateUserLMSStatus
-} from '../controllers/userController.js';
+} from '../controller/user.controller.js';
 const router = express.Router();
 
 // Routes with admin authorization

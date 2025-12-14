@@ -12,7 +12,7 @@ import {
   markAsSolution,
   togglePinDiscussion,
   toggleLockDiscussion
-} from '../controllers/discussionController.js';
+} from '../controller/discussion.controller.js';
 import { protect } from '../middleware/auth.js';
 
 // Public routes

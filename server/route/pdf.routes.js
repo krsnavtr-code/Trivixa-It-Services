@@ -1,5 +1,5 @@
 import express from 'express';
-import { generateCoursePDF, sendCoursePdfToStudent, downloadCourseBrochure } from '../controllers/pdfController.js';
+import { generateCoursePDF, sendCoursePdfToStudent, downloadCourseBrochure } from '../controller/pdf.controller.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();

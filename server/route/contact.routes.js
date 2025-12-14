@@ -3,13 +3,13 @@ import { protect, authorize } from '../middleware/auth.js';
 import {
   getAllContacts,
   updateContactStatus,
-  submitContact
-} from '../controllers/contactController.js';
+  submitContactForm
+} from '../controller/contact.controller.js';
 
 const router = express.Router();
 
 // Public routes
-router.post('/', submitContact);
+router.post('/', submitContactForm);
 
 // Protected admin routes
 router.use(protect);

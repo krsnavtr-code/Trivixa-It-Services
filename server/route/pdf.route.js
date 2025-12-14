@@ -1,17 +1,18 @@
 import express from 'express';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
-import { getAvailablePdfs, sendBrochure } from '../controller/pdfController.js';
+import { generateCoursePDF, sendCoursePdfToStudent, downloadCourseBrochure } from '../controller/pdf.controller.js';
 
 const router = express.Router();
 
 // @route   GET /api/pdfs
 // @desc    Get list of available PDFs
 // @access  Private/Admin
-router.get('/', protect, restrictTo('admin'), getAvailablePdfs);
+router.get('/:id/generate-pdf', protect, restrictTo('admin'), generateCoursePDF);
 
 // @route   POST /api/pdfs/send-brochure
 // @desc    Send a brochure via email
 // @access  Private/Admin
-router.post('/send-brochure', protect, restrictTo('admin'), sendBrochure);
+router.post('/:id/send-pdf', protect, restrictTo('admin'), sendCoursePdfToStudent);
+router.get('/:id/download-brochure', protect, downloadCourseBrochure);
 
 export default router;

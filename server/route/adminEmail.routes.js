@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import { protect, authorize } from '../middleware/auth.js';
-import { sendProposalEmails } from '../controller/adminEmailController.js';
+import { sendProposalEmails } from '../controller/adminEmail.controller.js';
 
 const router = express.Router();
 

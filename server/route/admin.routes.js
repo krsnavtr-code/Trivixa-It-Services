@@ -3,16 +3,14 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
-import { getVideos, getVideo, uploadVideo } from '../controller/videoController.js';
+import { getVideos, getVideo, uploadVideo } from '../controller/video.controller.js';
 import {
   getPendingUsers,
   approveUser,
   rejectUser,
   getAllUsers,
-  getAllCandidates,
-  getCandidate,
   updateCandidateStatus
-} from '../controller/adminController.js';
+} from '../controller/admin.controller.js';
 
 // Configure multer for file uploads
 const upload = multer({

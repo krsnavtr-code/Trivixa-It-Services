@@ -5,7 +5,7 @@ import {
   getPaymentDetails,
   createRazorpayOrder,
   verifyPayment 
-} from '../controllers/paymentController.js';
+} from '../controller/payment.controller.js';
 import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();

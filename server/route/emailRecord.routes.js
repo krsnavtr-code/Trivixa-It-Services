@@ -4,7 +4,7 @@ import {
   saveEmailRecord,
   getAllEmailRecords,
   getEmailRecord
-} from '../controllers/emailRecordController.js';
+} from '../controller/emailRecord.controller.js';
 
 const router = express.Router();
 

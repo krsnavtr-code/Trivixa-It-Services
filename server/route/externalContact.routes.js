@@ -1,5 +1,5 @@
 import express from 'express';
-import { getExternalContacts } from '../controller/externalContactController.js';
+import { getExternalContacts } from '../controller/externalContact.controller.js';
 
 const router = express.Router();
 
