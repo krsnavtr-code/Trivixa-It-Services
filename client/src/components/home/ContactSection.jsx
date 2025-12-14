@@ -213,8 +213,8 @@ export default function ContactSection() {
         </div>
       </div>
 
-      {/* Tailwind input helper */}
-      <style jsx>{`
+      {/* Input styles moved to global CSS */}
+      <style>{`
         .input {
           width: 100%;
           padding: 14px 16px;

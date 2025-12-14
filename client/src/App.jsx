@@ -36,7 +36,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useContactFormPopup from "./hooks/useContactFormPopup.jsx";
 import SuspendedAccount from "./pages/SuspendedAccount";
-import PendingApproval from "./pages/PendingApproval";
 import ChatButton from "./components/common/ChatButton";
 import PaymentTAndC from "./pages/PaymentTAndC";
 import PaymentsList from "./pages/admin/PaymentsList";
@@ -45,7 +44,6 @@ import SendBrochure from "./pages/admin/SendBrochure";
 import SendProposal from "./pages/admin/SendProposal";
 import EmailRecords from "./pages/admin/EmailRecords";
 import ThankYouPage from "./pages/ThankYouPage";
-import CandidateInviteForm from "./pages/CandidateInviteForm";
 
 // Blog Components
 import BlogListPage from "./pages/blog/BlogListPage";
@@ -53,7 +51,7 @@ import BlogDetailPage from "./pages/blog/BlogDetailPage";
 import BlogPostList from "./pages/admin/BlogListPage";
 import BlogPostForm from "./pages/admin/BlogPostForm";
 
-import InactiveAccount from "./pages/auth/InactiveAccount";
+// import InactiveAccount from "./pages/auth/InactiveAccount";
 import CandidatesPage from "./pages/admin/CandidatesPage.jsx";
 
 // Create a layout component that conditionally renders Navbar and Footer
@@ -66,8 +64,7 @@ const MainLayout = ({ children }) => {
     location.pathname.startsWith("/login") ||
     location.pathname.startsWith("/register") ||
     location.pathname.startsWith("/forgot-password") ||
-    location.pathname.startsWith("/reset-password") ||
-    location.pathname.startsWith("/jobfair");
+    location.pathname.startsWith("/reset-password");
 
   // Determine if we should show the navbar and apply the top margin
   const showNavbar = !isAdminRoute && !isAuthRoute;
@@ -132,8 +129,6 @@ function App() {
       <Routes>
         {/* Account Status Pages */}
         <Route path="/suspended" element={<SuspendedAccount />} />
-        <Route path="/pending-approval" element={<PendingApproval />} />
-        <Route path="/inactive-account" element={<InactiveAccount />} />
 
         {/* Public routes */}
         <Route
@@ -311,46 +306,6 @@ function App() {
             </MainLayout>
           }
         />
-
-        {/* Status pages */}
-        {/* <Route
-          path="/inactive-account"
-          element={
-            <MainLayout>
-              <InactiveAccount />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/pending-approval"
-          element={
-            <MainLayout>
-              <PendingApproval />
-            </MainLayout>
-          }
-        /> */}
-
-        {/* JobFair Routes */}
-        {/* <Route
-          path="/jobfair"
-          element={<Navigate to="/jobfair/apply/student" replace />}
-        />
-        <Route
-          path="/jobfair/apply/student"
-          element={
-            <MainLayout>
-              <CandidateInviteForm defaultType="student" />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/jobfair/apply/company"
-          element={
-            <MainLayout>
-              <CandidateInviteForm defaultType="company" />
-            </MainLayout>
-          }
-        /> */}
 
         {/* Admin Routes */}
         <Route
