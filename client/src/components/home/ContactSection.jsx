@@ -41,15 +41,11 @@ export default function ContactSection() {
         {/* Header */}
         <div className="text-center mb-20">
           <motion.span
-            initial={{ opacity: 0, y: -10 }}
-            whileInView={{ opacity: 1, y: 0 }}
             className="inline-block px-5 py-1.5 rounded-full bg-orange-100 dark:bg-white/5 border border-orange-200 dark:border-white/10 text-[#F47C26] text-xs font-bold tracking-widest"
           >
             CONTACT
           </motion.span>
           <motion.h2
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="mt-6 text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white"
           >
@@ -59,8 +55,6 @@ export default function ContactSection() {
             </span>
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="mt-4 max-w-2xl mx-auto text-gray-600 dark:text-gray-400"
           >
@@ -90,8 +84,6 @@ export default function ContactSection() {
             ].map((i, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 className="group flex gap-5 p-6 rounded-2xl bg-white/70 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 hover:shadow-xl transition"
               >
@@ -112,8 +104,6 @@ export default function ContactSection() {
 
           {/* Form */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="lg:col-span-3"
           >
@@ -124,9 +114,6 @@ export default function ContactSection() {
                 {done ? (
                   <motion.div
                     key="done"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
                     className="text-center py-20"
                   >
                     <div className="mx-auto h-20 w-20 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
@@ -148,9 +135,6 @@ export default function ContactSection() {
                 ) : (
                   <motion.form
                     key="form"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
                     onSubmit={onSubmit}
                     className="space-y-6"
                   >

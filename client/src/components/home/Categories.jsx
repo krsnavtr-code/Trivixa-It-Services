@@ -125,23 +125,16 @@ const Categories = () => {
   // --- Render: Main Content ---
   return (
     <section className="relative py-24 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden transition-colors duration-300">
-      {/* Background: Technical Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
-
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
             <motion.span
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
               className="text-[#F47C26] font-bold uppercase tracking-widest text-xs"
             >
               Our Portfolio
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="mt-2 text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight"
             >
@@ -151,8 +144,6 @@ const Categories = () => {
               </span>
             </motion.h2>
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="mt-4 text-gray-600 dark:text-gray-400 text-lg"
             >
@@ -162,8 +153,6 @@ const Categories = () => {
           </div>
 
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
             <Link
@@ -181,8 +170,6 @@ const Categories = () => {
         {/* Grid Section */}
         <motion.div
           variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >

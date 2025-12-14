@@ -77,20 +77,6 @@ const Banner = () => {
     <section className="relative w-full min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#030014] overflow-hidden py-24 px-6 perspective-1000 transition-colors duration-500">
       {/* --- Futuristic Background --- */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {/* Animated Aurora Blobs */}
-        <motion.div
-          animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[20%] -left-[10%] w-[800px] h-[800px] bg-purple-500/20 dark:bg-purple-600/20 rounded-full blur-[120px]"
-        />
-        <motion.div
-          animate={{ rotate: -360, scale: [1, 1.3, 1] }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[20%] -right-[10%] w-[600px] h-[600px] bg-blue-500/20 dark:bg-indigo-600/20 rounded-full blur-[120px]"
-        />
-        <div className="absolute -bottom-[20%] left-[20%] w-[700px] h-[700px] bg-[#F47C26]/10 dark:bg-[#F47C26]/10 rounded-full blur-[120px]" />
-
-        {/* Perspective Grid */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light"></div>
         <div
           className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1]"

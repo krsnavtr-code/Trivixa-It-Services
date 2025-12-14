@@ -30,8 +30,6 @@ const Content = () => {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* --- Header Section --- */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-20"
         >
@@ -55,8 +53,6 @@ const Content = () => {
         {/* --- Why Choose Trivixa Grid --- */}
         <motion.div
           variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
           viewport={{ once: true }}
           className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12"
         >
@@ -164,8 +160,6 @@ const Content = () => {
 
         {/* --- Final CTA --- */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           className="text-center bg-gradient-to-r from-[#F47C26] to-[#d5671f] rounded-3xl p-10 md:p-16 shadow-2xl shadow-orange-500/20 relative overflow-hidden"
         >

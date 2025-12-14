@@ -89,8 +89,6 @@ const ProjectCard = ({ course, index }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
       whileHover={{ y: -10 }}
@@ -240,17 +238,13 @@ const FeaturedProjects = () => {
   return (
     <section className="relative py-32 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden min-h-screen transition-colors duration-300">
       {/* --- Background --- */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-multiply dark:mix-blend-normal pointer-events-none"></div>
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-400/10 dark:bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
           <div className="max-w-2xl">
             <motion.span
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
               className="px-3 py-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-[#F47C26] text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2"
             >
               <span className="w-2 h-2 rounded-full bg-[#F47C26] animate-pulse"></span>
@@ -258,8 +252,6 @@ const FeaturedProjects = () => {
             </motion.span>
 
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="mt-6 text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-tight"
             >
@@ -271,8 +263,6 @@ const FeaturedProjects = () => {
           </div>
 
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
             className="hidden md:block"
           >
@@ -338,8 +328,6 @@ const FeaturedProjects = () => {
 
         {/* Footer CTA (Mobile Only) */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           className="mt-16 text-center md:hidden"
         >

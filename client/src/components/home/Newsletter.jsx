@@ -33,8 +33,6 @@ const Newsletter = () => {
 
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden shadow-2xl dark:shadow-none transition-colors duration-300"
         >
@@ -64,9 +62,6 @@ const Newsletter = () => {
             {isSubscribed ? (
               <motion.div
                 key="success"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
                 className="bg-green-100 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400 px-6 py-4 rounded-xl inline-flex items-center gap-3"
               >
                 <FaCheckCircle className="text-xl" />
@@ -77,9 +72,6 @@ const Newsletter = () => {
             ) : (
               <motion.form
                 key="form"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
                 onSubmit={handleSubmit}
                 className="max-w-lg mx-auto flex flex-col sm:flex-row gap-4"
               >

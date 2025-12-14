@@ -73,16 +73,12 @@ const OurProcess = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <motion.span
-            initial={{ opacity: 0, y: -10 }}
-            whileInView={{ opacity: 1, y: 0 }}
             className="px-4 py-1.5 rounded-full bg-[#F47C26]/10 border border-[#F47C26]/20 text-[#F47C26] text-xs font-bold uppercase tracking-wider"
           >
             How We Work
           </motion.span>
 
           <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="mt-4 text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white"
           >
@@ -93,8 +89,6 @@ const OurProcess = () => {
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg"
           >
@@ -110,8 +104,6 @@ const OurProcess = () => {
         {/* Process Grid */}
         <motion.div
           variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
