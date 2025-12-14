@@ -1,4 +1,5 @@
 import api from './axios';
+import { toast } from 'react-hot-toast';
 
 // Base endpoint for FAQs
 const FAQ_ENDPOINT = '/faqs';
@@ -49,9 +50,7 @@ const handleApiError = (error, context) => {
   
   // For other errors, show a toast notification in browser environment
   if (typeof window !== 'undefined') {
-    import('react-hot-toast').then(({ toast }) => {
-      toast.error(`Using mock FAQ data: ${error.message}`);
-    });
+    toast.error(`Using mock FAQ data: ${error.message}`);
   }
   
   // Return mock data instead of throwing an error

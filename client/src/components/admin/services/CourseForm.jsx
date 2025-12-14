@@ -348,11 +348,12 @@ export const CourseForm = ({ isEdit = false }) => {
       image: "",
       thumbnail: "",
       previewVideo: "",
-      benefits: ["No specific benefits listed"],
-      whatYouWillLearn: ["Learn valuable skills"],
-      requirements: ["No special requirements"],
-      whoIsThisFor: ["Anyone interested in learning"],
-      prerequisites: ["No Requirements required"],
+      // These fields are set in the form data below
+      benefits: formData.benefits || ["No specific benefits listed"],
+      whatYouWillLearn: formData.whatYouWillLearn || ["Learn valuable skills"],
+      requirements: formData.requirements || ["No special requirements"],
+      whoIsThisFor: formData.whoIsThisFor || ["Anyone interested in learning"],
+      prerequisites: formData.prerequisites || ["No Requirements required"],
       tags: [],
       faqs: [],
       curriculum: [
@@ -641,12 +642,7 @@ export const CourseForm = ({ isEdit = false }) => {
                 topics: ["Course introduction"],
               },
             ],
-        // Ensure boolean fields are properly set
-        certificateIncluded: formData.certificateIncluded !== false,
-        isFeatured:
-          formData.isFeatured === true || formData.isFeatured === "true",
-        isPublished:
-          formData.isPublished === true || formData.isPublished === "true",
+        // Boolean fields are already set in the initial form data
         // Ensure required fields have values
         level: ["Beginner", "Intermediate", "Advanced"].includes(formData.level)
           ? formData.level
