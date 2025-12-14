@@ -4,7 +4,6 @@ import SEO from "../../components/SEO";
 import axios from "axios";
 import { getCourseById } from "../../api/servicesApi";
 import { submitContactForm } from "../../api/contactApi";
-import { enrollInCourse } from "../../api/enrollmentApi";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -31,14 +30,12 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDuration, formatPrice } from "../../utils/format";
 import { getImageUrl } from "../../utils/imageUtils";
-import { useCart } from "../../contexts/CartContext";
 import PaymentForm from "../../components/PaymentForm";
 
 const CourseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { addToCart } = useCart();
 
   // Get current user from auth context
   const { currentUser } = useAuth();
@@ -893,24 +890,11 @@ const CourseDetail = () => {
               {/* Course Action Buttons */}
               <div className="flex flex-wrap gap-3">
                 <button
-                  onClick={() => {
-                    // if (!isAuthenticated) {
-                    //   // Redirect to login page with a return URL
-                    //   navigate("/login", { state: { from: `/services/${id}` } });
-                    //   toast.info("Please log in to enroll in this course");
-                    //   return;
-                    // }
-                    setShowCheckoutOptions(true);
-                  }}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg font-medium flex items-center transition-colors"
+                  onClick={handleViewCourse}
+                  className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                 >
-                  Download Brochure <FaArrowRight className="ml-2" />
+                  <FaPlay className="text-sm" /> View Course Details
                 </button>
-                {course.previewVideo && (
-                  <button className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium flex items-center">
-                    <FaPlay className="mr-2" /> Preview this course
-                  </button>
-                )}
               </div>
             </div>
 
@@ -1551,7 +1535,7 @@ const CourseDetail = () => {
                   <button
                     onClick={handleEnroll}
                     disabled={isSubmitting}
-                    className={`w-full flex items-center justify-center px-2 py-2 rounded-lg font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 ${
+                    className={`w-full flex items-center justify-center px-2 py-2 rounded-lg font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 ${
                       isSubmitting
                         ? "opacity-80 cursor-not-allowed"
                         : "shadow-md hover:shadow-lg"

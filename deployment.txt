@@ -1,0 +1,139 @@
+from pathlib import Path
+
+content = """TRIVIXA.IN VPS DEPLOYMENT NOTES
+==============================
+
+Server:
+- Ubuntu VPS
+- Domain: trivixa.in
+- Stack: MERN (React + Node + MongoDB)
+- Frontend: Vite + React
+- Backend: Node.js + Express
+- Process Manager: PM2
+- Web Server: Nginx
+
+------------------------------
+1) BASIC SETUP
+------------------------------
+apt update && apt upgrade -y
+apt install -y git curl nginx
+
+Node.js (LTS):
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt install -y nodejs
+
+PM2:
+npm install -g pm2
+
+------------------------------
+2) PROJECT STRUCTURE
+------------------------------
+/var/www/trivixa
+├── client (Vite React)
+└── server (Node/Express)
+
+------------------------------
+3) FRONTEND (VITE)
+------------------------------
+- Build command:
+  npm run build
+
+- Output folder:
+  /var/www/trivixa/client/dist
+
+- IMPORTANT:
+  - Never run `npm run dev` in production
+  - Use relative API URLs:
+    axios.get('/api/route')
+
+------------------------------
+4) BACKEND (NODE)
+------------------------------
+- Run with PM2:
+  pm2 start index.js --name trivixa-api
+  pm2 save
+  pm2 startup
+
+- Backend Port:
+  4002
+
+------------------------------
+5) NGINX CONFIG
+------------------------------
+File:
+  /etc/nginx/sites-available/trivixa
+
+Config:
+--------------------------------
+server {
+    listen 80;
+    server_name trivixa.in www.trivixa.in;
+
+    root /var/www/trivixa/client/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api {
+        proxy_pass http://localhost:4002;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+--------------------------------
+
+Enable site:
+ln -s /etc/nginx/sites-available/trivixa /etc/nginx/sites-enabled/trivixa
+rm -f /etc/nginx/sites-enabled/default
+
+Restart:
+nginx -t
+systemctl restart nginx
+
+------------------------------
+6) COMMON ISSUE FIX
+------------------------------
+Issue: Site refused to connect
+Reason: sites-enabled folder empty
+
+Fix:
+- Ensure symlink exists in /etc/nginx/sites-enabled
+- Ensure nginx listening on port 80:
+  ss -ltnp | grep :80
+
+------------------------------
+7) SSL (HTTPS)
+------------------------------
+apt install -y certbot python3-certbot-nginx
+certbot --nginx -d trivixa.in -d www.trivixa.in
+certbot renew --dry-run
+
+------------------------------
+8) IMPORTANT NOTES
+------------------------------
+- Vite proxy works ONLY in dev mode
+- Production proxy handled by Nginx
+- Client is NEVER started in production
+- dist folder is served directly by Nginx
+
+------------------------------
+STATUS
+------------------------------
+✔ Frontend: LIVE
+✔ Backend: LIVE
+✔ Domain: LIVE
+✔ HTTPS: ENABLED
+✔ PM2: RUNNING
+
+Date: Deployment successful
+"""
+
+path = Path("/mnt/data/trivixa_deployment_notes.txt")
+path.write_text(content)
+
+path

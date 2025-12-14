@@ -1,8 +1,6 @@
-import React from "react";
 import { HelmetProvider } from "react-helmet-async";
 import Home from "./home/Home";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import MyCourses from "./components/MyCourses";
 import LoginPage from "./pages/auth/LoginPage";
 import FreeCourses from "./pages/FreeCourses";
 import { Toaster } from "react-hot-toast";
@@ -25,7 +23,6 @@ import CategoryForm from "./components/admin/categories/CategoryForm";
 import CorporateTraining from "./pages/user/CorporateTraining";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
-import MyLearning from "./pages/user/MyLearning";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import FAQPage from "./pages/FAQPage";
@@ -34,8 +31,6 @@ import ImageUploadDemo from "./pages/admin/ImageUploadDemo";
 import ImageGallery from "./components/admin/ImageGallery";
 import CourseForm from "./components/admin/services/CourseForm";
 import MediaGallery from "./pages/admin/MediaGallery";
-import { CartProvider } from "./contexts/CartContext";
-import Profile from "./pages/user/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useContactFormPopup from "./hooks/useContactFormPopup.jsx";
@@ -50,8 +45,6 @@ import SendProposal from "./pages/admin/SendProposal";
 import EmailRecords from "./pages/admin/EmailRecords";
 import ThankYouPage from "./pages/ThankYouPage";
 import CandidateInviteForm from "./pages/CandidateInviteForm";
-import CareerManagement from "./pages/admin/career/CareerManagement";
-import lmsRoutes from "./routes/lmsRoutes";
 
 // Blog Components
 import BlogListPage from "./pages/blog/BlogListPage";
@@ -59,16 +52,7 @@ import BlogDetailPage from "./pages/blog/BlogDetailPage";
 import BlogPostList from "./pages/admin/BlogListPage";
 import BlogPostForm from "./pages/admin/BlogPostForm";
 
-// LMS Components
-import LMSLayout from "./components/lms/LMSLayout";
-import RegisterPage from "./pages/auth/RegisterPage";
-import LMS from "./pages/lms";
 import InactiveAccount from "./pages/auth/InactiveAccount";
-
-// LMS Management Components for Admin Panel
-import Sprint from "./components/admin/lmsManagement/Sprint.jsx";
-import LmsManagement from "./components/admin/lmsManagement/LmsManagement.jsx";
-import Assessment from "./components/admin/lmsManagement/Assessment.jsx";
 import CandidatesPage from "./pages/admin/CandidatesPage.jsx";
 
 // Create a layout component that conditionally renders Navbar and Footer
@@ -76,8 +60,6 @@ const MainLayout = ({ children }) => {
   const location = useLocation();
   // Check if the current route is an admin route
   const isAdminRoute = location.pathname.startsWith("/admin");
-  // Check if the current route is an LMS route
-  const isLMSRoute = location.pathname.startsWith("/lms");
   // Check if the current route is login, register, forgot-password, reset-password, or jobfair
   const isAuthRoute =
     location.pathname.startsWith("/login") ||
@@ -87,7 +69,7 @@ const MainLayout = ({ children }) => {
     location.pathname.startsWith("/jobfair");
 
   // Determine if we should show the navbar and apply the top margin
-  const showNavbar = !isAdminRoute && !isLMSRoute && !isAuthRoute;
+  const showNavbar = !isAdminRoute && !isAuthRoute;
 
   return (
     <div className="dark:bg-slate-900 dark:text-white min-h-screen flex flex-col">
@@ -111,7 +93,6 @@ function App() {
 
   return (
     <HelmetProvider>
-      <CartProvider>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -327,79 +308,6 @@ function App() {
             }
           />
 
-          {/* Protected routes - Basic website access (only requires active account) */}
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute allowedRoles={["admin", "user", "student"]}>
-                <MainLayout>
-                  <Profile />
-                </MainLayout>
-              </PrivateRoute>
-            }
-          />
-
-          {/* Protected routes - Requires active and approved account (LMS access) */}
-          <Route
-            path="/my-learning"
-            element={
-              <PrivateRoute
-                requireLMS={true}
-                allowedRoles={["student", "admin"]}
-              >
-                <MainLayout>
-                  <MyLearning />
-                </MainLayout>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/my-courses"
-            element={
-              <PrivateRoute
-                requireLMS={true}
-                allowedRoles={["student", "admin"]}
-              >
-                <MainLayout>
-                  <MyCourses />
-                </MainLayout>
-              </PrivateRoute>
-            }
-          />
-
-          {/* LMS Routes - Requires active and approved account */}
-          <Route
-            path="/mylearning"
-            element={
-              <PrivateRoute
-                requireLMS={true}
-                allowedRoles={["student", "admin"]}
-              >
-                <Navigate to="/lms" replace />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/lms"
-            element={
-              <PrivateRoute
-                requireLMS={true}
-                allowedRoles={["student", "admin"]}
-              >
-                <LMSLayout>
-                  <LMS />
-                </LMSLayout>
-              </PrivateRoute>
-            }
-          >
-            <Route index element={<Navigate to="dashboard" replace />} />
-            {lmsRoutes.map((route, index) => (
-              <Route key={index} path={route.path} element={route.element} />
-            ))}
-          </Route>
-
           {/* Status pages */}
           <Route
             path="/inactive-account"
@@ -493,35 +401,13 @@ function App() {
             <Route path="/admin/send-brochure" element={<SendBrochure />} />
             <Route path="/admin/send-proposal" element={<SendProposal />} />
 
-            {/* LMS Routes */}
-            <Route path="/admin/lms-management" element={<LmsManagement />} />
-            <Route
-              path="/admin/lms"
-              element={<Navigate to="create-sprint" replace />}
-            />
-            <Route path="/admin/lms/create-sprint" element={<Sprint />} />
-            <Route path="/admin/lms/assessment" element={<Assessment />} />
-            <Route path="/admin/lms/career" element={<CareerManagement />} />
-
             {/* Candidates Management */}
             <Route path="/admin/candidates" element={<CandidatesPage />} />
           </Route>
 
-          {/* LMS Routes */}
-          <Route
-            path="/register"
-            element={
-              <MainLayout>
-                <RegisterPage />
-              </MainLayout>
-            }
-          />
-
           {/* Catch-all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        {/* <Cart /> */}
-      </CartProvider>
     </HelmetProvider>
   );
 }

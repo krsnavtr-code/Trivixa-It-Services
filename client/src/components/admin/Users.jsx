@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import userApi from "../../api/userApi";
 import { FaEdit, FaKey, FaTrash, FaBook } from "react-icons/fa";
-import EnrollUserModal from "./EnrollUserModal";
 
 
 // Modal components
@@ -586,16 +585,6 @@ const Users = () => {
           setCurrentUser(null);
         }}
         onSave={handleChangePassword}
-      />
-
-      <EnrollUserModal
-        visible={isEnrollModalOpen}
-        userId={currentUser?._id}
-        onCancel={() => {
-          setIsEnrollModalOpen(false);
-          setCurrentUser(null);
-        }}
-        onEnroll={handleEnrollUser}
       />
     </div>
   );
