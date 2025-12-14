@@ -44,6 +44,7 @@ import SendBrochure from "./pages/admin/SendBrochure";
 import SendProposal from "./pages/admin/SendProposal";
 import EmailRecords from "./pages/admin/EmailRecords";
 import ThankYouPage from "./pages/ThankYouPage";
+import Careers from "./pages/Careers";
 
 // Blog Components
 import BlogListPage from "./pages/blog/BlogListPage";
@@ -193,6 +194,15 @@ function App() {
           element={
             <MainLayout>
               <FreeCourses />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/career"
+          element={
+            <MainLayout>
+              <Careers />
             </MainLayout>
           }
         />
