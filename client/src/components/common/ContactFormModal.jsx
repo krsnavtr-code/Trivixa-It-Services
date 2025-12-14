@@ -5,7 +5,9 @@ import { submitContactForm } from "../../api/contactApi";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-const ContactFormModal = ({ isOpen, onClose }) => {
+const ContactFormModal = (props) => {
+  // Destructure props to get isOpen and onClose
+  const { isOpen, onClose } = props;
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -143,6 +145,9 @@ const ContactFormModal = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  // Create a filtered props object to exclude the jsx prop
+  const filteredProps = { isOpen, onClose };
 
   return (
     <AnimatePresence>

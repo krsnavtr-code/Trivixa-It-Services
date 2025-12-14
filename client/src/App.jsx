@@ -211,6 +211,7 @@ function App() {
           }
         />
 
+        {/* NOT DONE */}
         <Route
           path="/course/:id"
           element={
@@ -312,7 +313,7 @@ function App() {
         />
 
         {/* Status pages */}
-        <Route
+        {/* <Route
           path="/inactive-account"
           element={
             <MainLayout>
@@ -327,10 +328,10 @@ function App() {
               <PendingApproval />
             </MainLayout>
           }
-        />
+        /> */}
 
         {/* JobFair Routes */}
-        <Route
+        {/* <Route
           path="/jobfair"
           element={<Navigate to="/jobfair/apply/student" replace />}
         />
@@ -349,7 +350,7 @@ function App() {
               <CandidateInviteForm defaultType="company" />
             </MainLayout>
           }
-        />
+        /> */}
 
         {/* Admin Routes */}
         <Route

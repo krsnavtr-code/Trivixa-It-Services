@@ -88,7 +88,7 @@ const AllCategories = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0a0f2d]">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-[#0a0f2d] transition-colors duration-300">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#F47C26]"></div>
       </div>
     );
@@ -96,12 +96,12 @@ const AllCategories = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0a0f2d] flex items-center justify-center px-4">
-        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-6 rounded-xl max-w-md text-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f2d] flex items-center justify-center px-4 transition-colors duration-300">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 p-6 rounded-xl max-w-md text-center">
           <p>{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-sm transition-colors"
+            className="mt-4 px-4 py-2 bg-red-100 dark:bg-red-500/20 hover:bg-red-200 dark:hover:bg-red-500/30 rounded-lg text-sm transition-colors"
           >
             Retry Connection
           </button>
@@ -111,11 +111,11 @@ const AllCategories = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0f2d] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f2d] relative overflow-hidden transition-colors duration-300">
       {/* Background Ambience */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none fixed"></div>
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#F47C26]/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-multiply dark:mix-blend-normal pointer-events-none fixed"></div>
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-orange-400/10 dark:bg-[#F47C26]/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="relative z-10 py-24 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -126,16 +126,16 @@ const AllCategories = () => {
             transition={{ duration: 0.8 }}
             className="text-center mb-20"
           >
-            <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[#F47C26] text-xs font-bold uppercase tracking-wider">
+            <span className="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-[#F47C26] dark:bg-white/5 dark:border-white/10 dark:text-[#F47C26] text-xs font-bold uppercase tracking-wider shadow-sm dark:shadow-none">
               Core Competencies
             </span>
-            <h1 className="mt-6 text-4xl md:text-5xl font-extrabold text-white">
+            <h1 className="mt-6 text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
               Our Areas of{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
                 Expertise
               </span>
             </h1>
-            <p className="mt-4 text-gray-400 max-w-2xl mx-auto text-lg">
+            <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
               Explore our specialized technological domains. We deliver
               excellence across the entire digital spectrum.
             </p>
@@ -154,30 +154,30 @@ const AllCategories = () => {
                   to={`/services/category/${category.name
                     .toLowerCase()
                     .replace(/\s+/g, "-")}`}
-                  className="group relative block bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:bg-white/[0.08] hover:border-[#F47C26]/30 transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                  className="group relative block bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl p-6 hover:shadow-xl hover:border-orange-200 dark:hover:bg-white/[0.08] dark:hover:border-[#F47C26]/30 transition-all duration-300 hover:-translate-y-2 overflow-hidden"
                 >
                   {/* Icon Container */}
                   <div className="flex items-center justify-between mb-6">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10 flex items-center justify-center text-2xl text-blue-300 group-hover:text-[#F47C26] group-hover:scale-110 transition-all duration-300 shadow-inner">
+                    <div className="w-14 h-14 rounded-xl bg-blue-50 dark:bg-gradient-to-br dark:from-blue-500/10 dark:to-purple-500/10 border border-blue-100 dark:border-white/10 flex items-center justify-center text-2xl text-blue-600 dark:text-blue-300 group-hover:text-[#F47C26] group-hover:scale-110 transition-all duration-300 shadow-sm dark:shadow-inner">
                       {getCategoryIcon(category.name)}
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-500 group-hover:bg-[#F47C26] group-hover:text-white transition-all duration-300">
+                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400 dark:text-gray-500 group-hover:bg-[#F47C26] group-hover:text-white transition-all duration-300">
                       <FaArrowRight className="text-xs transform group-hover:-rotate-45 transition-transform duration-300" />
                     </div>
                   </div>
 
                   {/* Content */}
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#F47C26] transition-colors">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-[#F47C26] transition-colors">
                       {category.name}
                     </h3>
 
-                    <p className="text-sm text-gray-400 line-clamp-2 mb-4 h-10 leading-relaxed">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4 h-10 leading-relaxed">
                       {category.description ||
                         "Specialized solutions tailored to drive efficiency and innovation in this domain."}
                     </p>
 
-                    <div className="pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <div className="pt-4 border-t border-gray-100 dark:border-white/5 flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wide">
                       <span className="w-2 h-2 rounded-full bg-[#F47C26]"></span>
                       {category.courseCount || 0} Solutions Available
                     </div>

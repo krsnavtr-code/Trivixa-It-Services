@@ -102,6 +102,7 @@ const Footer = () => {
               <FooterLink to="/services" text="Our Services" />
               <FooterLink to="/portfolio" text="Portfolio" />
               <FooterLink to="/career" text="Careers" />
+              <FooterLink to="/corporate-training" text="Corporate" />
               <FooterLink to="/contact" text="Contact" />
             </ul>
           </motion.div>
@@ -114,9 +115,10 @@ const Footer = () => {
             </h3>
             <ul className="space-y-3">
               <FooterLink to="/faq" text="FAQs" />
+              <FooterLink to="/blog" text="Blog & News" />
               <FooterLink to="/privacy-policy" text="Privacy Policy" />
               <FooterLink to="/terms-of-service" text="Terms & Conditions" />
-              <FooterLink to="/support" text="Support Center" />
+              <FooterLink to="/payment-t-and-c" text="Payment Terms & Conditions" />
               <FooterLink to="/sitemap" text="Sitemap" />
             </ul>
           </motion.div>
@@ -133,8 +135,7 @@ const Footer = () => {
                   <FaMapMarkerAlt className="text-xs" />
                 </div>
                 <span className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
-                  H-161 BSI Sector-63, Noida, <br /> Gautam Budh Nagar, UP
-                  201301
+                  Noida, UP 201016
                 </span>
               </li>
 
