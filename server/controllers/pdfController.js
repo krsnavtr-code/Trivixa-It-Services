@@ -6,7 +6,7 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fs from 'fs';
 import QRCode from 'qrcode';
 import { sendCoursePdfEmail } from '../utils/email.js';
-import Enrollment from '../model/enrollmentModel.js';
+// import Enrollment from '../model/enrollmentModel.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

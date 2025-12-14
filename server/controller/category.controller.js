@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import Category from "../model/category.model.js";
-import Book from "../model/book.model.js";
 import { validationResult } from 'express-validator';
 
 // Get all categories with optional filters
@@ -289,40 +288,6 @@ export const deleteCategory = async (req, res) => {
                 success: false,
                 message: 'Category not found',
                 error: 'CATEGORY_NOT_FOUND'
-            });
-        }
-        
-        console.log('[Category] Found category to delete:', {
-            _id: category._id,
-            name: category.name,
-            bookCount: category.bookCount
-        });
-        
-        // 2. Check if any books are using this category
-        try {
-            const booksCount = await Book.countDocuments({ category: id }).session(session);
-            console.log(`[Category] Found ${booksCount} books associated with category ${id}`);
-            
-            if (booksCount > 0) {
-                console.error(`[Category] Cannot delete - ${booksCount} books are associated with this category`);
-                await session.abortTransaction();
-                session.endSession();
-                return res.status(400).json({ 
-                    success: false,
-                    message: `Cannot delete category - it has ${booksCount} associated book(s)`,
-                    error: 'CATEGORY_IN_USE',
-                    bookCount: booksCount
-                });
-            }
-        } catch (error) {
-            console.error('[Category] Error checking for associated books:', error);
-            await session.abortTransaction();
-            session.endSession();
-            return res.status(500).json({
-                success: false,
-                message: 'Error checking for associated books',
-                error: 'BOOK_CHECK_ERROR',
-                details: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
         }
         

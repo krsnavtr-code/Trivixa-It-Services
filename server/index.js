@@ -8,34 +8,24 @@ import { fileURLToPath } from 'url';
 
 
 // Import routes
-import bookRoute from "./route/book.route.js";
 import authRoute from "./route/auth.route.js";
 import userRoutes from "./routes/userRoutes.js";
 import profileRoute from "./route/profile.route.js";
-import cartRoute from "./route/cart.route.js";
 import categoryRoute from "./route/category.route.js";
 import servicesRoute from "./route/services.route.js";
 import contactRoute from "./route/contactRoutes.js";
-import enrollmentRoute from "./routes/enrollmentRoutes.js";
 import faqRoute from "./route/faq.route.js";
 import uploadRoute from "./route/uploadRoute.js";
 import authRoutes from "./route/authRoutes.js";
 import adminRoutes from "./route/adminRoutes.js";
-import lmsRoutes from "./route/lms.route.js";
 import blogRoutes from "./route/blog.route.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import adminPaymentRoutes from "./routes/adminPaymentRoutes.js";
 import pdfRoutes from "./routes/pdfRoutes.js";
 import pdfRouter from "./route/pdf.route.js";
-import sprintRoutes from "./routes/sprintRoutes.js";
 import chatRoutes from "./route/chat.route.js";
-import sessionRoutes from "./routes/sessionRoutes.js";
-import taskRoutes from "./routes/taskRoutes.js";
 import discussionRoutes from "./routes/discussionRoutes.js";
-import careerRoutes from "./routes/careerRoutes.js";
-import applicationRoutes from "./routes/applicationRoutes.js";
 import externalContactRoutes from "./routes/externalContactRoutes.js";
-import candidateRoutes from "./routes/candidateRoutes.js";
 import adminEmailRoutes from "./routes/adminEmailRoutes.js";
 import emailRecordRoutes from "./routes/emailRecordRoutes.js";
 
@@ -149,12 +139,6 @@ if (!fs.existsSync(uploadsDir)) {
     //     }
     // });
 }
-
-// Debug: Log the current working directory and paths
-// console.log('Current working directory:', process.cwd());
-// console.log('__dirname:', __dirname);
-// console.log('Public directory path:', path.join(__dirname, 'public'));
-// console.log('Uploads directory path:', uploadsDir);
 
 // List all files in the public directory
 const listPublicFiles = (dir) => {
@@ -337,7 +321,6 @@ app.get('/api/test-categories', async (req, res) => {
 
 // Mount routes in specific order
 // Public routes first
-app.use("/api/books", bookRoute);
 app.use("/api/categories", categoryRoute);
 app.use("/api/services", servicesRoute);
 app.use("/api/contacts", contactRoute);
@@ -351,21 +334,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/profile", profileRoute);
 app.use("/api/contact", contactRoute);
-app.use("/api/enrollments", enrollmentRoute);
-app.use("/api/candidates", candidateRoutes);
 app.use("/api/upload", uploadRoute);
 app.use("/api/admin", adminRoutes);
-app.use("/api/lms", lmsRoutes);
-app.use("/api/sprints", sprintRoutes);
-app.use("/api/sessions", sessionRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin/payments", adminPaymentRoutes);
-app.use("/api/v1/sprints", sprintRoutes);
-app.use("/api/v1/tasks", taskRoutes);
 app.use("/api/discussions", discussionRoutes);
 app.use("/api/chat", chatRoutes);
-app.use("/api/careers", careerRoutes);
-app.use("/api/applications", applicationRoutes);
 
 // Admin email routes
 app.use('/api/v1/admin/emails', adminEmailRoutes);
