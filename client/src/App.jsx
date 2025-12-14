@@ -2,6 +2,7 @@ import { HelmetProvider } from "react-helmet-async";
 import Home from "./home/Home";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
 import FreeCourses from "./pages/FreeCourses";
 import { Toaster } from "react-hot-toast";
 import AdminLayout from "./components/admin/AdminLayout";
@@ -93,321 +94,317 @@ function App() {
 
   return (
     <HelmetProvider>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: "var(--color-bg-elevated)",
-              color: "var(--color-fg-default)",
-              boxShadow: "var(--shadow-lg)",
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "var(--color-bg-elevated)",
+            color: "var(--color-fg-default)",
+            boxShadow: "var(--shadow-lg)",
+          },
+          success: {
+            iconTheme: {
+              primary: "#10B981",
+              secondary: "white",
             },
-            success: {
-              iconTheme: {
-                primary: "#10B981",
-                secondary: "white",
-              },
+          },
+          error: {
+            iconTheme: {
+              primary: "#EF4444",
+              secondary: "white",
             },
-            error: {
-              iconTheme: {
-                primary: "#EF4444",
-                secondary: "white",
-              },
-            },
-          }}
-        />
-        <ContactFormPopup />
-        <ToastContainer
-          position="bottom-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-        <Routes>
-          {/* Account Status Pages */}
-          <Route path="/suspended" element={<SuspendedAccount />} />
-          <Route path="/pending-approval" element={<PendingApproval />} />
-          <Route path="/inactive-account" element={<InactiveAccount />} />
+          },
+        }}
+      />
+      <ContactFormPopup />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <Routes>
+        {/* Account Status Pages */}
+        <Route path="/suspended" element={<SuspendedAccount />} />
+        <Route path="/pending-approval" element={<PendingApproval />} />
+        <Route path="/inactive-account" element={<InactiveAccount />} />
 
-          {/* Public routes */}
-          <Route
-            path="/"
-            element={
-              <MainLayout>
-                <Home />
-              </MainLayout>
-            }
-          >
-            {/* Add any nested public routes here */}
-          </Route>
-
-          <Route
-            path="/login"
-            element={
-              <MainLayout>
-                <LoginPage />
-              </MainLayout>
-            }
-          />
-
-          {/* <Route path="/signup" element={
+        {/* Public routes */}
+        <Route
+          path="/"
+          element={
             <MainLayout>
               <Home />
-              <Signup />
             </MainLayout>
-          } /> */}
+          }
+        >
+          {/* Add any nested public routes here */}
+        </Route>
 
+        <Route
+          path="/login"
+          element={
+            <MainLayout>
+              <LoginPage />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <MainLayout>
+              <RegisterPage />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/unauthorized"
+          element={
+            <MainLayout>
+              <Unauthorized />
+            </MainLayout>
+          }
+        />
+
+        {/* Public course routes */}
+        <Route
+          path="/services"
+          element={
+            <MainLayout>
+              <ServicesByCategory />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/services/category/:categoryName"
+          element={
+            <MainLayout>
+              <ServicesByCategory />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/free-courses"
+          element={
+            <MainLayout>
+              <FreeCourses />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/categories"
+          element={
+            <MainLayout>
+              <AllCategories />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/course/:id"
+          element={
+            <MainLayout>
+              <CourseDetail />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/about"
+          element={
+            <MainLayout>
+              <About />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/contact"
+          element={
+            <MainLayout>
+              <Contact />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/faq"
+          element={
+            <MainLayout>
+              <FAQPage />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/corporate-training"
+          element={
+            <MainLayout>
+              <CorporateTraining />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/privacy-policy"
+          element={
+            <MainLayout>
+              <PrivacyPolicy />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/terms-of-service"
+          element={
+            <MainLayout>
+              <TermsOfService />
+            </MainLayout>
+          }
+        />
+
+        {/* Blog Routes */}
+        <Route
+          path="/blog"
+          element={
+            <MainLayout>
+              <BlogListPage />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/blog/:slug"
+          element={
+            <MainLayout>
+              <BlogDetailPage />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/payment-t-and-c"
+          element={
+            <MainLayout>
+              <PaymentTAndC />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/thank-you"
+          element={
+            <MainLayout>
+              <ThankYouPage />
+            </MainLayout>
+          }
+        />
+
+        {/* Status pages */}
+        <Route
+          path="/inactive-account"
+          element={
+            <MainLayout>
+              <InactiveAccount />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/pending-approval"
+          element={
+            <MainLayout>
+              <PendingApproval />
+            </MainLayout>
+          }
+        />
+
+        {/* JobFair Routes */}
+        <Route
+          path="/jobfair"
+          element={<Navigate to="/jobfair/apply/student" replace />}
+        />
+        <Route
+          path="/jobfair/apply/student"
+          element={
+            <MainLayout>
+              <CandidateInviteForm defaultType="student" />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/jobfair/apply/company"
+          element={
+            <MainLayout>
+              <CandidateInviteForm defaultType="company" />
+            </MainLayout>
+          }
+        />
+
+        {/* Admin Routes */}
+        <Route
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <AdminLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route path="/admin" element={<Navigate to="dashboard" replace />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/categories" element={<CategoriesList />} />
+          <Route path="/admin/categories/new" element={<CategoryForm />} />
+          <Route path="/admin/categories/:id/edit" element={<CategoryForm />} />
+          <Route path="/admin/services" element={<CoursesList />} />
           <Route
-            path="/unauthorized"
-            element={
-              <MainLayout>
-                <Unauthorized />
-              </MainLayout>
-            }
+            path="/admin/services/new"
+            element={<CourseForm isEdit={false} />}
           />
-
-          {/* Public course routes */}
           <Route
-            path="/services"
-            element={
-              <MainLayout>
-                <ServicesByCategory />
-              </MainLayout>
-            }
+            path="/admin/services/:id/edit"
+            element={<CourseForm isEdit={true} />}
           />
+          <Route path="/admin/course/:id" element={<CourseDetail />} />
+          <Route path="/admin/users" element={<Users />} />
+          <Route path="/admin/contacts" element={<ContactsList />} />
+          <Route path="/admin/faqs" element={<ManageFAQs />} />
+          <Route path="/admin/media" element={<MediaGallery />} />
+          <Route path="/admin/image-upload" element={<ImageUploadDemo />} />
+          <Route path="/admin/image-gallery" element={<ImageGallery />} />
+          <Route path="/admin/enrollments" element={<AdminEnrollments />} />
 
-          <Route
-            path="/services/category/:categoryName"
-            element={
-              <MainLayout>
-                <ServicesByCategory />
-              </MainLayout>
-            }
-          />
+          {/* Payment Admin Routes */}
+          <Route path="/admin/payments" element={<PaymentsList />} />
+          <Route path="/admin/payments/:id" element={<PaymentDetails />} />
 
-          <Route
-            path="/free-courses"
-            element={
-              <MainLayout>
-                <FreeCourses />
-              </MainLayout>
-            }
-          />
+          {/* Blog Admin Routes */}
+          <Route path="/admin/blog" element={<BlogPostList />} />
+          <Route path="/admin/blog/new" element={<BlogPostForm />} />
+          <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />
 
-          <Route
-            path="/categories"
-            element={
-              <MainLayout>
-                <AllCategories />
-              </MainLayout>
-            }
-          />
+          {/* Career Management */}
 
-          <Route
-            path="/course/:id"
-            element={
-              <MainLayout>
-                <CourseDetail />
-              </MainLayout>
-            }
-          />
+          {/* Email Routes */}
+          <Route path="/admin/email-records" element={<EmailRecords />} />
+          <Route path="/admin/send-brochure" element={<SendBrochure />} />
+          <Route path="/admin/send-proposal" element={<SendProposal />} />
 
-          <Route
-            path="/about"
-            element={
-              <MainLayout>
-                <About />
-              </MainLayout>
-            }
-          />
+          {/* Candidates Management */}
+          <Route path="/admin/candidates" element={<CandidatesPage />} />
+        </Route>
 
-          <Route
-            path="/contact"
-            element={
-              <MainLayout>
-                <Contact />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/faq"
-            element={
-              <MainLayout>
-                <FAQPage />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/corporate-training"
-            element={
-              <MainLayout>
-                <CorporateTraining />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/privacy-policy"
-            element={
-              <MainLayout>
-                <PrivacyPolicy />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/terms-of-service"
-            element={
-              <MainLayout>
-                <TermsOfService />
-              </MainLayout>
-            }
-          />
-
-          {/* Blog Routes */}
-          <Route
-            path="/blog"
-            element={
-              <MainLayout>
-                <BlogListPage />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/blog/:slug"
-            element={
-              <MainLayout>
-                <BlogDetailPage />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/payment-t-and-c"
-            element={
-              <MainLayout>
-                <PaymentTAndC />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/thank-you"
-            element={
-              <MainLayout>
-                <ThankYouPage />
-              </MainLayout>
-            }
-          />
-
-          {/* Status pages */}
-          <Route
-            path="/inactive-account"
-            element={
-              <MainLayout>
-                <InactiveAccount />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/pending-approval"
-            element={
-              <MainLayout>
-                <PendingApproval />
-              </MainLayout>
-            }
-          />
-
-          {/* JobFair Routes */}
-          <Route
-            path="/jobfair"
-            element={<Navigate to="/jobfair/apply/student" replace />}
-          />
-          <Route
-            path="/jobfair/apply/student"
-            element={
-              <MainLayout>
-                <CandidateInviteForm defaultType="student" />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/jobfair/apply/company"
-            element={
-              <MainLayout>
-                <CandidateInviteForm defaultType="company" />
-              </MainLayout>
-            }
-          />
-
-          {/* Admin Routes */}
-          <Route
-            element={
-              <PrivateRoute allowedRoles={["admin"]}>
-                <AdminLayout />
-              </PrivateRoute>
-            }
-          >
-            <Route
-              path="/admin"
-              element={<Navigate to="dashboard" replace />}
-            />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/categories" element={<CategoriesList />} />
-            <Route path="/admin/categories/new" element={<CategoryForm />} />
-            <Route
-              path="/admin/categories/:id/edit"
-              element={<CategoryForm />}
-            />
-            <Route path="/admin/services" element={<CoursesList />} />
-            <Route
-              path="/admin/services/new"
-              element={<CourseForm isEdit={false} />}
-            />
-            <Route
-              path="/admin/services/:id/edit"
-              element={<CourseForm isEdit={true} />}
-            />
-            <Route path="/admin/course/:id" element={<CourseDetail />} />
-            <Route path="/admin/users" element={<Users />} />
-            <Route path="/admin/contacts" element={<ContactsList />} />
-            <Route path="/admin/faqs" element={<ManageFAQs />} />
-            <Route path="/admin/media" element={<MediaGallery />} />
-            <Route path="/admin/image-upload" element={<ImageUploadDemo />} />
-            <Route path="/admin/image-gallery" element={<ImageGallery />} />
-            <Route path="/admin/enrollments" element={<AdminEnrollments />} />
-
-            {/* Payment Admin Routes */}
-            <Route path="/admin/payments" element={<PaymentsList />} />
-            <Route path="/admin/payments/:id" element={<PaymentDetails />} />
-
-            {/* Blog Admin Routes */}
-            <Route path="/admin/blog" element={<BlogPostList />} />
-            <Route path="/admin/blog/new" element={<BlogPostForm />} />
-            <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />
-
-            {/* Career Management */}
-
-            {/* Email Routes */}
-            <Route path="/admin/email-records" element={<EmailRecords />} />
-            <Route path="/admin/send-brochure" element={<SendBrochure />} />
-            <Route path="/admin/send-proposal" element={<SendProposal />} />
-
-            {/* Candidates Management */}
-            <Route path="/admin/candidates" element={<CandidatesPage />} />
-          </Route>
-
-          {/* Catch-all route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        {/* Catch-all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </HelmetProvider>
   );
 }
