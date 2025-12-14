@@ -58,8 +58,7 @@ export default defineConfig(({ command }) => ({
             'react-markdown',
             'react-beautiful-dnd',
             'framer-motion',
-            '@ant-design/compatible',
-            'antd'
+            '@ant-design/compatible'
           ],
         },
       },
