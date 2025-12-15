@@ -1,381 +1,409 @@
-import React, { useEffect } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import {
+  FaTachometerAlt,
+  FaBook,
+  FaPaperPlane,
+  FaFileContract,
+  FaUsers,
+  FaList,
+  FaBlog,
+  FaAddressBook,
+  FaCreditCard,
+  FaGraduationCap,
+  FaQuestionCircle,
+  FaImages,
+  FaSignOutAlt,
+  FaBars,
+  FaTimes,
+  FaUserShield,
+  FaChevronRight,
+} from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+
+// --- Configuration ---
+
+// Define roles for granular access (Optional: implies 'all' if undefined)
+const NAV_ITEMS = [
+  {
+    category: "Overview",
+    items: [
+      {
+        path: "/admin/dashboard",
+        label: "Dashboard",
+        icon: <FaTachometerAlt />,
+        activePaths: ["/admin/dashboard"],
+      },
+    ],
+  },
+  {
+    category: "Content & Products",
+    items: [
+      {
+        path: "/admin/services",
+        label: "Courses & Services",
+        icon: <FaBook />,
+        activePaths: ["/admin/services"],
+      },
+      {
+        path: "/admin/categories",
+        label: "Categories",
+        icon: <FaList />,
+        activePaths: ["/admin/categories"],
+      },
+      {
+        path: "/admin/blog",
+        label: "Blog",
+        icon: <FaBlog />,
+        activePaths: ["/admin/blog"],
+      },
+      {
+        path: "/admin/image-gallery",
+        label: "Media Gallery",
+        icon: <FaImages />,
+        activePaths: ["/admin/image-gallery"],
+      },
+    ],
+  },
+  {
+    category: "CRM & Sales",
+    items: [
+      {
+        path: "/admin/candidates",
+        label: "Candidates",
+        icon: <FaUsers />,
+        activePaths: ["/admin/candidates"],
+      },
+      {
+        path: "/admin/enrollments",
+        label: "Enrollments",
+        icon: <FaGraduationCap />,
+        activePaths: ["/admin/enrollments"],
+      },
+      {
+        path: "/admin/contacts",
+        label: "Inquiries",
+        icon: <FaAddressBook />,
+        activePaths: ["/admin/contacts"],
+      },
+      {
+        path: "/admin/send-brochure",
+        label: "Send Brochure",
+        icon: <FaPaperPlane />,
+        activePaths: ["/admin/send-brochure"],
+      },
+      {
+        path: "/admin/send-proposal",
+        label: "Send Proposal",
+        icon: <FaFileContract />,
+        activePaths: ["/admin/send-proposal"],
+      },
+    ],
+  },
+  {
+    category: "Finance & Users",
+    items: [
+      {
+        path: "/admin/payments",
+        label: "Payments",
+        icon: <FaCreditCard />,
+        activePaths: ["/admin/payments"],
+        roles: ["super_admin", "finance"],
+      },
+      {
+        path: "/admin/users",
+        label: "User Management",
+        icon: <FaUserShield />,
+        activePaths: ["/admin/users"],
+        roles: ["super_admin"],
+      },
+      {
+        path: "/admin/faqs",
+        label: "FAQs",
+        icon: <FaQuestionCircle />,
+        activePaths: ["/admin/faqs"],
+      },
+    ],
+  },
+];
 
 const AdminLayout = () => {
-  const { currentUser, isAuthenticated, loading } = useAuth();
+  const { currentUser, isAuthenticated, loading, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLogout = () => {
-    console.log("AdminLayout - Logging out");
-    // The logout function should be provided by the AuthContext
-    navigate("/login");
+  // Responsive State
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+  // Handle Resize
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 1024;
+      setIsMobile(mobile);
+      if (mobile) setIsSidebarOpen(false);
+      else setIsSidebarOpen(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      if (logout) await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
-  // Show loading state
+  // --- Render Loading ---
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0a0f2d]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#F47C26]"></div>
       </div>
     );
   }
 
-  // Since we're already wrapped in PrivateRoute with allowedRoles=['admin'],
-  // we can assume the user is an admin at this point
+  // --- Render Access Denied ---
   if (!currentUser || !isAuthenticated) {
-    console.log("AdminLayout - No user or not authenticated");
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">
-            Access Denied
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0a0f2d] p-6">
+        <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-red-200 dark:border-red-500/30 p-8 rounded-2xl shadow-xl text-center max-w-md w-full">
+          <FaUserShield className="text-5xl text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Access Restricted
           </h2>
-          <p className="mb-4">You must be logged in to access this page.</p>
           <Link
             to="/login"
-            className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="inline-block mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
           >
-            Login
+            Authenticate
           </Link>
         </div>
       </div>
     );
   }
 
+  const userRole = currentUser?.role || "admin"; // Default to admin
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="flex h-screen bg-gray-100">
-        {/* Sidebar */}
-        <div className="pb-8 bg-indigo-800 text-white w-64 flex-shrink-0 flex flex-col h-screen">
-          <div className="p-4 flex-shrink-0">
-            <h1 className="text-2xl font-bold text-indigo-100">Admin Panel</h1>
-            <p className="text-indigo-200 text-sm">
-              Welcome, {currentUser?.fullname || "Admin"}
-            </p>
+    <div className="min-h-screen bg-gray-100 dark:bg-[#05081a] flex transition-colors duration-500 overflow-hidden relative">
+      {/* --- Mobile Backdrop --- */}
+      <AnimatePresence>
+        {isMobile && isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* --- Sidebar (Command Center) --- */}
+      <aside
+        className={`fixed top-0 left-0 h-full bg-white dark:bg-[#0a0f2d] border-r border-gray-200 dark:border-white/10 flex flex-col z-50 transition-all duration-300 shadow-2xl
+          ${
+            isSidebarOpen
+              ? "w-72 translate-x-0"
+              : isMobile
+              ? "-translate-x-full w-72"
+              : "w-20 translate-x-0"
+          }
+        `}
+      >
+        {/* Header */}
+        <div className="h-20 flex items-center justify-between px-6 border-b border-gray-100 dark:border-white/5 shrink-0">
+          <div
+            className={`flex items-center gap-2 ${
+              !isSidebarOpen && !isMobile && "mx-auto"
+            }`}
+          >
+            <div className="w-8 h-8 rounded bg-gradient-to-tr from-[#F47C26] to-purple-600 flex items-center justify-center text-white font-bold shrink-0">
+              T
+            </div>
+            {(isSidebarOpen || isMobile) && (
+              <span className="font-bold text-gray-800 dark:text-white tracking-wide text-lg">
+                Admin<span className="text-[#F47C26]">OS</span>
+              </span>
+            )}
+          </div>
+          {isMobile && (
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="text-gray-400 hover:text-white"
+            >
+              <FaTimes />
+            </button>
+          )}
+        </div>
+
+        {/* User Profile Snippet */}
+        <div
+          className={`p-6 border-b border-gray-100 dark:border-white/5 shrink-0 ${
+            !isSidebarOpen && !isMobile && "flex flex-col items-center p-4"
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-white/10 border border-gray-300 dark:border-white/20 flex items-center justify-center text-gray-500 dark:text-gray-300 shrink-0">
+              {currentUser?.fullname?.charAt(0) || "A"}
+            </div>
+            {(isSidebarOpen || isMobile) && (
+              <div className="overflow-hidden">
+                <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                  {currentUser?.fullname}
+                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {userRole}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Navigation Links (Scrollable) */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+          {NAV_ITEMS.map((group, groupIdx) => (
+            <div key={groupIdx}>
+              {(isSidebarOpen || isMobile) && (
+                <h3 className="px-3 mb-2 text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                  {group.category}
+                </h3>
+              )}
+              <ul className="space-y-1">
+                {group.items.map((item) => {
+                  // Role Check
+                  if (item.roles && !item.roles.includes(userRole)) return null;
+
+                  const isActive = item.activePaths
+                    ? item.activePaths.some((path) =>
+                        location.pathname.startsWith(path)
+                      )
+                    : location.pathname === item.path;
+
+                  return (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative ${
+                          isActive
+                            ? "bg-[#F47C26] text-white shadow-lg shadow-orange-500/20"
+                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#F47C26] dark:hover:text-white"
+                        }`}
+                        title={!isSidebarOpen && !isMobile ? item.label : ""}
+                      >
+                        <span
+                          className={`text-lg shrink-0 ${
+                            !isSidebarOpen && !isMobile && "mx-auto"
+                          }`}
+                        >
+                          {item.icon}
+                        </span>
+                        {(isSidebarOpen || isMobile) && (
+                          <>
+                            <span className="text-sm font-medium flex-1">
+                              {item.label}
+                            </span>
+                            {isActive && (
+                              <FaChevronRight className="text-[10px] opacity-80" />
+                            )}
+                          </>
+                        )}
+                        {!isSidebarOpen && !isMobile && isActive && (
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-l-full"></div>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
+        {/* Footer Actions */}
+        <div className="p-4 border-t border-gray-100 dark:border-white/5 shrink-0">
+          <button
+            onClick={handleLogout}
+            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all ${
+              !isSidebarOpen && !isMobile && "justify-center"
+            }`}
+          >
+            <FaSignOutAlt className="text-lg shrink-0" />
+            {(isSidebarOpen || isMobile) && (
+              <span className="font-bold text-sm">System Logout</span>
+            )}
+          </button>
+        </div>
+      </aside>
+
+      {/* --- Main Content Area --- */}
+      <main
+        className={`flex-1 flex flex-col min-h-screen transition-all duration-300 w-full ${
+          isSidebarOpen && !isMobile ? "ml-72" : !isMobile ? "ml-20" : ""
+        }`}
+      >
+        {/* Top Bar */}
+        <div className="h-20 bg-white/80 dark:bg-[#05081a]/90 backdrop-blur-md border-b border-gray-200 dark:border-white/10 sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="md:hidden text-gray-500 dark:text-gray-400 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5"
+            >
+              <FaBars size={20} />
+            </button>
+
+            {/* Breadcrumb / Title */}
+            <div>
+              <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white capitalize truncate">
+                {location.pathname.split("/").pop().replace(/-/g, " ")}
+              </h1>
+              <div className="hidden md:flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                Online &bull;{" "}
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </div>
+            </div>
           </div>
 
-          <nav className="flex-1 overflow-y-auto">
-            <div>
-              <Link
-                to="/admin/dashboard"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="h-5 w-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  ></path>
-                </svg>
-                Dashboard
-              </Link>
-              <Link
-                to="/admin/lms-management"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="h-5 w-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  ></path>
-                </svg>
-                LMS
-              </Link>
-              <Link
-                to="/admin/services"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="h-5 w-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  ></path>
-                </svg>
-                Courses
-              </Link>
-
-              <Link
-                to="/admin/send-brochure"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
-                  />
-                </svg>
-                Send Brochure
-              </Link>
-
-              <Link
-                to="/admin/send-proposal"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-                Send College Proposal
-              </Link>
-              <Link
-                to="/admin/candidates"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="h-5 w-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-                Candidates
-              </Link>
-              <Link
-                to="/admin/categories"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                  />
-                </svg>
-                Categories
-              </Link>
-
-              <Link
-                to="/admin/users"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-                Users
-              </Link>
-
-              <Link
-                to="/admin/blog"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                  />
-                </svg>
-                Blog
-              </Link>
-
-              <Link
-                to="/admin/contacts"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                  />
-                </svg>
-                Contacts
-              </Link>
-
-              <Link
-                to="/admin/payments"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                  />
-                </svg>
-                Payments
-              </Link>
-
-              <Link
-                to="/admin/enrollments"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                  />
-                </svg>
-                Enrollments
-              </Link>
-
-              <Link
-                to="/admin/faqs"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                FAQs
-              </Link>
-
-              <Link
-                to="/admin/image-gallery"
-                className="flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                Media Gallery
-              </Link>
-
-              <button
-                onClick={handleLogout}
-                className="w-full text-left flex items-center px-6 py-3 text-indigo-100 hover:bg-indigo-700"
-              >
-                <svg
-                  className="w-5 h-5 mr-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-                Logout
-              </button>
+          {/* System Context Trigger */}
+          <div className="hidden md:block group relative">
+            <div className="cursor-help opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 text-xs font-mono text-gray-500 dark:text-gray-400 bg-white dark:bg-white/5">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#F47C26] animate-pulse"></div>
+              v2.4.0 Stable
             </div>
-          </nav>
+            {/* Diagram: Admin Architecture */}
+            <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#0a0f2d] border border-gray-200 dark:border-white/10 rounded-xl p-2 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"></div>
+          </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 overflow-auto p-6">
+        {/* Content Outlet */}
+        <div className="p-4 md:p-8 relative z-10 w-full max-w-[1920px] mx-auto">
+          {/* Subtle Grid Background */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.05]"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, #808080 1px, transparent 1px), linear-gradient(to bottom, #808080 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+            }}
+          ></div>
           <Outlet />
         </div>
-      </div>
+      </main>
     </div>
   );
 };

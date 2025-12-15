@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { getCategories } from "../../api/categoryApi";
 import { getCourses, deleteCourse } from "../../api/servicesApi";
 import userApi from "../../api/userApi";
 import { toast } from "react-hot-toast";
+import { motion } from "framer-motion";
+import {
+  FaLayerGroup,
+  FaBook,
+  FaUsers,
+  FaMoneyBillWave,
+  FaPlus,
+  FaArrowRight,
+  FaChartLine,
+} from "react-icons/fa";
 
 const AdminDashboard = () => {
-  console.log("AdminDashboard - Rendering...");
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -16,11 +24,24 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Animation Variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
   const handleDeleteCourse = async (id) => {
     if (window.confirm("Are you sure you want to delete this course?")) {
       try {
         await deleteCourse(id);
-        // Refresh the courses list after deletion
         const response = await getCourses();
         setCourses(response.data || []);
         toast.success("Course deleted successfully");
@@ -32,50 +53,37 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    console.log("AdminDashboard - useEffect running");
     const fetchData = async () => {
-      console.log("Fetching dashboard data...");
       try {
         setLoading(true);
 
-        // Fetch categories
-        try {
-          const categoriesRes = await getCategories();
-          console.log("Categories response:", categoriesRes);
-          const categoriesData = categoriesRes.data || categoriesRes || [];
-          setCategories(categoriesData);
-          console.log("Processed categories:", categoriesData);
-        } catch (error) {
-          console.error("Error fetching categories:", error);
+        // Parallel fetching for speed
+        const [categoriesRes, coursesRes, usersRes] = await Promise.allSettled([
+          getCategories(),
+          getCourses(),
+          userApi.getUsers(),
+        ]);
+
+        if (categoriesRes.status === "fulfilled") {
+          setCategories(categoriesRes.value.data || categoriesRes.value || []);
+        } else {
           toast.error("Failed to load categories");
         }
 
-        // Fetch courses
-        try {
-          const coursesRes = await getCourses();
-          console.log("Courses response:", coursesRes);
-          const coursesData = coursesRes.data || coursesRes || [];
-          setCourses(coursesData);
-          console.log("Processed courses:", coursesData);
-        } catch (error) {
-          console.error("Error fetching courses:", error);
+        if (coursesRes.status === "fulfilled") {
+          setCourses(coursesRes.value.data || coursesRes.value || []);
+        } else {
           toast.error("Failed to load courses");
         }
 
-        // Fetch users
-        try {
-          const usersRes = await userApi.getUsers();
-          console.log("Users response:", usersRes);
-          const usersData = usersRes.data || usersRes || [];
-          setUsers(usersData);
-          console.log("Processed users:", usersData);
-        } catch (error) {
-          console.error("Error fetching users:", error);
+        if (usersRes.status === "fulfilled") {
+          setUsers(usersRes.value.data || usersRes.value || []);
+        } else {
           toast.error("Failed to load users");
         }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
-        toast.error("Failed to load dashboard data");
+        toast.error("System Error: Data fetch failed");
       } finally {
         setLoading(false);
       }
@@ -83,32 +91,6 @@ const AdminDashboard = () => {
 
     fetchData();
   }, []);
-
-  console.log("AdminDashboard - Render with state:", { loading, categories });
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
-
-  // Quick Actions
-  const quickActions = [
-    {
-      label: "Add New Course",
-      icon: "plus",
-      link: "/admin/services/new",
-      color: "indigo",
-    },
-    {
-      label: "Add New Category",
-      icon: "plus",
-      link: "/admin/categories/new",
-      color: "green",
-    },
-  ];
 
   const totalRevenue = courses.reduce(
     (acc, course) =>
@@ -119,175 +101,174 @@ const AdminDashboard = () => {
       ),
     0
   );
-  console.log("Total Revenue:", totalRevenue);
+
+  const stats = [
+    {
+      label: "Categories",
+      value: categories.length,
+      icon: <FaLayerGroup />,
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+      border: "border-blue-500/20",
+      link: "/admin/categories",
+    },
+    {
+      label: "Total Courses",
+      value: courses.length,
+      icon: <FaBook />,
+      color: "text-purple-500",
+      bg: "bg-purple-500/10",
+      border: "border-purple-500/20",
+      link: "/admin/services",
+    },
+    {
+      label: "Active Users",
+      value: users.length,
+      icon: <FaUsers />,
+      color: "text-green-500",
+      bg: "bg-green-500/10",
+      border: "border-green-500/20",
+      link: "/admin/users",
+    },
+    {
+      label: "Total Revenue",
+      value: `₹${totalRevenue.toLocaleString()}`,
+      icon: <FaMoneyBillWave />,
+      color: "text-[#F47C26]",
+      bg: "bg-[#F47C26]/10",
+      border: "border-[#F47C26]/20",
+      link: "/admin/payments",
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[calc(100vh-200px)]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#F47C26]"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-        Dashboard Overview
-      </h2>
+    <div className="relative">
+      {/* Background Ambience (Localized to content area) */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[#F47C26]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {/* Categories Card */}
-        <div
-          className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => navigate("/admin/categories")}
-        >
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-green-100 text-green-600">
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <h3 className="text-gray-500 text-sm font-medium">Categories</h3>
-              <p className="text-2xl font-semibold text-gray-800">
-                {Array.isArray(categories) ? categories.length : 0}
-              </p>
-            </div>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-8"
+      >
+        {/* --- Header --- */}
+        <div className="flex justify-between items-end">
+          <div>
+            <h2 className="text-3xl font-black text-gray-900 dark:text-white">
+              Dashboard <span className="text-[#F47C26]">Overview</span>
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
+              System metrics and quick controls.
+            </p>
+          </div>
+          <div className="hidden md:block">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-bold uppercase tracking-wide border border-green-200 dark:border-green-500/20">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              System Operational
+            </span>
           </div>
         </div>
 
-        {/* Total Courses Card */}
-        <div
-          className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => navigate("/admin/services")}
-        >
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-indigo-100 text-indigo-600">
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <h3 className="text-gray-500 text-sm font-medium">
-                Total Courses
-              </h3>
-              <p className="text-2xl font-semibold text-gray-800">
-                {courses.length}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Total Students Card */}
-        <div
-          className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => navigate("/admin/users")}
-        >
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-purple-100 text-purple-600">
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0111.357-3.182M15 21v-1a4 4 0 00-4-4H8m11-9a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <h3 className="text-gray-500 text-sm font-medium">
-                Total Students
-              </h3>
-              <p className="text-2xl font-semibold text-gray-800">
-                {Array.isArray(users) ? users.length : 0}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Total Revenue Card */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-purple-100 text-purple-600">
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <h3 className="text-gray-500 text-sm font-medium">
-                Total Revenue
-              </h3>
-              <p className="text-2xl font-semibold text-gray-800">
-                {totalRevenue}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="flex flex-col gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            Quick Actions
-          </h3>
-          <div className="flex flex-row space-x-3">
-            {quickActions.map((action) => (
-              <Link
-                key={action.label}
-                to={action.link}
-                className={`flex items-center p-3 rounded-md bg-${action.color}-50 text-${action.color}-700 hover:bg-${action.color}-100`}
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+        {/* --- Stats Grid --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, index) => (
+            <motion.div
+              key={index}
+              variants={itemVariants}
+              onClick={() => navigate(stat.link)}
+              className={`cursor-pointer group relative overflow-hidden bg-white dark:bg-white/5 backdrop-blur-md border ${stat.border} p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:shadow-none`}
+            >
+              <div className="relative z-10 flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    {stat.label}
+                  </p>
+                  <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                    {stat.value}
+                  </h3>
+                </div>
+                <div
+                  className={`p-3 rounded-xl ${stat.bg} ${stat.color} text-xl group-hover:scale-110 transition-transform`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                {action.label}
-              </Link>
-            ))}
-          </div>
+                  {stat.icon}
+                </div>
+              </div>
+              {/* Hover Glow */}
+              <div
+                className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 bg-gradient-to-br from-transparent to-${
+                  stat.color.split("-")[1]
+                }-500`}
+              ></div>
+            </motion.div>
+          ))}
         </div>
-      </div>
+
+        {/* --- Analytics Diagram --- */}
+        <motion.div
+          variants={itemVariants}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        >
+          <div className="lg:col-span-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <FaChartLine className="text-[#F47C26]" /> Platform Analytics
+              </h3>
+              <select className="bg-gray-50 dark:bg-white/5 border-none text-xs rounded-lg px-3 py-1 text-gray-500 cursor-pointer">
+                <option>Last 7 Days</option>
+                <option>Last 30 Days</option>
+              </select>
+            </div>
+            <div className="aspect-[2/1] w-full bg-gray-50 dark:bg-black/20 rounded-xl border border-dashed border-gray-200 dark:border-white/10 flex items-center justify-center text-xs text-gray-400"></div>
+          </div>
+
+          {/* --- Quick Actions --- */}
+          <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm">
+            <h3 className="font-bold text-gray-900 dark:text-white mb-6">
+              Quick Commands
+            </h3>
+            <div className="space-y-3">
+              <button
+                onClick={() => navigate("/admin/services/new")}
+                className="w-full flex items-center justify-between p-4 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-indigo-200 dark:bg-indigo-500/30 rounded-lg text-indigo-700 dark:text-indigo-300">
+                    <FaPlus size={12} />
+                  </div>
+                  <span className="font-semibold text-indigo-900 dark:text-indigo-100 text-sm">
+                    New Course
+                  </span>
+                </div>
+                <FaArrowRight className="text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 text-xs" />
+              </button>
+
+              <button
+                onClick={() => navigate("/admin/categories/new")}
+                className="w-full flex items-center justify-between p-4 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/20 hover:bg-green-100 dark:hover:bg-green-500/20 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-200 dark:bg-green-500/30 rounded-lg text-green-700 dark:text-green-300">
+                    <FaLayerGroup size={12} />
+                  </div>
+                  <span className="font-semibold text-green-900 dark:text-green-100 text-sm">
+                    New Category
+                  </span>
+                </div>
+                <FaArrowRight className="text-green-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 text-xs" />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
