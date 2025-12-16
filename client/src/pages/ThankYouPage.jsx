@@ -16,9 +16,9 @@ const ThankYouPage = () => {
         transaction_id: "",
         value: 1.0,
         currency: "INR",
-        event_callback: function () {
-          console.log("Conversion tracked on thank you page");
-        },
+        // event_callback: function () {
+        //   console.log("Conversion tracked on thank you page");
+        // },
       });
     }
   }, []);

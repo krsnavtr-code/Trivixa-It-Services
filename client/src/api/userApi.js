@@ -244,10 +244,10 @@ export default userApi;
 // Test API connection
 export const testApiConnection = async () => {
   try {
-    console.log('Testing API connection...');
+    // console.log('Testing API connection...');
     // Test with a more appropriate endpoint
     const response = await api.get('/services');
-    console.log('API test response:', response.data);
+    // console.log('API test response:', response.data);
     return true;
   } catch (error) {
     console.error('API connection test failed:', {

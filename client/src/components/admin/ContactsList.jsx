@@ -135,30 +135,30 @@ const ContactsList = () => {
         ...(filters.course && { course: filters.course }), // Add course filter
       };
       
-      console.log('Fetching contacts with filters:', {
-        status: filters.status,
-        date: filters.date,
-        course: filters.course,
-        page: pagination.page,
-        limit: pagination.limit,
-        params: params // Log the actual params being sent
-      });
+      // console.log('Fetching contacts with filters:', {
+      //   status: filters.status,
+      //   date: filters.date,
+      //   course: filters.course,
+      //   page: pagination.page,
+      //   limit: pagination.limit,
+      //   params: params // Log the actual params being sent
+      // });
 
       const response = await getContacts(params);
-      console.log('API Response:', {
-        success: response.success,
-        dataLength: response.data?.length,
-        filtersApplied: {
-          status: filters.status,
-          date: filters.date,
-          course: filters.course
-        },
-        responseData: response.data?.map(c => ({
-          id: c._id,
-          courseTitle: c.courseTitle,
-          status: c.status
-        }))
-      });
+      // console.log('API Response:', {
+      //   success: response.success,
+      //   dataLength: response.data?.length,
+      //   filtersApplied: {
+      //     status: filters.status,
+      //     date: filters.date,
+      //     course: filters.course
+      //   },
+      //   responseData: response.data?.map(c => ({
+      //     id: c._id,
+      //     courseTitle: c.courseTitle,
+      //     status: c.status
+      //   }))
+      // });
 
       if (response.success) {
         setContacts(response.data || []);
@@ -169,12 +169,12 @@ const ContactsList = () => {
         const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
         const currentPage = response.meta?.currentPage || response.meta?.page || pagination.page;
         
-        console.log('Updating pagination state:', {
-          total: totalItems,
-          totalPages,
-          currentPage,
-          limit: itemsPerPage
-        });
+        // console.log('Updating pagination state:', {
+        //   total: totalItems,
+        //   totalPages,
+        //   currentPage,
+        //   limit: itemsPerPage
+        // });
         
         // Update pagination state with calculated values
         setPagination(prev => ({

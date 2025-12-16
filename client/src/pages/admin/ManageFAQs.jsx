@@ -120,9 +120,9 @@ const ManageFAQs = () => {
   const fetchFAQs = async () => {
     try {
       setLoading(true);
-      console.log('Fetching FAQs...');
+      // console.log('Fetching FAQs...');
       const data = await getAllFAQs();
-      console.log('Received FAQs data:', data);
+      // console.log('Received FAQs data:', data);
       
       if (!Array.isArray(data)) {
         console.error('Expected an array of FAQs but got:', data);
@@ -131,7 +131,7 @@ const ManageFAQs = () => {
       }
       
       setFaqs(data);
-      console.log(`${data.length} FAQs loaded`);
+      // console.log(`${data.length} FAQs loaded`);
     } catch (err) {
       console.error('Error fetching FAQs:', err);
       setError('Failed to load FAQs. Please try again.');

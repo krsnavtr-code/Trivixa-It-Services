@@ -34,9 +34,9 @@ const CategoryForm = () => {
 
     try {
       setLoading(true);
-      console.log(`Fetching category with ID: ${id}`);
+      // console.log(`Fetching category with ID: ${id}`);
       const category = await getCategoryById(id);
-      console.log("Fetched category data:", category);
+      // console.log("Fetched category data:", category);
 
       if (!category) {
         throw new Error("Category not found");
@@ -64,14 +64,14 @@ const CategoryForm = () => {
     const { name, value, type, checked } = e.target;
     const newValue = type === "checkbox" ? checked : value;
 
-    console.log(`Field changed - Name: ${name}, Value:`, newValue);
+    // console.log(`Field changed - Name: ${name}, Value:`, newValue);
 
     setFormData((prev) => {
       const newData = {
         ...prev,
         [name]: newValue,
       };
-      console.log("Updated form data:", newData);
+      // console.log("Updated form data:", newData);
       return newData;
     });
 
@@ -113,15 +113,15 @@ const CategoryForm = () => {
     e.preventDefault();
 
     // Log current form data and environment before validation
-    console.log("=== Form Submission Started ===");
-    console.log(
-      "Form data before validation:",
-      JSON.parse(JSON.stringify(formData))
-    );
-    console.log(
-      "Environment VITE_API_BASE_URL:",
-      import.meta.env.VITE_API_BASE_URL
-    );
+    // // console.log("=== Form Submission Started ===");
+    // // console.log(
+    //   "Form data before validation:",
+    //   JSON.parse(JSON.stringify(formData))
+    // );
+    // // console.log(
+    //   "Environment VITE_API_BASE_URL:",
+    //   import.meta.env.VITE_API_BASE_URL
+    // );
 
     // Client-side validation
     if (!formData.name || !formData.name.trim()) {
@@ -157,8 +157,8 @@ const CategoryForm = () => {
         image: formData.image?.trim() || "",
       };
 
-      console.log("=== Prepared Category Data ===");
-      console.log(JSON.stringify(categoryData, null, 2));
+      // console.log("=== Prepared Category Data ===");
+      // console.log(JSON.stringify(categoryData, null, 2));
 
       // If there's a file to upload, use FormData
       let requestData = { ...categoryData }; // Create a copy to avoid modifying the original
@@ -174,15 +174,15 @@ const CategoryForm = () => {
         requestData = formDataToSend;
       }
 
-      console.log("Sending request with data:", requestData);
+      // console.log("Sending request with data:", requestData);
 
       if (isEditing) {
         const response = await updateCategory(id, requestData);
-        console.log("Update response:", response);
+        // console.log("Update response:", response);
         toast.success("Category updated successfully");
       } else {
         const response = await createCategory(requestData);
-        console.log("Create response:", response);
+        // console.log("Create response:", response);
         toast.success("Category created successfully");
       }
 

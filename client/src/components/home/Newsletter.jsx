@@ -13,7 +13,7 @@ const Newsletter = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Simulate API call
-    console.log("Subscribed with email:", email);
+    // console.log("Subscribed with email:", email);
     setIsSubscribed(true);
     setEmail("");
 

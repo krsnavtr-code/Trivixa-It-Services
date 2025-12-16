@@ -67,7 +67,7 @@ export const getFAQs = async (params = {}) => {
       limit: 50
     };
     
-    console.log('Fetching FAQs with params:', { ...defaultParams, ...params });
+    // console.log('Fetching FAQs with params:', { ...defaultParams, ...params });
     
     try {
       const response = await api.get(FAQ_ENDPOINT, { 
@@ -80,7 +80,7 @@ export const getFAQs = async (params = {}) => {
         validateStatus: (status) => status < 500
       });
       
-      console.log('FAQ API Response:', response.data);
+      // console.log('FAQ API Response:', response.data);
       
       // Handle different response formats
       if (Array.isArray(response.data)) {

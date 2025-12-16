@@ -52,13 +52,13 @@ export default function PrivateRoute({
     const hasAllowedRole = normalizedAllowedRoles.includes(normalizedUserRole);
 
     if (!hasAllowedRole) {
-      console.log('PrivateRoute - Role-based access denied', {
-        currentRole: userRole,
-        normalizedUserRole,
-        allowedRoles,
-        normalizedAllowedRoles,
-        hasToken: !!localStorage.getItem('token')
-      });
+      // console.log('PrivateRoute - Role-based access denied', {
+      //   currentRole: userRole,
+      //   normalizedUserRole,
+      //   allowedRoles,
+      //   normalizedAllowedRoles,
+      //   hasToken: !!localStorage.getItem('token')
+      // });
       return <Navigate to="/unauthorized" replace />;
     }
   }

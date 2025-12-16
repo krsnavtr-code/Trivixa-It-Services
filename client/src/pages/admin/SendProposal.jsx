@@ -156,20 +156,20 @@ Warm regards,
       };
 
       // Debug log to check the selected message type and content
-      console.log("Selected message type:", selectedMessageType);
-      console.log("Using message:", emailData.message.substring(0, 50) + "...");
+      // console.log("Selected message type:", selectedMessageType);
+      // console.log("Using message:", emailData.message.substring(0, 50) + "...");
 
       // Add files first (this is important for some servers)
       if (files && files.length > 0) {
-        console.log("Adding files to form data:", files);
+        // console.log("Adding files to form data:", files);
         files.forEach((file, index) => {
           formData.append("attachments", file);
-          console.log(
-            `Added file ${index + 1}: ${file.name} (${(
-              file.size /
-              (1024 * 1024)
-            ).toFixed(2)}MB)`
-          );
+          // console.log(
+          //   `Added file ${index + 1}: ${file.name} (${(
+          //     file.size /
+          //     (1024 * 1024)
+          //   ).toFixed(2)}MB)`
+          // );
         });
       } else {
         console.log("No files to attach");
@@ -179,15 +179,15 @@ Warm regards,
       formData.append("data", JSON.stringify(emailData));
 
       // Log form data for debugging (without logging file content)
-      console.log("FormData entries:");
+      // console.log("FormData entries:");
       for (let pair of formData.entries()) {
         if (pair[0] === "attachments") {
-          console.log(
-            `${pair[0]}: ${pair[1].name} (${(
-              pair[1].size /
-              (1024 * 1024)
-            ).toFixed(2)}MB)`
-          );
+          // console.log(
+          //   `${pair[0]}: ${pair[1].name} (${(
+          //     pair[1].size /
+          //     (1024 * 1024)
+          //   ).toFixed(2)}MB)`
+          // );
         } else {
           console.log(pair[0] + ":", pair[1]);
         }
@@ -339,7 +339,7 @@ Warm regards,
       }
 
       if (validFiles.length > 0) {
-        console.log("Valid files selected:", validFiles);
+        // console.log("Valid files selected:", validFiles);
         setFiles((prevFiles) => [...prevFiles, ...validFiles]);
       }
     }

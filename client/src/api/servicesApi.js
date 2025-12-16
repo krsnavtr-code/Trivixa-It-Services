@@ -42,10 +42,10 @@ export const getCourses = async (queryParams = '', isAdmin = false) => {
         // Ensure we're including all necessary fields
         params.set('fields', 'title,description,image,category,instructor,price,showOnHome,isPublished,level');
         
-        // console.log('Making API request to /services with params:', Object.fromEntries(params));
+        // // console.log('Making API request to /services with params:', Object.fromEntries(params));
         const response = await axios.get(`/services?${params.toString()}`);
         
-        // console.log('API Response data structure:', {
+        // // console.log('API Response data structure:', {
         //     isArray: Array.isArray(response.data),
         //     hasDataProperty: response.data && typeof response.data === 'object' && 'data' in response.data,
         //     responseKeys: response.data ? Object.keys(response.data) : 'no data'
@@ -75,7 +75,7 @@ export const getCourses = async (queryParams = '', isAdmin = false) => {
 // Get single course by ID with all necessary fields
 export const getCourseById = async (id) => {
     try {
-        console.log(`Fetching course with ID: ${id}`);
+        // console.log(`Fetching course with ID: ${id}`);
         const response = await axios.get(`/services/${id}`, {
             params: {
                 fields: [
@@ -89,7 +89,7 @@ export const getCourseById = async (id) => {
                 ].join(',')
             }
         });
-        console.log('Course fetched successfully:', response.data);
+        // console.log('Course fetched successfully:', response.data);
         return response.data;
     } catch (error) {
         console.error(`Error fetching course with ID ${id}:`, error);
@@ -103,7 +103,7 @@ export const getCourseById = async (id) => {
 
 // Helper function to clean and format course data
 const prepareCourseData = (courseData) => {
-    console.log('Original course data in prepareCourseData:', JSON.stringify(courseData, null, 2));
+    // console.log('Original course data in prepareCourseData:', JSON.stringify(courseData, null, 2));
     
     // Create a deep copy to avoid mutating the original data
     const cleanData = JSON.parse(JSON.stringify(courseData));
@@ -239,18 +239,18 @@ const prepareCourseData = (courseData) => {
         }];
     }
     
-    console.log('Prepared course data:', JSON.stringify(cleanData, null, 2));
+    // console.log('Prepared course data:', JSON.stringify(cleanData, null, 2));
     return cleanData;
 };
 
 // Create a new course
 export const createCourse = async (courseData) => {
     try {
-        console.log('Original course data:', courseData);
+        // console.log('Original course data:', courseData);
         
         // Clean and format the course data first
         const cleanData = prepareCourseData(courseData);
-        console.log('Prepared course data:', cleanData);
+        // console.log('Prepared course data:', cleanData);
         
         // Check for required fields after processing
         const requiredFields = ['title', 'description', 'category', 'instructor', 'level'];
@@ -268,7 +268,7 @@ export const createCourse = async (courseData) => {
         }
         
         // Log the exact data being sent
-        console.log('Sending to server:', JSON.stringify(cleanData, null, 2));
+        // console.log('Sending to server:', JSON.stringify(cleanData, null, 2));
         
         const response = await axios({
             method: 'post',
@@ -282,8 +282,8 @@ export const createCourse = async (courseData) => {
             validateStatus: (status) => status < 500 // Don't throw for 4xx errors
         });
 
-        console.log('Server response status:', response.status);
-        console.log('Server response data:', response.data);
+        // console.log('Server response status:', response.status);
+        // console.log('Server response data:', response.data);
         
         if (response.status >= 400) {
             // Handle 4xx errors
@@ -310,7 +310,7 @@ export const createCourse = async (courseData) => {
             throw new Error('The server response is missing the course ID');
         }
         
-        console.log('Course created successfully:', responseCourseData);
+        // console.log('Course created successfully:', responseCourseData);
         return responseCourseData;
     } catch (error) {
         console.error('Error creating course:', error);
@@ -363,7 +363,7 @@ export const createCourse = async (courseData) => {
 // Update a course (full or partial update)
 export const updateCourse = async (id, courseData, isPartial = false) => {
     try {
-        console.log(`${isPartial ? 'Partially' : 'Fully'} updating course ${id} with data:`, courseData);
+        // console.log(`${isPartial ? 'Partially' : 'Fully'} updating course ${id} with data:`, courseData);
         
         // Helper function to clean array fields
         const cleanArrayField = (field) => {
@@ -378,7 +378,7 @@ export const updateCourse = async (id, courseData, isPartial = false) => {
         };
         
         // Log the raw isFeatured value for debugging
-        console.log('Raw isFeatured value:', courseData.isFeatured, 'type:', typeof courseData.isFeatured);
+        // console.log('Raw isFeatured value:', courseData.isFeatured, 'type:', typeof courseData.isFeatured);
         
         // Clean and format the data
         const cleanData = {
@@ -421,7 +421,7 @@ export const updateCourse = async (id, courseData, isPartial = false) => {
               )
             : cleanData;
 
-        console.log('Sending cleaned data:', dataToSend);
+        // console.log('Sending cleaned data:', dataToSend);
         
         const method = isPartial ? 'patch' : 'put';
         const response = await axios[method](`/services/${id}`, dataToSend, {
@@ -430,7 +430,7 @@ export const updateCourse = async (id, courseData, isPartial = false) => {
             }
         });
         
-        console.log(`Course ${isPartial ? 'partially ' : ''}updated successfully:`, response.data);
+        // console.log(`Course ${isPartial ? 'partially ' : ''}updated successfully:`, response.data);
         return response.data;
     } catch (error) {
         console.error(`Error ${isPartial ? 'partially ' : ''}updating course ${id}:`, error);
@@ -445,13 +445,13 @@ export const updateCourse = async (id, courseData, isPartial = false) => {
 // Update specific course section
 export const updateCourseSection = async (id, section, sectionData) => {
     try {
-        console.log(`Updating course ${id} section '${section}' with data:`, sectionData);
+        // console.log(`Updating course ${id} section '${section}' with data:`, sectionData);
         const response = await axios.patch(`/services/${id}/section/${section}`, sectionData, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        console.log(`Course section '${section}' updated successfully:`, response.data);
+        // console.log(`Course section '${section}' updated successfully:`, response.data);
         return response.data;
     } catch (error) {
         console.error(`Error updating course ${id} section '${section}':`, error);
@@ -466,9 +466,9 @@ export const updateCourseSection = async (id, section, sectionData) => {
 // Delete a course
 export const deleteCourse = async (id) => {
     try {
-        console.log(`Deleting course with ID: ${id}`);
+        // console.log(`Deleting course with ID: ${id}`);
         const response = await axios.delete(`/services/${id}`);
-        console.log('Course deleted successfully:', response.data);
+        // console.log('Course deleted successfully:', response.data);
         return response.data;
     } catch (error) {
         console.error(`Error deleting course ${id}:`, error);
@@ -493,9 +493,9 @@ export const getServicesByCategory = async (categoryId = '') => {
       params.category = categoryId;
     }
     
-    // console.log('Fetching courses with params:', params);
+    // // console.log('Fetching courses with params:', params);
     const response = await axios.get('/services', { params });
-    // console.log('Courses fetched successfully:', response.data);
+    // // console.log('Courses fetched successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching courses by category:', error);
@@ -546,18 +546,18 @@ export const downloadBrochure = async (courseId) => {
 
 export const getCategoriesForForm = async () => {   
     try {
-        console.log('Fetching categories for form');
+        // console.log('Fetching categories for form');
         
         // First, try with a simple query to get all categories
-        console.log('Making API call to /categories');
+        // console.log('Making API call to /categories');
         const response = await axios.get('/categories');
         
-        console.log('Raw categories API response:', response);
-        console.log('Response data:', response.data);
+        // console.log('Raw categories API response:', response);
+        // console.log('Response data:', response.data);
         
         // Check if we have a data property with an array
         if (response.data && Array.isArray(response.data)) {
-            console.log('Found categories directly in response.data');
+            // console.log('Found categories directly in response.data');
             return response.data.map(cat => ({
                 value: cat._id,
                 label: cat.title || cat.name || 'Unnamed Category'
@@ -566,7 +566,7 @@ export const getCategoriesForForm = async () => {
         
         // Check for nested data property
         if (response.data?.data && Array.isArray(response.data.data)) {
-            console.log('Found categories in response.data.data');
+            // console.log('Found categories in response.data.data');
             return response.data.data.map(cat => ({
                 value: cat._id,
                 label: cat.title || cat.name || 'Unnamed Category'
@@ -575,7 +575,7 @@ export const getCategoriesForForm = async () => {
         
         // Check for results property (some APIs use this)
         if (response.data?.results && Array.isArray(response.data.results)) {
-            console.log('Found categories in response.data.results');
+            // console.log('Found categories in response.data.results');
             return response.data.results.map(cat => ({
                 value: cat._id,
                 label: cat.title || cat.name || 'Unnamed Category'

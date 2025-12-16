@@ -24,7 +24,7 @@ const VITE_API_URL= import.meta.env.VITE_API_URL;
 // };
 export const getImageUrl = (path) => {
   if (!path) {
-    console.log('No path provided, returning empty string');
+    // console.log('No path provided, returning empty string');
     return '';
   }
 

@@ -24,7 +24,7 @@ const location = useLocation();
   }, []);
 
   const fetchCategories = async () => {
-    console.log('Fetching categories...');
+    // console.log('Fetching categories...');
     try {
       setLoading(true);
       
@@ -35,10 +35,10 @@ const location = useLocation();
         status: statusFilter === 'all' ? undefined : statusFilter
       };
       
-      console.log('Calling getCategories with params:', params);
+      // console.log('Calling getCategories with params:', params);
       const response = await getCategories(params);
       
-      console.log('Categories response received:', response);
+      // console.log('Categories response received:', response);
       if (response?.success && response?.data) {
         setCategories(response.data);
         setTotalCount(response.pagination?.total || response.data.length);
