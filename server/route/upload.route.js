@@ -1,5 +1,4 @@
 import express from 'express';
-import { handleFileUpload } from '../utils/fileUpload.js';
 import { protect } from '../middleware/authMiddleware.js';
 import path from 'path';
 import { fileURLToPath } from 'url';

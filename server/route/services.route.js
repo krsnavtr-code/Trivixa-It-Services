@@ -7,8 +7,6 @@ import {
     updateCourse, 
     deleteCourse,
     uploadCourseImage,
-    generatePdf,
-    deletePdf
 } from '../controller/services.controller.js';
 import { isAdmin } from '../middleware/admin.js';
 import multer from 'multer';
@@ -90,8 +88,6 @@ router.post('/', isAdmin, validateCourse, createCourse);
 router.put('/:id', isAdmin, validateCourse, updateCourse);
 router.delete('/:id', isAdmin, deleteCourse);
 router.post('/:id/upload-image', isAdmin, upload.single('image'), uploadCourseImage);
-router.post('/:id/generate-pdf', isAdmin, generatePdf);
-router.delete('/:id/pdf', isAdmin, deletePdf);
 
 // Public routes
 router.get('/', getAllCourses);

@@ -42,14 +42,14 @@ export const getCourses = async (queryParams = '', isAdmin = false) => {
         // Ensure we're including all necessary fields
         params.set('fields', 'title,description,image,category,instructor,price,showOnHome,isPublished,level');
         
-        console.log('Making API request to /services with params:', Object.fromEntries(params));
+        // console.log('Making API request to /services with params:', Object.fromEntries(params));
         const response = await axios.get(`/services?${params.toString()}`);
         
-        console.log('API Response data structure:', {
-            isArray: Array.isArray(response.data),
-            hasDataProperty: response.data && typeof response.data === 'object' && 'data' in response.data,
-            responseKeys: response.data ? Object.keys(response.data) : 'no data'
-        });
+        // console.log('API Response data structure:', {
+        //     isArray: Array.isArray(response.data),
+        //     hasDataProperty: response.data && typeof response.data === 'object' && 'data' in response.data,
+        //     responseKeys: response.data ? Object.keys(response.data) : 'no data'
+        // });
         
         // Handle different response formats
         if (Array.isArray(response.data)) {

@@ -30,14 +30,9 @@ import chatRoutes from "./route/chat.route.js";
 import paymentRoutes from "./route/payment.routes.js";
 import adminPaymentRoutes from "./route/adminPayment.routes.js";
 
-// PDFs & Emails
-import pdfRoutes from "./route/pdf.routes.js"; // Logic routes
-import pdfRouter from "./route/pdf.route.js";  // Resource routes
+// Emails
 import adminEmailRoutes from "./route/adminEmail.routes.js";
 import emailRecordRoutes from "./route/emailRecord.routes.js";
-
-// Models (for testing)
-import Category from "./model/category.model.js";
 
 // --- Configuration & Setup ---
 dotenv.config();
@@ -50,8 +45,6 @@ const __dirname = path.dirname(__filename);
 // Define Paths
 const publicDir = path.join(__dirname, "public");
 const uploadsDir = path.join(__dirname, "public", "uploads");
-const pdfsDir = path.join(publicDir, "pdfs");
-const uploadedBrochuresDir = path.join(publicDir, "uploaded_brochure");
 const candidateProfileDir = path.join(publicDir, "candidate_profile");
 
 // --- Middleware Configuration ---
@@ -99,7 +92,7 @@ app.options("*", cors(corsOptions));
 // --- File System & Static Files ---
 
 // Ensure directories exist
-[uploadsDir, pdfsDir].forEach(dir => {
+[uploadsDir].forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
         console.log(`Created directory: ${dir}`);
@@ -127,21 +120,13 @@ app.use("/uploads", (req, res, next) => {
     },
 }));
 
-// Static Route: Generated PDFs
-app.use("/pdfs", express.static(pdfsDir, {
-    setHeaders: (res, filePath) => {
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", 'inline; filename="' + path.basename(filePath) + '"');
+// Static Route: Candidate Profiles
+app.use("/candidate_profile", express.static(candidateProfileDir, {
+    setHeaders: (res, path) => {
+        res.setHeader("Cache-Control", "public, max-age=31536000");
     },
 }));
 
-// Static Route: Brochures
-app.use("/uploaded_brochure", express.static(uploadedBrochuresDir, {
-    setHeaders: (res, path) => {
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", "inline");
-    },
-}));
 
 // Static Route: Candidate Profiles
 app.use("/candidate_profile", express.static(candidateProfileDir, {
@@ -223,9 +208,6 @@ app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/v1/admin/emails", adminEmailRoutes);
 app.use("/api/emails", emailRecordRoutes);
 
-// PDFs
-app.use("/api", pdfRoutes);      // Likely for generation endpoints
-app.use("/api/pdfs", pdfRouter); // Likely for management endpoints
 
 // --- Global Error Handling ---
 app.use((err, req, res, next) => {

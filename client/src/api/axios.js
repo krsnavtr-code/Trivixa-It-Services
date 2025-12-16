@@ -149,7 +149,7 @@ api.interceptors.response.use(
         
         // Request new access token using refresh token
         const response = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:4002/api'}/auth/refresh-token`,
+          '/api/auth/refresh-token',
           { refreshToken },
           {
             headers: {

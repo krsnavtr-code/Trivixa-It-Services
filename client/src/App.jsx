@@ -30,12 +30,9 @@ import Careers from "./pages/Careers";
 import Unauthorized from "./pages/Unauthorized";
 import SuspendedAccount from "./pages/SuspendedAccount";
 
-// --- Service & Course Pages ---
+// --- Service Pages ---
 import ServicesByCategory from "./pages/user/ServicesByCategory.jsx";
 import AllCategories from "./pages/user/AllCategories";
-import CourseDetail from "./pages/user/CourseDetail";
-import FreeCourses from "./pages/FreeCourses";
-import CorporateTraining from "./pages/user/CorporateTraining";
 
 // --- Auth Pages ---
 import LoginPage from "./pages/auth/LoginPage";
@@ -45,8 +42,6 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import CategoriesList from "./components/admin/categories/CategoriesList";
 import CategoryForm from "./components/admin/categories/CategoryForm";
-import CoursesList from "./components/admin/services/CoursesList";
-import CourseForm from "./components/admin/services/CourseForm";
 import Users from "./components/admin/Users";
 import ContactsList from "./components/admin/ContactsList";
 import ManageFAQs from "./pages/admin/ManageFAQs";
@@ -210,14 +205,6 @@ function App() {
             }
           />
           <Route
-            path="/career"
-            element={
-              <MainLayout>
-                <Careers />
-              </MainLayout>
-            }
-          />
-          <Route
             path="/thank-you"
             element={
               <MainLayout>
@@ -274,30 +261,6 @@ function App() {
             element={
               <MainLayout>
                 <AllCategories />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/course/:id"
-            element={
-              <MainLayout>
-                <CourseDetail />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/free-courses"
-            element={
-              <MainLayout>
-                <FreeCourses />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/corporate-training"
-            element={
-              <MainLayout>
-                <CorporateTraining />
               </MainLayout>
             }
           />
@@ -371,18 +334,6 @@ function App() {
               element={<Navigate to="dashboard" replace />}
             />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
-
-            {/* Project/Services Management */}
-            <Route path="/admin/services" element={<CoursesList />} />
-            <Route
-              path="/admin/services/new"
-              element={<CourseForm isEdit={false} />}
-            />
-            <Route
-              path="/admin/services/:id/edit"
-              element={<CourseForm isEdit={true} />}
-            />
-            <Route path="/admin/course/:id" element={<CourseDetail />} />
 
             {/* Category Management */}
             <Route path="/admin/categories" element={<CategoriesList />} />

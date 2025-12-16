@@ -8,9 +8,9 @@ const userApi = {
   // Get all users with optional filters
   getUsers: async (filters = {}) => {
     try {
-      console.log('Fetching users with filters:', filters);
+      // console.log('Fetching users with filters:', filters);
       const response = await api.get('/users', { params: filters });
-      console.log('Users response:', response);
+      // console.log('Users response:', response);
       return response.data;
     } catch (error) {
       console.error('Error fetching users:', {
