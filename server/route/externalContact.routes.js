@@ -6,7 +6,7 @@ const router = express.Router();
 // Token-based authentication middleware
 const authenticateToken = (req, res, next) => {
   const token = req.params.token;
-    const expectedToken = 'firstvite_data_importing_in_origanation_id_1_FV';
+    const expectedToken = 'trivixa_data_importing_in_origanation_id_1_FV';
 
   if (!token || token !== expectedToken) {
     return res.status(401).json({

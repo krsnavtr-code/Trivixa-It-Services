@@ -93,7 +93,7 @@ export const sendEmail = async ({
     })));
 
     const mailOptions = {
-      from: `"${process.env.EMAIL_FROM_NAME || 'FirstVITE E-Learning'}" <${fromEmail}>`,
+      from: `"${process.env.EMAIL_FROM_NAME}" <${fromEmail}>`,
       to: to,
       subject: subject,
       text: text,
@@ -162,7 +162,7 @@ export const sendCoursePdfEmail = async (email, course, pdfBuffer, fileName = ''
       <p>Please find attached the course material for <strong>${course.title}</strong>.</p>
       <p>Course Description: ${course.description || 'No description available'}</p>
       <p>Thank you for learning with us!</p>
-      <p>Best regards,<br>The ${process.env.APP_NAME || 'FirstVite'} Team</p>
+      <p>Best regards,<br>The ${process.env.APP_NAME} Team</p>
     </div>
   `;
 
@@ -217,7 +217,7 @@ export const sendContactNotifications = async (contact) => {
         
         <p>We'll respond to you at: ${contact.email}</p>
         
-        <p>Best regards,<br>The ${process.env.APP_NAME || 'FirstVite'} Team</p>
+        <p>Best regards,<br>The ${process.env.APP_NAME} Team</p>
       </div>
     `;
 

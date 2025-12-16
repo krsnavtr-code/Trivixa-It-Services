@@ -46,14 +46,6 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Increase the HTTP request timeout to 5 minutes (300000ms)
 app.timeout = 300000;
 
-// Middleware
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'https://firstvite.com',
-  'https://www.firstvite.com'
-];
-
 // CORS configuration
 const corsOptions = {
     origin: function (origin, callback) {
@@ -66,15 +58,12 @@ const corsOptions = {
         const allowedOrigins = [
             'http://localhost:5173',
             'http://localhost:5174',
-            'https://firstvite.com',
-            'https://www.firstvite.com',
-            'https://firstvite.vercel.app',
-            'https://www.firstvite.vercel.app'
+            'https://trivixa.in',
+            'https://www.trivixa.com',
         ];
         
         if (allowedOrigins.includes(origin) || 
-            origin.endsWith('.firstvite.com') || 
-            origin.endsWith('.vercel.app')) {
+            origin.endsWith('.trivixa.com')) {
             return callback(null, true);
         }
         
