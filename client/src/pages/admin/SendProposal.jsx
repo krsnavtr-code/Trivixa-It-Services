@@ -206,7 +206,7 @@ Warm regards,
         const response = await axios({
           method: "post",
           url: `${
-            import.meta.env.VITE_API_BASE_URL || "http://localhost:4002/api"
+            "/api"
           }/v1/admin/emails/send-proposal`,
           data: formData,
           headers: {
