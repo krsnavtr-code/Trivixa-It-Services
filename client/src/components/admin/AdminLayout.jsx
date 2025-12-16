@@ -41,12 +41,6 @@ const NAV_ITEMS = [
     category: "Content & Products",
     items: [
       {
-        path: "/admin/services",
-        label: "Courses & Services",
-        icon: <FaBook />,
-        activePaths: ["/admin/services"],
-      },
-      {
         path: "/admin/categories",
         label: "Categories",
         icon: <FaList />,

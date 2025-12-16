@@ -367,7 +367,7 @@ function App() {
           </Route>
 
           {/* Catch-all 404 */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/unauthorized" replace />} />
         </Routes>
       </ThemeProvider>
     </HelmetProvider>
