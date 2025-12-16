@@ -2,410 +2,268 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import path from 'path';
-import Category from "./model/category.model.js";
-import { fileURLToPath } from 'url';
+import path from "path";
+import fs from "fs"; // Moved to top
+import { fileURLToPath } from "url";
 
-
-// Import routes
-import authRoute from "./route/auth.route.js";
+// --- Import Routes ---
+// Auth & Users
+import authRoutes from "./route/auth.routes.js"; // Used authRoutes instead of authRoute
 import userRoutes from "./route/user.routes.js";
 import profileRoute from "./route/profile.route.js";
+
+// Core Business Logic
 import categoryRoute from "./route/category.route.js";
 import servicesRoute from "./route/services.route.js";
-import contactRoute from "./route/contact.routes.js";
+import contactRoute from "./route/contact.routes.js"; // Used for both /contact and /contacts
 import faqRoute from "./route/faq.route.js";
-import uploadRoute from "./route/upload.route.js";
-import authRoutes from "./route/auth.routes.js";
-import adminRoutes from "./route/admin.routes.js";
 import blogRoutes from "./route/blog.route.js";
+import discussionRoutes from "./route/discussion.routes.js";
+
+// Admin & Operations
+import adminRoutes from "./route/admin.routes.js";
+import uploadRoute from "./route/upload.route.js";
+import externalContactRoutes from "./route/externalContact.routes.js";
+import chatRoutes from "./route/chat.route.js";
+
+// Payments
 import paymentRoutes from "./route/payment.routes.js";
 import adminPaymentRoutes from "./route/adminPayment.routes.js";
-import pdfRoutes from "./route/pdf.routes.js";
-import pdfRouter from "./route/pdf.route.js";
-import chatRoutes from "./route/chat.route.js";
-import discussionRoutes from "./route/discussion.routes.js";
-import externalContactRoutes from "./route/externalContact.routes.js";
+
+// PDFs & Emails
+import pdfRoutes from "./route/pdf.routes.js"; // Logic routes
+import pdfRouter from "./route/pdf.route.js";  // Resource routes
 import adminEmailRoutes from "./route/adminEmail.routes.js";
 import emailRecordRoutes from "./route/emailRecord.routes.js";
 
-// Initialize express app
+// Models (for testing)
+import Category from "./model/category.model.js";
+
+// --- Configuration & Setup ---
+dotenv.config();
 const app = express();
 
-// Get directory name in ES module
+// ES Module fix for __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
-dotenv.config();
+// Define Paths
+const publicDir = path.join(__dirname, "public");
+const uploadsDir = path.join(__dirname, "public", "uploads");
+const pdfsDir = path.join(publicDir, "pdfs");
+const uploadedBrochuresDir = path.join(publicDir, "uploaded_brochure");
+const candidateProfileDir = path.join(publicDir, "candidate_profile");
 
-// Configure express to handle larger payloads
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+// --- Middleware Configuration ---
 
-// Increase the HTTP request timeout to 5 minutes (300000ms)
+// 1. Body Parser (Large limits for file/data uploads)
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+// 2. Timeout (5 minutes)
 app.timeout = 300000;
 
-// CORS configuration
+// 3. CORS
 const corsOptions = {
     origin: function (origin, callback) {
-        // In development or if no origin, allow all
-        if (process.env.NODE_ENV !== 'production' || !origin) {
+        if (process.env.NODE_ENV !== "production" || !origin) {
             return callback(null, true);
         }
-        
-        // Check if the origin is in the allowed list
         const allowedOrigins = [
-            'http://localhost:5173',
-            'http://localhost:5174',
-            'https://trivixa.in',
-            'https://www.trivixa.com',
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "https://trivixa.in",
+            "https://www.trivixa.com",
         ];
-        
-        if (allowedOrigins.includes(origin) || 
-            origin.endsWith('.trivixa.com')) {
+        if (allowedOrigins.includes(origin) || origin.endsWith(".trivixa.com")) {
             return callback(null, true);
         }
-        
-        console.warn('CORS blocked request from origin:', origin);
-        return callback(new Error('Not allowed by CORS'));
+        console.warn("CORS blocked request from origin:", origin);
+        return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: [
-        'Content-Type', 
-        'Authorization',
-        'x-auth-token', 
-        'x-user-agent', 
-        'x-client-ip',
-        'Cache-Control',
-        'Pragma',
-        'Expires',
-        'Accept',
-        'Access-Control-Allow-Origin'
+        "Content-Type", "Authorization", "x-auth-token", "x-user-agent",
+        "x-client-ip", "Cache-Control", "Pragma", "Expires", "Accept",
+        "Access-Control-Allow-Origin",
     ],
     exposedHeaders: [
-        'Content-Length',
-        'Content-Type',
-        'Content-Disposition',
-        'x-auth-token',
-        'x-user-agent',
-        'x-client-ip'
-    ]
+        "Content-Length", "Content-Type", "Content-Disposition",
+        "x-auth-token", "x-user-agent", "x-client-ip",
+    ],
 };
-
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
-// Handle preflight requests
-app.options('*', cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// --- File System & Static Files ---
 
-// Serve static files from the public directory
-const publicDir = path.join(__dirname, 'public');
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
-const pdfsDir = path.join(publicDir, 'pdfs');
-
-// Ensure PDFs directory exists
-if (!fs.existsSync(pdfsDir)) {
-    fs.mkdirSync(pdfsDir, { recursive: true });
-    console.log(`Created PDFs directory at: ${pdfsDir}`);
-}
-import fs from 'fs';
-
-// Ensure uploads directory exists
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-    console.log('Created uploads directory:', uploadsDir);
-} else {
-    // console.log('Uploads directory exists at:', uploadsDir);
-    // List files in the uploads directory for debugging
-    // fs.readdir(uploadsDir, (err, files) => {
-    //     if (err) {
-    //         console.error('Error reading uploads directory:', err);
-    //     } else {
-    //         console.log('Files in uploads directory:', files);
-    //     }
-    // });
-}
-
-// List all files in the public directory
-const listPublicFiles = (dir) => {
-    try {
-        const files = fs.readdirSync(dir);
-        // console.log(`Files in ${dir}:`, files);
-        return files;
-    } catch (err) {
-        console.error(`Error reading directory ${dir}:`, err);
-        return [];
+// Ensure directories exist
+[uploadsDir, pdfsDir].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+        console.log(`Created directory: ${dir}`);
     }
-};
-
-listPublicFiles(publicDir);
-listPublicFiles(uploadsDir);
-
-// Ensure PDFs directory exists
-if (!fs.existsSync(pdfsDir)) {
-    fs.mkdirSync(pdfsDir, { recursive: true });
-}
-
-// Serve static files from the public directory
-app.use(express.static(publicDir, {
-    setHeaders: (res, path) => {
-        res.setHeader('Cache-Control', 'public, max-age=31536000');
-    }
-}));
-
-// Serve uploaded brochures from the public/uploaded_brochure directory
-const uploadedBrochuresDir = path.join(publicDir, 'uploaded_brochure');
-app.use('/uploaded_brochure', express.static(uploadedBrochuresDir, {
-    setHeaders: (res, path) => {
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline');
-    }
-}));
-
-// Serve PDF files from the public/pdfs directory
-app.use('/pdfs', express.static(pdfsDir, {
-    setHeaders: (res, path) => {
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename="' + path.basename(path) + '"');
-    }
-}));
-
-// Serve static files from the public directory
-app.use(express.static(publicDir));
-
-// Serve candidate profile images
-const candidateProfileDir = path.join(publicDir, 'candidate_profile');
-app.use('/candidate_profile', express.static(candidateProfileDir, {
-    setHeaders: (res, path) => {
-        // Set appropriate cache headers for images
-        res.setHeader('Cache-Control', 'public, max-age=31536000');
-    }
-}));
-
-// Serve uploads with specific headers
-app.use('/uploads', (req, res, next) => {
-    console.log('Request for upload file:', req.path);
-    next();
-}, express.static(uploadsDir, {
-  setHeaders: (res, filePath) => {
-    console.log('Serving file:', filePath);
-    const ext = path.extname(filePath).toLowerCase().substring(1);
-    const mimeTypes = {
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png',
-      'gif': 'image/gif',
-      'webp': 'image/webp'
-    };
-    
-    if (mimeTypes[ext]) {
-      res.set('Content-Type', mimeTypes[ext]);
-      res.set('Cache-Control', 'public, max-age=31536000');
-    }
-  }
-}));
-
-// Test route to check file serving
-app.get('/test-upload/:filename', (req, res) => {
-  const { filename } = req.params;
-  const filePath = path.join(uploadsDir, filename);
-  
-  if (fs.existsSync(filePath)) {
-    console.log(`Serving test file: ${filePath}`);
-    res.sendFile(filePath);
-  } else {
-    console.error(`File not found: ${filePath}`);
-    res.status(404).json({
-      success: false,
-      message: 'File not found',
-      path: filePath,
-      files: fs.readdirSync(uploadsDir)
-    });
-  }
 });
 
-// console.log('Serving static files from:', publicDir);
-// console.log('Uploads directory at:', uploadsDir);
+// List public files (Debug logs)
+// try {
+//     fs.readdirSync(publicDir);
+//     fs.readdirSync(uploadsDir);
+// } catch (e) { console.error("Error listing files", e); }
 
-// Database connection
+// Static Route: Uploads (with specific MIME types)
+app.use("/uploads", (req, res, next) => {
+    // console.log('Request for upload file:', req.path);
+    next();
+}, express.static(uploadsDir, {
+    setHeaders: (res, filePath) => {
+        const ext = path.extname(filePath).toLowerCase().substring(1);
+        const mimeTypes = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp" };
+        if (mimeTypes[ext]) {
+            res.set("Content-Type", mimeTypes[ext]);
+            res.set("Cache-Control", "public, max-age=31536000");
+        }
+    },
+}));
+
+// Static Route: Generated PDFs
+app.use("/pdfs", express.static(pdfsDir, {
+    setHeaders: (res, filePath) => {
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", 'inline; filename="' + path.basename(filePath) + '"');
+    },
+}));
+
+// Static Route: Brochures
+app.use("/uploaded_brochure", express.static(uploadedBrochuresDir, {
+    setHeaders: (res, path) => {
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", "inline");
+    },
+}));
+
+// Static Route: Candidate Profiles
+app.use("/candidate_profile", express.static(candidateProfileDir, {
+    setHeaders: (res, path) => {
+        res.setHeader("Cache-Control", "public, max-age=31536000");
+    },
+}));
+
+// Fallback Static Route (General public folder)
+app.use(express.static(publicDir, {
+    setHeaders: (res, path) => {
+        res.setHeader("Cache-Control", "public, max-age=31536000");
+    },
+}));
+
+// Test Endpoint for uploads
+app.get("/test-upload/:filename", (req, res) => {
+    const { filename } = req.params;
+    const filePath = path.join(uploadsDir, filename);
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        res.status(404).json({ success: false, message: "File not found", path: filePath });
+    }
+});
+
+// --- Database Connection ---
 const PORT = process.env.PORT || 4002;
 const URI = process.env.MongoDBURI;
 
-const connectDB = async () => {
-    try {
-        console.log('Attempting to connect to MongoDB...');
-        console.log('Connection string:', URI ? 'Provided' : 'Missing');
-        
-        await mongoose.connect(URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-        });
-        
-        console.log("✅ Successfully connected to MongoDB");
-    } catch (error) {
-        console.error("❌ MongoDB connection error:", error);
-        if (error.name === 'MongoServerError') {
-            console.error('MongoDB Server Error:', error.message);
-        } else if (error.name === 'MongooseServerSelectionError') {
-            console.error('Could not connect to MongoDB. Is it running?');
-        }
+mongoose
+    .connect(URI)
+    .then(() => console.log("✅ Successfully connected to MongoDB"))
+    .catch((err) => {
+        console.error("❌ MongoDB connection error:", err);
+        if (err.name === "MongoServerError") console.error("MongoDB Server Error:", err.message);
         process.exit(1);
-    }
-};
+    });
 
-// Connect to the database
-connectDB();
+// --- API Routes ---
 
-// Log database connection status
-mongoose.connection.on('error', err => {
-    console.error('MongoDB connection error:', err);});
-
-// Routes - Specific routes first
-// console.log('Mounting upload route at /api/upload');
-app.use('/api/upload', uploadRoute); // File upload routes
-app.use('/api', pdfRoutes); // PDF generation routes
-
-// Mount PDF routes at /api/pdfs
-// console.log('Mounting PDF routes at /api/pdfs');
-app.use('/api/pdfs', pdfRouter);
-
-// Debug route to test if the server is running
-app.get('/api/ping', (req, res) => {
+// Health & Debug
+app.get("/api/ping", (req, res) => {
     res.json({
         success: true,
-        message: 'Server is running',
+        message: "Server is running",
         timestamp: new Date().toISOString(),
-        nodeVersion: process.version,
-        environment: process.env.NODE_ENV || 'development',
-        paths: {
-            currentWorkingDir: process.cwd(),
-            publicDir: publicDir,
-            uploadsDir: uploadsDir
-        }
+        environment: process.env.NODE_ENV || "development",
     });
 });
 
-// Test public categories endpoint
-app.get('/api/test-categories', async (req, res) => {
-    try {
-        const categories = await Category.find({}).limit(10);
-        res.json({
-            success: true,
-            count: categories.length,
-            data: categories
-        });
-    } catch (err) {
-        console.error('Test categories error:', err);
-        res.status(500).json({
-            success: false,
-            message: 'Error fetching test categories',
-            error: process.env.NODE_ENV === 'development' ? err.message : undefined
-        });
-    }
-});
+app.get("/api/health", (req, res) => res.status(200).json({ status: "OK", timestamp: new Date() }));
 
-// Mount routes in specific order
-// Public routes first
+// Public Routes
 app.use("/api/categories", categoryRoute);
 app.use("/api/services", servicesRoute);
-app.use("/api/contacts", contactRoute);
+app.use("/api/contacts", contactRoute); // Plural
+app.use("/api/contact", contactRoute);  // Singular (Backwards compatibility)
 app.use("/api/faqs", faqRoute);
 app.use("/api/blog", blogRoutes);
+app.use("/api/outcontact", externalContactRoutes);
 
-// Auth routes
+// Authentication
 app.use("/api/auth", authRoutes);
 
-// Protected routes (require authentication)
+// Protected Routes / Operations
 app.use("/api/users", userRoutes);
 app.use("/api/profile", profileRoute);
-app.use("/api/contact", contactRoute);
 app.use("/api/upload", uploadRoute);
 app.use("/api/admin", adminRoutes);
-app.use("/api/payments", paymentRoutes);
-app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/discussions", discussionRoutes);
 app.use("/api/chat", chatRoutes);
 
-// Admin email routes
-app.use('/api/v1/admin/emails', adminEmailRoutes);
+// Payments
+app.use("/api/payments", paymentRoutes);
+app.use("/api/admin/payments", adminPaymentRoutes);
 
-// Email record routes
-app.use('/api/emails', emailRecordRoutes);
+// Emails & Records
+app.use("/api/v1/admin/emails", adminEmailRoutes);
+app.use("/api/emails", emailRecordRoutes);
 
-// External API Routes
-app.use("/api/outcontact", externalContactRoutes);
+// PDFs
+app.use("/api", pdfRoutes);      // Likely for generation endpoints
+app.use("/api/pdfs", pdfRouter); // Likely for management endpoints
 
-// PDF routes
-// console.log('Mounting PDF routes at /api/pdfs');
-app.use("/api/pdfs", pdfRouter);
-
-// Log all routes for debugging
-const printRoutes = (routes, parentPath = '') => {
-  routes.forEach(route => {
-    if (route.route) {
-      const methods = Object.keys(route.route.methods).join(',').toUpperCase();
-      console.log(`${methods.padEnd(6)} ${parentPath}${route.route.path}`);
-    } else if (route.name === 'router') {
-      // This is a router instance
-      const routerPath = route.regexp?.toString().replace(/^\/\^|\$\//g, '').replace('\\/?', '') || '';
-      if (route.handle?.stack) {
-        printRoutes(route.handle.stack, `${parentPath}${routerPath}/`);
-      }
-    }
-  });
-};
-
-// console.log('\nRegistered Routes:');
-// printRoutes(app._router.stack);
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.status(200).json({ status: 'OK', timestamp: new Date() });
-});
-
-// Error handling middleware
+// --- Global Error Handling ---
 app.use((err, req, res, next) => {
-    const isDev = process.env.NODE_ENV === 'development';
-
-    // Default values
+    const isDev = process.env.NODE_ENV === "development";
     let statusCode = err.statusCode || 500;
-    let message = err.message || 'Internal Server Error';
+    let message = err.message || "Internal Server Error";
 
-    // Handle common Mongoose/Mongo errors
-    if (err.code === 11000) { // Duplicate key error
+    // Mongoose Duplicate Key Error
+    if (err.code === 11000) {
         statusCode = 409;
         const fields = Object.keys(err.keyValue || {});
-        if (fields.includes('email')) {
-            message = 'Email already registered. Go to Login page';
+        if (fields.includes("email")) {
+            message = "Email already registered. Go to Login page";
         } else {
-            message = 'Duplicate value entered';
+            message = "Duplicate value entered";
         }
     }
 
-    if (err.name === 'ValidationError') {
+    // Mongoose Validation Error
+    if (err.name === "ValidationError") {
         statusCode = 400;
     }
 
     res.status(statusCode).json({
-        status: String(statusCode).startsWith('4') ? 'fail' : 'error',
+        status: String(statusCode).startsWith("4") ? "fail" : "error",
         message,
-        ...(isDev ? { stack: err.stack } : {})
+        ...(isDev ? { stack: err.stack } : {}),
     });
 });
 
-// Start the server
+// --- Server Start ---
 const server = app.listen(PORT, () => {
-    
     console.log(`Server is running on port ${PORT}`);
 });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-    console.error('UNHANDLED REJECTION! Shutting down...');
+// Handle unhandled promise rejections (crash safety)
+process.on("unhandledRejection", (err) => {
+    console.error("UNHANDLED REJECTION! Shutting down...");
     console.error(err);
     server.close(() => {
         process.exit(1);
