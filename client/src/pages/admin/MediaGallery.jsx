@@ -10,9 +10,11 @@ import {
   FiRefreshCw,
   FiUpload,
   FiTrash2,
-  FiMaximize2,
   FiSearch,
-  FiFilter,
+  FiGrid,
+  FiList,
+  FiLayers,
+  FiLayout, // Icon for Comfortable View
 } from "react-icons/fi";
 import { FaPlay, FaImage, FaFilm, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -24,6 +26,9 @@ const ImageGallery = () => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+
+  // View Modes: 'grid' (Square Crop), 'comfortable' (Masonry/Full Ratio), 'compact' (Small), 'list' (Details)
+  const [viewMode, setViewMode] = useState("grid");
 
   // Animation Variants
   const containerVariants = {
@@ -90,6 +95,21 @@ const ImageGallery = () => {
     return matchesTab && itemName.includes(searchLower);
   });
 
+  // Dynamic Container Classes based on View Mode
+  const getContainerClasses = () => {
+    switch (viewMode) {
+      case "comfortable":
+        // CSS Columns for Masonry Layout
+        return "block columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4";
+      case "compact":
+        return "grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2";
+      case "list":
+        return "grid grid-cols-1 gap-2";
+      default: // grid
+        return "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4";
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-200px)]">
@@ -117,7 +137,7 @@ const ImageGallery = () => {
 
           <div className="flex items-center gap-3">
             <Link
-              to="/admin/media-gallery/upload"
+              to="/admin/image-upload"
               className="inline-flex items-center gap-2 bg-[#F47C26] hover:bg-[#d5671f] text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-orange-500/30 hover:-translate-y-1"
             >
               <FiUpload /> Upload
@@ -133,36 +153,65 @@ const ImageGallery = () => {
         </div>
 
         {/* --- Controls Toolbar --- */}
-        <div className="bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 p-4 rounded-2xl mb-8 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center">
+        <div className="bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 p-4 rounded-2xl mb-8 shadow-sm flex flex-col xl:flex-row gap-4 justify-between items-center">
           {/* Tabs */}
-          <div className="flex bg-gray-100 dark:bg-black/20 p-1 rounded-xl">
+          <div className="flex bg-gray-100 dark:bg-black/20 p-1 rounded-xl w-full xl:w-auto overflow-x-auto">
             {["all", "image", "video"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                   activeTab === tab
                     ? "bg-white dark:bg-[#0a0f2d] text-[#F47C26] shadow-sm"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 {tab === "all"
-                  ? "All"
+                  ? "All Assets"
                   : tab.charAt(0).toUpperCase() + tab.slice(1) + "s"}
               </button>
             ))}
           </div>
 
-          {/* Search */}
-          <div className="relative w-full md:w-64">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search assets..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:border-[#F47C26] transition-colors"
-            />
+          <div className="flex items-center gap-4 w-full xl:w-auto">
+            {/* View Mode Switcher */}
+            <div className="flex bg-gray-100 dark:bg-black/20 p-1 rounded-xl shrink-0 overflow-x-auto">
+              {[
+                { id: "grid", icon: <FiGrid />, title: "Grid (Crop)" },
+                {
+                  id: "comfortable",
+                  icon: <FiLayout />,
+                  title: "Comfortable (Masonry)",
+                },
+                { id: "compact", icon: <FiLayers />, title: "Compact" },
+                { id: "list", icon: <FiList />, title: "List" },
+              ].map((mode) => (
+                <button
+                  key={mode.id}
+                  onClick={() => setViewMode(mode.id)}
+                  title={mode.title}
+                  className={`p-2 rounded-lg transition-all ${
+                    viewMode === mode.id
+                      ? "bg-white dark:bg-[#0a0f2d] text-blue-500 shadow-sm"
+                      : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  }`}
+                >
+                  {mode.icon}
+                </button>
+              ))}
+            </div>
+
+            {/* Search */}
+            <div className="relative w-full xl:w-64">
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search filename..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:border-[#F47C26] transition-colors"
+              />
+            </div>
           </div>
         </div>
 
@@ -174,6 +223,7 @@ const ImageGallery = () => {
           <span className="text-[10px] text-gray-400 uppercase tracking-widest block mb-1">
             Asset Delivery Network
           </span>
+          [Image of CDN distribution and media optimization flow]
         </div>
 
         {/* --- Media Grid --- */}
@@ -181,7 +231,7 @@ const ImageGallery = () => {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
+          className={getContainerClasses()} // Dynamic class application
         >
           <AnimatePresence>
             {filteredMedia.map((item) => (
@@ -189,66 +239,138 @@ const ImageGallery = () => {
                 key={item._id || item.name}
                 variants={itemVariants}
                 layout
-                className="group relative aspect-square bg-gray-100 dark:bg-[#05081a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 hover:border-[#F47C26]/50 transition-all cursor-pointer shadow-sm hover:shadow-xl"
+                // Note: 'break-inside-avoid' is crucial for Masonry (Comfortable) view
+                className={`group relative bg-gray-100 dark:bg-[#05081a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 hover:border-[#F47C26]/50 transition-all cursor-pointer shadow-sm hover:shadow-xl break-inside-avoid ${
+                  viewMode === "list"
+                    ? "flex items-center gap-4 p-2 h-20 mb-2"
+                    : viewMode === "comfortable"
+                    ? "mb-4" // Margin bottom for masonry spacing
+                    : "aspect-square" // Fixed aspect ratio for grid/compact
+                }`}
                 onClick={() => setSelectedMedia(item)}
               >
                 {/* Thumbnail */}
-                {item.type === "video" ? (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-900">
-                    <video
-                      src={item.url}
-                      className="w-full h-full object-cover opacity-80"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                        <FaPlay className="text-white text-xs ml-0.5" />
+                <div
+                  className={`${
+                    viewMode === "list"
+                      ? "w-16 h-16 rounded-lg shrink-0 overflow-hidden relative"
+                      : "w-full h-full"
+                  }`}
+                >
+                  {item.type === "video" ? (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-900">
+                      <video
+                        src={item.url}
+                        className="w-full h-full object-cover opacity-80"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div
+                          className={`${
+                            viewMode === "compact"
+                              ? "w-6 h-6 border-2"
+                              : "w-10 h-10 border"
+                          } rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-white/30`}
+                        >
+                          <FaPlay
+                            className={`text-white ml-0.5 ${
+                              viewMode === "compact" ? "text-[8px]" : "text-xs"
+                            }`}
+                          />
+                        </div>
                       </div>
                     </div>
+                  ) : (
+                    <img
+                      src={item.thumbnailUrl || item.url}
+                      alt={item.name}
+                      // If 'comfortable', use object-contain or cover depending on preference,
+                      // but 'h-auto' is implicit in the img tag usually.
+                      // We ensure it fills width.
+                      className={`w-full transition-transform duration-500 group-hover:scale-110 ${
+                        viewMode === "comfortable"
+                          ? "h-auto object-contain" // Allow natural height
+                          : "h-full object-cover" // Force square
+                      }`}
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+
+                {/* List View Details */}
+                {viewMode === "list" && (
+                  <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-4 items-center gap-4">
+                    <div className="col-span-2">
+                      <p className="font-bold text-gray-900 dark:text-white truncate">
+                        {item.name || "Unnamed"}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {item.url}
+                      </p>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {(item.size / 1024).toFixed(1)} KB
+                    </div>
+                    <div className="text-sm text-gray-500 uppercase">
+                      {item.type}
+                    </div>
                   </div>
-                ) : (
-                  <img
-                    src={item.thumbnailUrl || item.url}
-                    alt={item.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
-                  />
                 )}
 
-                {/* Overlay Actions */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-3">
-                  <div className="flex gap-2 justify-center mb-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        copyToClipboard(item.url);
-                      }}
-                      className="p-2 rounded-lg bg-white/10 backdrop-blur-md hover:bg-[#F47C26] text-white transition-colors"
-                      title="Copy URL"
+                {/* Overlay Actions (Hidden in Compact, Always visible on Hover for others) */}
+                {viewMode !== "compact" && (
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-200 flex flex-col justify-end p-3 ${
+                      viewMode === "list"
+                        ? "opacity-0 group-hover:opacity-100 bg-black/50 flex-row items-center justify-end"
+                        : "opacity-0 group-hover:opacity-100"
+                    }`}
+                  >
+                    <div
+                      className={`flex gap-2 ${
+                        viewMode === "list"
+                          ? "mr-4"
+                          : "justify-center mb-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+                      }`}
                     >
-                      <FiCopy size={14} />
-                    </button>
-                    <button
-                      onClick={(e) =>
-                        handleDelete(item.name || item.filename, e)
-                      }
-                      className="p-2 rounded-lg bg-white/10 backdrop-blur-md hover:bg-red-500 text-white transition-colors"
-                      title="Delete"
-                    >
-                      <FiTrash2 size={14} />
-                    </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          copyToClipboard(item.url);
+                        }}
+                        className="p-2 rounded-lg bg-white/10 backdrop-blur-md hover:bg-[#F47C26] text-white transition-colors"
+                        title="Copy URL"
+                      >
+                        <FiCopy size={14} />
+                      </button>
+                      <button
+                        onClick={(e) =>
+                          handleDelete(item.name || item.filename, e)
+                        }
+                        className="p-2 rounded-lg bg-white/10 backdrop-blur-md hover:bg-red-500 text-white transition-colors"
+                        title="Delete"
+                      >
+                        <FiTrash2 size={14} />
+                      </button>
+                    </div>
+                    {viewMode !== "list" && (
+                      <>
+                        <p className="text-xs text-white/80 truncate font-medium">
+                          {item.name || "Unnamed"}
+                        </p>
+                        <p className="text-[10px] text-white/50 uppercase tracking-wide">
+                          {(item.size / 1024).toFixed(1)} KB • {item.type}
+                        </p>
+                      </>
+                    )}
                   </div>
-                  <p className="text-xs text-white/80 truncate font-medium">
-                    {item.name || "Unnamed"}
-                  </p>
-                  <p className="text-[10px] text-white/50 uppercase tracking-wide">
-                    {(item.size / 1024).toFixed(1)} KB • {item.type}
-                  </p>
-                </div>
+                )}
 
                 {/* Type Badge */}
-                <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/50 backdrop-blur-sm text-[10px] text-white font-bold uppercase tracking-wider border border-white/10">
-                  {item.type === "video" ? "VID" : "IMG"}
-                </div>
+                {viewMode !== "list" && (
+                  <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/50 backdrop-blur-sm text-[10px] text-white font-bold uppercase tracking-wider border border-white/10">
+                    {item.type === "video" ? "VID" : "IMG"}
+                  </div>
+                )}
               </motion.div>
             ))}
           </AnimatePresence>
