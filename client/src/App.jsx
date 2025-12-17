@@ -20,7 +20,6 @@ import AdminLayout from "./components/admin/AdminLayout";
 import Home from "./home/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import FAQPage from "./pages/FAQPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import PaymentTAndC from "./pages/PaymentTAndC";
@@ -42,7 +41,6 @@ import CategoriesList from "./pages/admin/Categories.jsx";
 import CategoryForm from "./components/admin/CategoryForm.jsx";
 import Users from "./components/admin/Users";
 import ContactsList from "./pages/admin/Contacts.jsx";
-import ManageFAQs from "./pages/admin/ManageFAQs";
 import MediaGallery from "./components/admin/MediaUploder.jsx";
 import ImageGallery from "./pages/admin/MediaGallery.jsx";
 import PaymentsList from "./pages/admin/PaymentsList";
@@ -192,14 +190,6 @@ function App() {
             }
           />
           <Route
-            path="/faq"
-            element={
-              <MainLayout>
-                <FAQPage />
-              </MainLayout>
-            }
-          />
-          <Route
             path="/thank-you"
             element={
               <MainLayout>
@@ -342,7 +332,6 @@ function App() {
             <Route path="/admin/blog" element={<BlogPostList />} />
             <Route path="/admin/blog/new" element={<BlogPostForm />} />
             <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />
-            <Route path="/admin/faqs" element={<ManageFAQs />} />
             <Route path="/admin/media-gallery" element={<ImageGallery />} />
             <Route
               path="/admin/media-gallery/upload"
