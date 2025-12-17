@@ -3,35 +3,24 @@ import axios from 'axios';
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: '',
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 seconds
+  timeout: 20000, // 20 seconds
   withCredentials: true, // Important for cookies/sessions
 });
 
 // Request interceptor for adding auth token and logging
 api.interceptors.request.use(
   (config) => {
-    // console.log('LocalStorage token:', localStorage.getItem('token')); // Debug log
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      // console.log('Setting Authorization header with token:', token.substring(0, 10) + '...'); // Log first 10 chars
     } else {
       console.warn('No token found in localStorage');
     }
-    
-    // Log request details in development
-    // if (import.meta.env.DEV || true) { // Force logging in all environments for now
-    //   console.log(`[${config.method?.toUpperCase()}] ${config.url}`, {
-    //     data: config.data,
-    //     params: config.params,
-    //     headers: config.headers,
-    //   });
-    // }
-    
+
     return config;
   },
   (error) => {
@@ -43,10 +32,6 @@ api.interceptors.request.use(
 // Response interceptor for handling errors and logging
 api.interceptors.response.use(
   (response) => {
-    // Log successful responses in development
-    // if (import.meta.env.DEV) {
-    //   console.log(`[${response.status}] ${response.config.url}`, response.data);
-    // }
     return response;
   },
   (error) => {
@@ -55,16 +40,6 @@ api.interceptors.response.use(
       status: error.response?.status,
       data: error.response?.data,
     };
-
-    // Log detailed error information
-    console.error('API Error:', {
-      url: error.config?.url,
-      method: error.config?.method,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      stack: import.meta.env.DEV ? error.stack : undefined,
-    });
 
     // Handle specific error statuses
     if (error.response) {
@@ -179,24 +154,21 @@ const submitContactForm = async (formData) => {
     // Add retry logic for rate limiting
     const maxRetries = 2;
     let lastError;
-    let lastResponse;
-    let retryAfter = 5; // Default retry after 5 seconds
     
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        // Add an increasing delay between retries (exponential backoff)
+        // Add an increasing delay between retries (exponential backoff with jitter)
         if (attempt > 0) {
-          const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Max 5 seconds
+          const baseDelay = Math.min(1000 * Math.pow(2, attempt - 1), 8000); // Max 8 seconds
+          const jitter = Math.random() * 1000; // Add up to 1s of jitter
+          const delay = Math.min(baseDelay + jitter, 10000); // Absolute max 10s
           await new Promise(resolve => setTimeout(resolve, delay));
         }
         
         // Make the API call with the correct endpoint
         const response = await api.post('/api/contacts', requestData);
-        lastResponse = response;
         
         // If we get here, the request was successful
-        // console.log('Contact form submission successful:', response.data);
-        
         return {
           success: response.data?.success || true,
           data: response.data?.data || response.data,
@@ -205,6 +177,16 @@ const submitContactForm = async (formData) => {
       } catch (error) {
         lastError = error;
         
+        // If we get a 429 and have retries left, continue to the next attempt
+        if (error.response?.status === 429 && attempt < maxRetries) {
+          console.warn(`Rate limited on attempt ${attempt + 1}. Retrying...`);
+          continue;
+        }
+
+        // For other errors or if we've run out of retries, rethrow the error
+        lastError = error;
+        lastError = error;
+
         // If this is a 429 error, provide more specific feedback
         if (error.response?.status === 429) {
           retryAfter = error.response?.headers?.['retry-after'] || 60; // Default to 60 seconds
@@ -230,15 +212,7 @@ const submitContactForm = async (formData) => {
           await new Promise(resolve => setTimeout(resolve, (retryAfter * 1000) + 1000));
           continue;
         }
-        
-        // For other errors, log and rethrow
-        console.error(`API Error (attempt ${attempt + 1}/${maxRetries + 1}):`, {
-          message: error.message,
-          status: error.response?.status,
-          data: error.response?.data,
-          code: error.code
-        });
-        
+
         // If this is the last attempt, throw the error
         if (attempt === maxRetries) {
           throw error;
@@ -271,12 +245,6 @@ const submitContactForm = async (formData) => {
     const errorMessage = lastError?.message || 'An error occurred while submitting the form. Please try again later.';
     throw new Error(errorMessage);
   } catch (error) {
-    console.error('Error in submitContactForm:', {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status
-    });
-
     // Handle validation errors
     if (error.response?.status === 400 && error.response.data?.errors) {
       const validationErrors = error.response.data.errors;
@@ -381,8 +349,6 @@ const getContacts = async (options = {}) => {
     if (options.date) params.append('date', options.date);
     if (options.course) params.append('course', options.course);
 
-    // console.log('Making request to:', `/api/contacts?${params.toString()}`);
-    
     const response = await api.get(`/api/contacts?${params.toString()}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,

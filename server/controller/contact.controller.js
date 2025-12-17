@@ -174,14 +174,6 @@ export const getAllContacts = async (req, res) => {
     const totalItems = await Contact.countDocuments(query);
     const totalPages = Math.ceil(totalItems / limitNum);
     
-    console.log('Pagination info:', {
-      totalItems,
-      totalPages,
-      currentPage: pageNum,
-      itemsPerPage: limitNum,
-      itemsInResponse: contacts.length
-    });
-    
     res.json({
       success: true,
       data: contacts,

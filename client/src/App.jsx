@@ -6,7 +6,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // --- Contexts & Hooks ---
-import { useAuth } from "./contexts/AuthContext"; // Assuming you have this
 import useContactFormPopup from "./hooks/useContactFormPopup.jsx";
 
 // --- Layouts & Common Components ---
@@ -26,7 +25,6 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import PaymentTAndC from "./pages/PaymentTAndC";
 import ThankYouPage from "./pages/ThankYouPage";
-import Careers from "./pages/Careers";
 import Unauthorized from "./pages/Unauthorized";
 import SuspendedAccount from "./pages/SuspendedAccount";
 
@@ -43,7 +41,7 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import CategoriesList from "./pages/admin/Categories.jsx";
 import CategoryForm from "./components/admin/CategoryForm.jsx";
 import Users from "./components/admin/Users";
-import ContactsList from "./components/admin/ContactsList";
+import ContactsList from "./pages/admin/Contacts.jsx";
 import ManageFAQs from "./pages/admin/ManageFAQs";
 import MediaGallery from "./components/admin/MediaUploder.jsx";
 import ImageGallery from "./pages/admin/MediaGallery.jsx";
@@ -53,7 +51,6 @@ import PaymentDetails from "./pages/admin/PaymentDetails";
 import SendBrochure from "./pages/admin/SendBrochure";
 import SendProposal from "./pages/admin/SendProposal";
 import EmailRecords from "./pages/admin/EmailRecords";
-import CandidatesPage from "./pages/admin/CandidatesPage.jsx";
 
 // --- Blog Components ---
 import BlogListPage from "./pages/blog/BlogListPage";
@@ -355,8 +352,7 @@ function App() {
 
             {/* CRM & Sales */}
             <Route path="/admin/users" element={<Users />} />
-            <Route path="/admin/candidates" element={<CandidatesPage />} />
-            <Route path="/admin/contacts" element={<ContactsList />} />
+            <Route path="/admin/inquiries" element={<ContactsList />} />
             <Route path="/admin/enrollments" element={<AdminEnrollments />} />
             <Route path="/admin/payments" element={<PaymentsList />} />
             <Route path="/admin/payments/:id" element={<PaymentDetails />} />

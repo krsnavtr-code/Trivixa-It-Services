@@ -64,22 +64,16 @@ const NAV_ITEMS = [
     category: "CRM & Sales",
     items: [
       {
-        path: "/admin/candidates",
-        label: "Candidates",
+        path: "/admin/inquiries",
+        label: "Inquiries",
         icon: <FaUsers />,
-        activePaths: ["/admin/candidates"],
+        activePaths: ["/admin/inquiries"],
       },
       {
         path: "/admin/enrollments",
         label: "Enrollments",
         icon: <FaGraduationCap />,
         activePaths: ["/admin/enrollments"],
-      },
-      {
-        path: "/admin/contacts",
-        label: "Inquiries",
-        icon: <FaAddressBook />,
-        activePaths: ["/admin/contacts"],
       },
       {
         path: "/admin/send-brochure",
