@@ -58,8 +58,8 @@ import CandidatesPage from "./pages/admin/CandidatesPage.jsx";
 // --- Blog Components ---
 import BlogListPage from "./pages/blog/BlogListPage";
 import BlogDetailPage from "./pages/blog/BlogDetailPage";
-import BlogPostList from "./pages/admin/BlogListPage";
-import BlogPostForm from "./pages/admin/BlogPostForm";
+import BlogPostList from "./pages/admin/Blog.jsx";
+import BlogPostForm from "./components/admin/BlogForm.jsx";
 
 // --- Theme Context Setup ---
 export const ThemeContext = createContext();
