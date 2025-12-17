@@ -1,21 +1,27 @@
- import { useState } from 'react';
-import { toast } from 'react-toastify';
-import { FaUpload, FaTimes } from 'react-icons/fa';
+import { useState, useRef } from "react";
+import { toast } from "react-toastify";
+import { FaUpload, FaTimes, FaImage } from "react-icons/fa";
+import api from "../../utils/api";
 
-const ImageUploader = ({ onUploadSuccess, label = 'Upload Image', className = '', maxSizeMB = 5 }) => {
+const ImageUploader = ({
+  onUploadSuccess,
+  label = "Upload Image",
+  className = "",
+  maxSizeMB = 5,
+}) => {
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewUrl, setPreviewUrl] = useState("");
   const [file, setFile] = useState(null);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    
+
     if (!selectedFile) return;
 
     // Check file type
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
     if (!validTypes.includes(selectedFile.type)) {
-      toast.error('Only JPG, PNG, and WebP images are allowed');
+      toast.error("Only JPG, PNG, and WebP images are allowed");
       return;
     }
 
@@ -36,60 +42,29 @@ const ImageUploader = ({ onUploadSuccess, label = 'Upload Image', className = ''
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
     }
-    setPreviewUrl('');
+    setPreviewUrl("");
     setFile(null);
   };
 
   const handleUpload = async () => {
     if (!file) {
-      toast.error('Please select an image to upload');
+      toast.error("Please select an image to upload");
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
       setIsUploading(true);
-      const token = localStorage.getItem('token');
-      const API_URL = 'api';
-      
-      // Add cache-busting parameter
-      const url = new URL(`${API_URL}/upload/image`);
-      url.searchParams.append('_t', Date.now());
-      
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: headers,
-        credentials: 'include',
-        body: formData,
+      const response = await api.post("/upload/image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      // Log response details for debugging
-      // console.log('Image upload response status:', response.status);
-      const responseText = await response.text();
-      // console.log('Image upload response text:', responseText);
-      
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        console.error('Failed to parse JSON response:', e);
-        throw new Error('Invalid server response');
-      }
+      const data = response.data;
 
-      if (!response.ok) {
-        throw new Error(data.message || `Upload failed with status ${response.status}`);
-      }
-
-      // console.log('Image upload successful, response:', data);
-      toast.success('Image uploaded successfully');
-      
       if (onUploadSuccess) {
         // Handle both response formats for backward compatibility
         const result = data.data || data;
@@ -98,16 +73,21 @@ const ImageUploader = ({ onUploadSuccess, label = 'Upload Image', className = ''
             url: result.url || result.path,
             path: result.path,
             name: result.name || file.name,
-            type: 'image'
+            type: "image",
           });
         }
       }
-      
+
       // Clean up
       removeImage();
+      toast.success("Image uploaded successfully");
     } catch (error) {
-      console.error('Upload error:', error);
-      toast.error(error.message || 'Failed to upload image');
+      console.error("Upload error:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to upload image";
+      toast.error(errorMessage);
     } finally {
       setIsUploading(false);
     }
@@ -119,7 +99,11 @@ const ImageUploader = ({ onUploadSuccess, label = 'Upload Image', className = ''
         <label
           htmlFor="image-upload"
           className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer 
-            ${previewUrl ? 'border-gray-300' : 'border-blue-500 hover:bg-blue-50 dark:border-blue-600 dark:hover:border-blue-500 dark:hover:bg-gray-700'}
+            ${
+              previewUrl
+                ? "border-gray-300"
+                : "border-blue-500 hover:bg-blue-50 dark:border-blue-600 dark:hover:border-blue-500 dark:hover:bg-gray-700"
+            }
             transition-colors duration-200 relative`}
         >
           {previewUrl ? (
@@ -130,7 +114,7 @@ const ImageUploader = ({ onUploadSuccess, label = 'Upload Image', className = ''
                 className="w-full h-full object-cover rounded-lg"
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = '/placeholder.svg';
+                  e.target.src = "/placeholder.svg";
                 }}
               />
               <button
@@ -148,7 +132,8 @@ const ImageUploader = ({ onUploadSuccess, label = 'Upload Image', className = ''
             <div className="flex flex-col items-center justify-center p-6 text-center">
               <FaUpload className="w-8 h-8 mb-2 text-gray-500 dark:text-gray-400" />
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                <span className="font-semibold">Click to upload</span> or drag and drop
+                <span className="font-semibold">Click to upload</span> or drag
+                and drop
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 PNG, JPG, WebP, GIF (MAX. {maxSizeMB}MB)
@@ -165,16 +150,16 @@ const ImageUploader = ({ onUploadSuccess, label = 'Upload Image', className = ''
           />
         </label>
       </div>
-      
+
       <div className="flex justify-end">
         <button
           type="button"
           onClick={handleUpload}
           disabled={!file || isUploading}
           className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-            ${(!file || isUploading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+            ${!file || isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          {isUploading ? 'Uploading...' : 'Upload Image'}
+          {isUploading ? "Uploading..." : "Upload Image"}
         </button>
       </div>
     </div>

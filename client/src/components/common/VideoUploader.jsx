@@ -59,14 +59,17 @@ const VideoUploader = ({ onUploadSuccess, label = 'Upload Video', className = ''
       const toastId = toast.loading('Uploading video...');
       
       try {
-        const response = await fetch(`${API_URL}/upload/video`, {
-          method: 'POST',
-          headers: {
-            'Authorization': token ? `Bearer ${token}` : '',
-          },
-          credentials: 'include',
-          body: formData,
-        });
+        const response = await fetch(
+          `${API_URL}/upload/video?_t=${Date.now()}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: token ? `Bearer ${token}` : "",
+            },
+            credentials: "include",
+            body: formData,
+          }
+        );
 
         let data;
         try {

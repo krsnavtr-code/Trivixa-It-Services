@@ -1,6 +1,6 @@
-from pathlib import Path
+VPS - IP = ssh root@31.97.236.197
 
-content = """TRIVIXA.IN VPS DEPLOYMENT NOTES
+TRIVIXA.IN VPS DEPLOYMENT NOTES
 ==============================
 
 Server:
