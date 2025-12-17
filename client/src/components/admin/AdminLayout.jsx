@@ -70,12 +70,6 @@ const NAV_ITEMS = [
         activePaths: ["/admin/inquiries"],
       },
       {
-        path: "/admin/enrollments",
-        label: "Enrollments",
-        icon: <FaGraduationCap />,
-        activePaths: ["/admin/enrollments"],
-      },
-      {
         path: "/admin/send-brochure",
         label: "Send Brochure",
         icon: <FaPaperPlane />,

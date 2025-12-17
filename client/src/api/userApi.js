@@ -213,21 +213,6 @@ const userApi = {
       throw error;
     }
   },
-  
-  // Admin enrolls a user in a course
-  adminEnrollUser: async (userId, courseId, status = 'active') => {
-    try {
-      const response = await api.post('/enrollments/admin-enroll', {
-        userId,
-        courseId,
-        status
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error enrolling user in course:', error);
-      throw error.response?.data || error;
-    }
-  }
 };
 
 export default userApi;

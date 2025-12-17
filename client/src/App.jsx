@@ -45,7 +45,6 @@ import ContactsList from "./pages/admin/Contacts.jsx";
 import ManageFAQs from "./pages/admin/ManageFAQs";
 import MediaGallery from "./components/admin/MediaUploder.jsx";
 import ImageGallery from "./pages/admin/MediaGallery.jsx";
-import AdminEnrollments from "./pages/admin/Enrollments";
 import PaymentsList from "./pages/admin/PaymentsList";
 import PaymentDetails from "./pages/admin/PaymentDetails";
 import SendBrochure from "./pages/admin/SendBrochure";
@@ -353,7 +352,6 @@ function App() {
             {/* CRM & Sales */}
             <Route path="/admin/users" element={<Users />} />
             <Route path="/admin/inquiries" element={<ContactsList />} />
-            <Route path="/admin/enrollments" element={<AdminEnrollments />} />
             <Route path="/admin/payments" element={<PaymentsList />} />
             <Route path="/admin/payments/:id" element={<PaymentDetails />} />
 
