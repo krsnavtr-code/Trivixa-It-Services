@@ -40,8 +40,8 @@ import RegisterPage from "./pages/auth/RegisterPage";
 
 // --- Admin Components & Pages ---
 import AdminDashboard from "./components/admin/AdminDashboard";
-import CategoriesList from "./components/admin/categories/CategoriesList";
-import CategoryForm from "./components/admin/categories/CategoryForm";
+import CategoriesList from "./pages/admin/Categories.jsx";
+import CategoryForm from "./components/admin/CategoryForm.jsx";
 import Users from "./components/admin/Users";
 import ContactsList from "./components/admin/ContactsList";
 import ManageFAQs from "./pages/admin/ManageFAQs";
