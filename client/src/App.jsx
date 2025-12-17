@@ -45,9 +45,8 @@ import CategoryForm from "./components/admin/categories/CategoryForm";
 import Users from "./components/admin/Users";
 import ContactsList from "./components/admin/ContactsList";
 import ManageFAQs from "./pages/admin/ManageFAQs";
-import MediaGallery from "./pages/admin/MediaGallery";
-import ImageGallery from "./components/admin/ImageGallery";
-import ImageUploadDemo from "./pages/admin/ImageUploadDemo";
+import MediaGallery from "./components/admin/MediaUploder.jsx";
+import ImageGallery from "./pages/admin/MediaGallery.jsx";
 import AdminEnrollments from "./pages/admin/Enrollments";
 import PaymentsList from "./pages/admin/PaymentsList";
 import PaymentDetails from "./pages/admin/PaymentDetails";
@@ -348,9 +347,11 @@ function App() {
             <Route path="/admin/blog/new" element={<BlogPostForm />} />
             <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />
             <Route path="/admin/faqs" element={<ManageFAQs />} />
-            <Route path="/admin/image-gallery" element={<ImageGallery />} />
-            <Route path="/admin/media" element={<MediaGallery />} />
-            <Route path="/admin/image-upload" element={<ImageUploadDemo />} />
+            <Route path="/admin/media-gallery" element={<ImageGallery />} />
+            <Route
+              path="/admin/media-gallery/upload"
+              element={<MediaGallery />}
+            />
 
             {/* CRM & Sales */}
             <Route path="/admin/users" element={<Users />} />

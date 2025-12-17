@@ -53,10 +53,10 @@ const NAV_ITEMS = [
         activePaths: ["/admin/blog"],
       },
       {
-        path: "/admin/image-gallery",
+        path: "/admin/media-gallery",
         label: "Media Gallery",
         icon: <FaImages />,
-        activePaths: ["/admin/image-gallery"],
+        activePaths: ["/admin/media-gallery"],
       },
     ],
   },
