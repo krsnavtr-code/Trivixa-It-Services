@@ -46,9 +46,9 @@ import MediaGallery from "./components/admin/MediaUploder.jsx";
 import ImageGallery from "./pages/admin/MediaGallery.jsx";
 import PaymentsList from "./pages/admin/PaymentsList";
 import PaymentDetails from "./pages/admin/PaymentDetails";
-import SendBrochure from "./pages/admin/SendBrochure";
-import SendProposal from "./pages/admin/SendProposal";
-import EmailRecords from "./pages/admin/EmailRecords";
+import SendBrochure from "./components/admin/SendBrochure.jsx";
+import SendProposal from "./components/admin/SendProposal";
+import EmailRecords from "./components/admin/EmailRecords.jsx";
 import FaqsPage from "./pages/admin/FaqsPage";
 import Mailer from "./pages/admin/MailSender.jsx"
 
