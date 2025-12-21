@@ -36,6 +36,7 @@ import AllCategories from "./pages/user/AllCategories";
 // --- Auth Pages ---
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
+import Profile from "./pages/user/Profile";
 
 // --- Admin Components & Pages ---
 import AdminDashboard from "./components/admin/AdminDashboard";
@@ -51,7 +52,7 @@ import SendBrochure from "./components/admin/SendBrochure.jsx";
 import SendProposal from "./components/admin/SendProposal";
 import EmailRecords from "./components/admin/EmailRecords.jsx";
 import FaqsPage from "./pages/admin/FaqsPage";
-import Mailer from "./pages/admin/MailSender.jsx"
+import Mailer from "./pages/admin/MailSender.jsx";
 
 // --- Blog Components ---
 import BlogListPage from "./pages/blog/BlogListPage";
@@ -293,6 +294,16 @@ function App() {
             }
           />
           <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <MainLayout>
+                  <Profile />
+                </MainLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/register"
             element={
               <MainLayout>
@@ -353,9 +364,18 @@ function App() {
 
             {/* Communications */}
             <Route path="/admin/mail-sender" element={<Mailer />} />
-            <Route path="/admin/mail-sender/brochure" element={<SendBrochure />} />
-            <Route path="/admin/mail-sender/proposal" element={<SendProposal />} />
-            <Route path="/admin/mail-sender/email-records" element={<EmailRecords />} />
+            <Route
+              path="/admin/mail-sender/brochure"
+              element={<SendBrochure />}
+            />
+            <Route
+              path="/admin/mail-sender/proposal"
+              element={<SendProposal />}
+            />
+            <Route
+              path="/admin/mail-sender/email-records"
+              element={<EmailRecords />}
+            />
 
             {/* CRM & Sales */}
             <Route path="/admin/users" element={<Users />} />
@@ -363,7 +383,7 @@ function App() {
             <Route path="/admin/payments" element={<PaymentsList />} />
             <Route path="/admin/payments/:id" element={<PaymentDetails />} />
             <Route path="/admin/faqs" element={<FaqsPage />} />
-            
+
             {/* <Route path="emails" element={<EmailRecords />} /> */}
           </Route>
 

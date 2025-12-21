@@ -257,16 +257,6 @@ function Navbar() {
                           <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                             {authUser?.email}
                           </p>
-                          <div
-                            className={`mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${
-                              isApproved
-                                ? "bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20"
-                                : "bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/20"
-                            }`}
-                          >
-                            {isApproved ? <FaCheck /> : <FaExclamationCircle />}{" "}
-                            {isApproved ? "Verified" : "Pending"}
-                          </div>
                         </div>
                         <div className="p-2 space-y-1">
                           <Link
@@ -275,14 +265,6 @@ function Navbar() {
                             onClick={() => setIsProfileMenuOpen(false)}
                           >
                             <FaUser className="text-[#F47C26]" /> Profile
-                          </Link>
-                          <Link
-                            to="/my-learning"
-                            className="flex items-center gap-3 px-3 py-2 text-sm text-[#0B2545] dark:text-gray-300 hover:bg-[#0B2545]/5 dark:hover:bg-white/10 rounded-lg transition-colors"
-                            onClick={() => setIsProfileMenuOpen(false)}
-                          >
-                            <FaGraduationCap className="text-[#F47C26]" /> My
-                            Learning
                           </Link>
                           <div className="h-px bg-gray-200 dark:bg-white/10 my-1" />
                           <button
