@@ -2,16 +2,28 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import axios from "../../api/axios";
-import { FiSend } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { FiUpload } from "react-icons/fi";
+import {
+  FiSend,
+  FiPaperclip,
+  FiBriefcase,
+  FiUser,
+  FiInfo,
+  FiLayout,
+  FiTrash2,
+  FiFileText,
+} from "react-icons/fi";
+import { Link, useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SendProposal = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState([]);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
-  // Default form values
+  // Default Values (same as provided)
   const defaultValues = {
     subject: "Invitation for Job Fair 2025 | FirstVITE E-Learning",
     studentMessage: `<div style="color: #4DA3FF; font-size: 18px;">
@@ -115,10 +127,11 @@ Warm regards,
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      messageType: "student", // Set default message type
+      messageType: "company", // Default to company for B2B context
       subject: defaultValues.subject,
       studentMessage: defaultValues.studentMessage,
       collegeMessage: defaultValues.collegeMessage,
@@ -126,526 +139,290 @@ Warm regards,
     },
   });
 
+  const messageType = watch("messageType");
+  const currentMessageField = `${messageType}Message`;
+  const currentMessage = watch(currentMessageField);
+
+  // --- Handlers ---
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const validFiles = Array.from(e.target.files).filter(
+        (file) => file.size <= 10 * 1024 * 1024
+      );
+      if (validFiles.length < e.target.files.length)
+        toast.error("Some files exceeded 10MB limit.");
+      setFiles((prev) => [...prev, ...validFiles]);
+    }
+  };
+
+  const removeFile = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true);
-      setError("");
-      setSuccess("");
-
       const formData = new FormData();
 
-      // Process emails from textarea (split by newline and filter out empty lines)
+      // Process Emails
       const emailList = data.emails
         .split("\n")
-        .map((email) => email.trim())
-        .filter((email) => email);
+        .map((e) => e.trim())
+        .filter(Boolean);
 
-      // Get the selected message type
-      const selectedMessageType = watch("messageType");
-
-      // Prepare the data object that will be stringified
+      // Prepare Payload
       const emailData = {
         emails: emailList,
         subject: data.subject,
-        message:
-          selectedMessageType === "student"
-            ? data.studentMessage
-            : selectedMessageType === "college"
-            ? data.collegeMessage
-            : data.companyMessage,
+        message: data[currentMessageField],
       };
 
-      // Debug log to check the selected message type and content
-      // console.log("Selected message type:", selectedMessageType);
-      // console.log("Using message:", emailData.message.substring(0, 50) + "...");
-
-      // Add files first (this is important for some servers)
-      if (files && files.length > 0) {
-        // console.log("Adding files to form data:", files);
-        files.forEach((file, index) => {
-          formData.append("attachments", file);
-          // console.log(
-          //   `Added file ${index + 1}: ${file.name} (${(
-          //     file.size /
-          //     (1024 * 1024)
-          //   ).toFixed(2)}MB)`
-          // );
-        });
-      } else {
-        console.log("No files to attach");
-      }
-
-      // Add the stringified data to formData as the last item
       formData.append("data", JSON.stringify(emailData));
+      files.forEach((file) => formData.append("attachments", file));
 
-      // Log form data for debugging (without logging file content)
-      // console.log("FormData entries:");
-      for (let pair of formData.entries()) {
-        if (pair[0] === "attachments") {
-          // console.log(
-          //   `${pair[0]}: ${pair[1].name} (${(
-          //     pair[1].size /
-          //     (1024 * 1024)
-          //   ).toFixed(2)}MB)`
-          // );
-        } else {
-          console.log(pair[0] + ":", pair[1]);
-        }
-      }
-
-      // Get token from localStorage
       const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Authentication token not found");
-      }
+      await axios.post("/v1/admin/emails/send-proposal", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      // Show loading toast
-      const toastId = toast.loading("Sending emails with attachments...");
-
-      try {
-        const response = await axios({
-          method: "post",
-          url: `${
-            "/api"
-          }/v1/admin/emails/send-proposal`,
-          data: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 120000, // 2 minutes
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            toast.loading(`Uploading files: ${percentCompleted}%`, {
-              id: toastId,
-            });
-          },
-        });
-
-        // Update toast to success
-        toast.success("Emails sent successfully!", { id: toastId });
-
-        if (response.data && response.data.status === "success") {
-          const messageType = watch("messageType");
-          let recipientType;
-          if (messageType === "student") {
-            recipientType = "student";
-          } else if (messageType === "college") {
-            recipientType = "college/university";
-          } else {
-            recipientType = "company";
-          }
-
-          setSuccess(`Proposal sent successfully to ${recipientType}!`);
-          toast.success(response.data.message || "Proposal sent successfully!");
-
-          // Reset form but keep the default messages and current message type
-          reset({
-            subject: defaultValues.subject,
-            messageType: messageType,
-            studentMessage: defaultValues.studentMessage,
-            collegeMessage: defaultValues.collegeMessage,
-            companyMessage: defaultValues.companyMessage,
-            emails: "",
-          });
-          setFiles([]);
-        } else {
-          throw new Error(response.data?.message || "Failed to send proposal");
-        }
-      } catch (error) {
-        console.error("Error sending proposal:", error);
-
-        // Check if it's a timeout error
-        if (
-          error.code === "ECONNABORTED" ||
-          error.message.includes("timeout")
-        ) {
-          // Show success message even on timeout since emails are processed in background
-          const messageType = watch("messageType");
-          const recipientType =
-            messageType === "student" ? "student" : "college/university";
-
-          setSuccess(`Proposal is being sent to ${recipientType}!`);
-          toast.success(
-            "Your request is being processed. You'll receive a confirmation once completed."
-          );
-
-          // Still reset the form
-          reset({
-            subject: defaultValues.subject,
-            messageType: messageType,
-            studentMessage: defaultValues.studentMessage,
-            collegeMessage: defaultValues.collegeMessage,
-            emails: "",
-          });
-          setFiles([]);
-        } else {
-          // Handle other types of errors
-          const errorMessage =
-            error.response?.data?.message ||
-            "Failed to send proposal. Please try again.";
-          setError(errorMessage);
-          toast.error(errorMessage);
-        }
-      }
+      toast.success(`Proposal sent to ${messageType} contacts!`);
+      setFiles([]);
+      // Optional: Reset logic here
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Transmission failed.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-      const ALLOWED_TYPES = [
-        "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "text/plain",
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-      ];
-
-      const validFiles = [];
-      const invalidFiles = [];
-      const invalidTypeFiles = [];
-
-      Array.from(e.target.files).forEach((file) => {
-        if (file.size > MAX_FILE_SIZE) {
-          invalidFiles.push(
-            `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`
-          );
-        } else if (!ALLOWED_TYPES.includes(file.type)) {
-          invalidTypeFiles.push(
-            `${file.name} (${file.type || "unknown type"})`
-          );
-        } else {
-          validFiles.push(file);
-        }
-      });
-
-      if (invalidFiles.length > 0) {
-        toast.error(
-          `The following files exceed 10MB: ${invalidFiles.join(", ")}`
-        );
-      }
-
-      if (invalidTypeFiles.length > 0) {
-        toast.error(`Unsupported file types: ${invalidTypeFiles.join(", ")}`);
-      }
-
-      if (validFiles.length > 0) {
-        // console.log("Valid files selected:", validFiles);
-        setFiles((prevFiles) => [...prevFiles, ...validFiles]);
-      }
-    }
-  };
-
-  const removeFile = (index) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  };
-
   return (
-    <div className="p-6 bg-white rounded-lg shadow">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black">
-          Send Proposal to Colleges
-        </h1>
-        <div className="mt-2 sm:mt-0 text-sm text-gray-500">
+    <div className="relative min-h-screen bg-gray-50 dark:bg-[#05081a] text-gray-900 dark:text-white transition-colors duration-300">
+      {/* Background Ambience */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <div className="relative z-10 px-6 py-8 max-w-[1600px] mx-auto">
+        {/* --- Header --- */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-black">
+              Proposal <span className="text-[#F47C26]">Dispatch</span>
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Initiate partnerships with colleges and corporate entities.
+            </p>
+          </div>
           <Link
-            to="/admin/email-records"
-            className="flex items-center bg-blue-600 px-2 py-1 rounded hover:bg-blue-700 transition-colors text-white"
+            to="/admin/mail-sender/email-records"
+            className="px-5 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-white/10 transition-all flex items-center gap-2"
           >
-            <FiSend className="mr-2" /> Sended To
+            <FiBriefcase /> Audit Logs
           </Link>
         </div>
-      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div>
-          <label
-            htmlFor="emails"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email Addresses (one per line)
-          </label>
-          <textarea
-            id="emails"
-            {...register("emails", {
-              required: "At least one email address is required",
-            })}
-            rows={5}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 font-mono text-sm"
-            placeholder="college1@example.com
-college2@example.com
-college3@example.com"
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            Enter one email address per line
-          </p>
-          {errors.emails && (
-            <p className="mt-1 text-sm text-red-600">{errors.emails.message}</p>
-          )}
+        {/* Visual Context: Sales Funnel */}
+        <div
+          className="mb-8 p-4 bg-white/50 dark:bg-black/20 rounded-2xl border border-dashed border-gray-300 dark:border-white/10 text-center opacity-60 hover:opacity-100 transition-opacity cursor-help"
+          title="View Pipeline"
+        >
+          <span className="text-xs text-gray-400 uppercase tracking-widest mb-2 block">
+            B2B Outreach Workflow
+          </span>
         </div>
 
-        <div>
-          <label
-            htmlFor="subject"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Subject
-          </label>
-          <input
-            type="text"
-            id="subject"
-            {...register("subject", { required: "Subject is required" })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Proposal for Partnership"
-          />
-          {errors.subject && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.subject.message}
-            </p>
-          )}
-        </div>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+        >
+          {/* --- Left Column: Configuration --- */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Recipient Type Selector */}
+            <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <FiUser /> Target Audience
+              </h3>
 
-        <div className="space-y-4">
-          {/* Student Message Card */}
-          <div
-            className={`border-2 rounded-lg p-4 transition-colors ${
-              watch("messageType") === "student"
-                ? "border-indigo-500 bg-indigo-50"
-                : "border-gray-200 hover:border-indigo-300"
-            }`}
-          >
-            <label className="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="radio"
-                {...register("messageType", {
-                  required: "Please select a message type",
-                })}
-                value="student"
-                className="mt-1 h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                defaultChecked
-              />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="block text-sm font-medium text-gray-700">
-                    Message for Student
-                  </span>
-                </div>
-                <div className="mt-2">
-                  <textarea
-                    {...register("studentMessage", {
-                      required: "Student message is required",
-                    })}
-                    rows={4}
-                    className="w-full h-[500px] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Write your message for the student here..."
-                  />
-                  {errors.studentMessage && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.studentMessage.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </label>
-          </div>
-
-          {/* College Message Card */}
-          <div
-            className={`border-2 rounded-lg p-4 transition-colors ${
-              watch("messageType") === "college"
-                ? "border-indigo-500 bg-indigo-50"
-                : "border-gray-200 hover:border-indigo-300"
-            }`}
-          >
-            <label className="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="radio"
-                {...register("messageType")}
-                value="college"
-                className="mt-1 h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-              />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="block text-sm font-medium text-gray-700">
-                    Message for College/University{" "}
-                    <span className="text-red-600">
-                      (Remember change the [College Name] before sending)
-                    </span>
-                  </span>
-                </div>
-                <div className="mt-2">
-                  <textarea
-                    {...register("collegeMessage", {
-                      required: "College/University message is required",
-                    })}
-                    rows={4}
-                    className="w-full h-[500px] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Write your message for the college/university here..."
-                  />
-                  {errors.collegeMessage && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.collegeMessage.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </label>
-          </div>
-
-          <div
-            className={`border-2 rounded-lg p-4 transition-colors ${
-              watch("messageType") === "company"
-                ? "border-indigo-500 bg-indigo-50"
-                : "border-gray-200 hover:border-indigo-300"
-            }`}
-          >
-            <label className="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="radio"
-                {...register("messageType")}
-                value="company"
-                className="mt-1 h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-              />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="block text-sm font-medium text-gray-700">
-                    Message for Company{" "}
-                    <span className="text-red-600">
-                      (Remember change the [Company Name] before sending)
-                    </span>
-                  </span>
-                </div>
-                <div className="mt-2">
-                  <textarea
-                    {...register("companyMessage", {
-                      required: "Company message is required",
-                    })}
-                    rows={4}
-                    className="w-full h-[500px] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Write your message for the company here..."
-                  />
-                  {errors.companyMessage && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.companyMessage.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </label>
-          </div>
-
-          {errors.messageType && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.messageType.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Attachments (Optional)
-          </label>
-          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-            <div className="space-y-1 text-center">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 48 48"
-                aria-hidden="true"
-              >
-                <path
-                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <div className="flex text-sm text-gray-600">
-                <label
-                  htmlFor="file-upload"
-                  className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-                >
-                  <span>Upload files</span>
-                  <input
-                    id="file-upload"
-                    name="file-upload"
-                    type="file"
-                    className="sr-only"
-                    multiple
-                    onChange={handleFileChange}
-                  />
-                </label>
-                <p className="pl-1">or drag and drop</p>
-              </div>
-              <p className="text-xs text-gray-500">
-                PDF, DOC, DOCX, XLS, XLSX, TXT, JPG, PNG, GIF up to 10MB
-              </p>
-            </div>
-          </div>
-
-          {files.length > 0 && (
-            <div className="mt-2">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">
-                Selected files:
-              </h4>
-              <ul className="border border-gray-200 rounded-md divide-y divide-gray-200">
-                {files.map((file, index) => (
-                  <li
-                    key={index}
-                    className="pl-3 pr-4 py-3 flex items-center justify-between text-sm"
+              <div className="space-y-3">
+                {[
+                  {
+                    id: "company",
+                    label: "Corporate Partners",
+                    desc: "Sponsors & Hiring Partners",
+                  },
+                  {
+                    id: "college",
+                    label: "Educational Institutes",
+                    desc: "Colleges & Universities",
+                  },
+                  {
+                    id: "student",
+                    label: "Student Body",
+                    desc: "Direct Candidates",
+                  },
+                ].map((type) => (
+                  <label
+                    key={type.id}
+                    className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
+                      messageType === type.id
+                        ? "bg-purple-50 dark:bg-purple-900/20 border-purple-500"
+                        : "bg-gray-50 dark:bg-white/5 border-transparent hover:bg-gray-100 dark:hover:bg-white/10"
+                    }`}
                   >
-                    <div className="w-0 flex-1 flex items-center">
-                      <svg
-                        className="flex-shrink-0 h-5 w-5 text-gray-400"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span className="ml-2 flex-1 w-0 truncate">
-                        {file.name}
+                    <input
+                      type="radio"
+                      value={type.id}
+                      {...register("messageType")}
+                      className="mt-1"
+                    />
+                    <div>
+                      <span className="font-bold block text-sm">
+                        {type.label}
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {type.desc}
                       </span>
                     </div>
-                    <div className="ml-4 flex-shrink-0">
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Recipient List */}
+            <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <FiSend /> Recipient List
+              </h3>
+              <textarea
+                {...register("emails", { required: "Recipients required" })}
+                rows={8}
+                className="w-full bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl p-4 font-mono text-sm focus:outline-none focus:border-[#F47C26] resize-none"
+                placeholder={`hr@company.com\nplacement@college.edu\n...`}
+              />
+              <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                <FiInfo /> Enter one email address per line.
+              </p>
+              {errors.emails && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.emails.message}
+                </p>
+              )}
+            </div>
+
+            {/* Attachments */}
+            <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <FiPaperclip /> Attachments
+              </h3>
+
+              <div className="border-2 border-dashed border-gray-300 dark:border-white/20 rounded-xl p-6 text-center hover:border-[#F47C26] transition-colors relative">
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <FiUpload className="mx-auto text-2xl text-gray-400 mb-2" />
+                <p className="text-sm font-medium">Click or Drag files here</p>
+                <p className="text-xs text-gray-500 mt-1">Max 10MB per file</p>
+              </div>
+
+              {files.length > 0 && (
+                <ul className="mt-4 space-y-2">
+                  {files.map((file, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-center justify-between text-sm bg-gray-50 dark:bg-white/5 p-2 rounded-lg"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <FiFileText className="text-gray-400" />
+                        <span className="truncate max-w-[150px]">
+                          {file.name}
+                        </span>
+                      </div>
                       <button
                         type="button"
-                        onClick={() => removeFile(index)}
-                        className="font-medium text-red-600 hover:text-red-500"
+                        onClick={() => removeFile(idx)}
+                        className="text-red-500 hover:text-red-700"
                       >
-                        Remove
+                        <FiTrash2 />
                       </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? "Sending..." : "Send Proposal"}
-          </button>
-        </div>
-      </form>
+          {/* --- Right Column: Content Editor --- */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-sm min-h-[600px] flex flex-col">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold flex items-center gap-2">
+                  <FiLayout /> Proposal Content
+                </h3>
+              </div>
+
+              {/* Subject Line */}
+              <div className="mb-6">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                  Subject Line
+                </label>
+                <input
+                  type="text"
+                  {...register("subject", { required: "Subject required" })}
+                  className="w-full bg-transparent text-xl font-bold border-b border-gray-200 dark:border-white/10 pb-2 focus:outline-none focus:border-[#F47C26] transition-all"
+                  placeholder="Proposal Subject..."
+                />
+              </div>
+
+              {/* Rich Text Editor */}
+              <div className="flex-1 bg-white dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col">
+                <ReactQuill
+                  theme="snow"
+                  value={currentMessage}
+                  onChange={(val) => setValue(currentMessageField, val)}
+                  className="flex-1 dark:text-gray-200 flex flex-col"
+                  modules={{
+                    toolbar: [
+                      [{ header: [1, 2, false] }],
+                      ["bold", "italic", "underline", "strike"],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      ["link", "clean"],
+                    ],
+                  }}
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="mt-8 flex justify-end gap-4">
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="px-6 py-3 rounded-xl border border-gray-200 dark:border-white/10 font-bold text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
+                >
+                  Discard
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-8 py-3 bg-[#F47C26] hover:bg-[#d5671f] text-white font-bold rounded-xl shadow-lg shadow-orange-500/30 flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <span className="animate-pulse">Processing...</span>
+                  ) : (
+                    <>
+                      <FiSend /> Send Proposal
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

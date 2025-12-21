@@ -26,6 +26,7 @@ import PaymentTAndC from "./pages/PaymentTAndC";
 import ThankYouPage from "./pages/ThankYouPage";
 import Unauthorized from "./pages/Unauthorized";
 import SuspendedAccount from "./pages/SuspendedAccount";
+import Faqs from "./pages/Faqs";
 
 // --- Service Pages ---
 import ServicesByCategory from "./pages/user/ServicesByCategory.jsx";
@@ -49,7 +50,7 @@ import SendBrochure from "./pages/admin/SendBrochure";
 import SendProposal from "./pages/admin/SendProposal";
 import EmailRecords from "./pages/admin/EmailRecords";
 import FaqsPage from "./pages/admin/FaqsPage";
-import Faqs from "./pages/Faqs";
+import Mailer from "./pages/admin/MailSender.jsx"
 
 // --- Blog Components ---
 import BlogListPage from "./pages/blog/BlogListPage";
@@ -348,18 +349,20 @@ function App() {
               element={<MediaGallery />}
             />
 
+            {/* Communications */}
+            <Route path="/admin/mail-sender" element={<Mailer />} />
+            <Route path="/admin/mail-sender/brochure" element={<SendBrochure />} />
+            <Route path="/admin/mail-sender/proposal" element={<SendProposal />} />
+            <Route path="/admin/mail-sender/email-records" element={<EmailRecords />} />
+
             {/* CRM & Sales */}
             <Route path="/admin/users" element={<Users />} />
             <Route path="/admin/inquiries" element={<ContactsList />} />
             <Route path="/admin/payments" element={<PaymentsList />} />
             <Route path="/admin/payments/:id" element={<PaymentDetails />} />
-
-            {/* Communications */}
-            <Route path="/admin/email-records" element={<EmailRecords />} />
-            <Route path="/admin/send-brochure" element={<SendBrochure />} />
-            <Route path="/admin/send-proposal" element={<SendProposal />} />
-            <Route path="emails" element={<EmailRecords />} />
             <Route path="/admin/faqs" element={<FaqsPage />} />
+            
+            {/* <Route path="emails" element={<EmailRecords />} /> */}
           </Route>
 
           {/* Catch-all 404 */}

@@ -79,17 +79,11 @@ const NAV_ITEMS = [
         activePaths: ["/admin/inquiries"],
       },
       {
-        path: "/admin/send-brochure",
-        label: "Send Brochure",
+        path: "/admin/mail-sender",
+        label: "Mail Sender",
         icon: <FaPaperPlane />,
-        activePaths: ["/admin/send-brochure"],
-      },
-      {
-        path: "/admin/send-proposal",
-        label: "Send Proposal",
-        icon: <FaFileContract />,
-        activePaths: ["/admin/send-proposal"],
-      },
+        activePaths: ["/admin/mail-sender"],
+      }
     ],
   },
   {
