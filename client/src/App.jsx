@@ -3,7 +3,9 @@ import { HelmetProvider } from "react-helmet-async";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { ToastContainer } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
+import { FaWifi, FaServer, FaRedo, FaPowerOff } from "react-icons/fa";
 
 // --- Contexts & Hooks ---
 import useContactFormPopup from "./hooks/useContactFormPopup.jsx";
@@ -60,11 +62,76 @@ import BlogDetailPage from "./pages/blog/BlogDetailPage";
 import BlogPostList from "./pages/admin/Blog.jsx";
 import BlogPostForm from "./components/admin/BlogForm.jsx";
 
-// --- Theme Context Setup ---
+// ==========================================
+// 🎨 UI COMPONENTS (Internal)
+// ==========================================
+
+// 1. High-Tech Loader
+const TrivixaLoader = ({ message = "Initializing System..." }) => (
+  <div className="fixed inset-0 z-[9999] bg-[#0a0f2d] flex flex-col items-center justify-center text-white overflow-hidden">
+    {/* Background Grid */}
+    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F47C26]/10 rounded-full blur-[120px]"></div>
+
+    {/* Spinner */}
+    <div className="relative w-24 h-24 mb-8">
+      <div className="absolute inset-0 border-4 border-[#F47C26]/30 rounded-full"></div>
+      <div className="absolute inset-0 border-4 border-t-[#F47C26] rounded-full animate-spin"></div>
+      <div className="absolute inset-4 border-4 border-b-blue-500 rounded-full animate-spin-slow"></div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+      </div>
+    </div>
+
+    {/* Text */}
+    <motion.h2
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+      className="text-xl font-mono text-[#F47C26] tracking-widest uppercase"
+    >
+      {message}
+    </motion.h2>
+  </div>
+);
+
+// 2. System Status Screen (Offline/Error)
+const SystemStatusScreen = ({ icon, title, message, onRetry, color }) => (
+  <div className="min-h-screen bg-[#0a0f2d] flex items-center justify-center p-6 relative overflow-hidden">
+    <div
+      className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] ${color}/10 rounded-full blur-[120px]`}
+    ></div>
+
+    <motion.div
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      className="relative z-10 bg-white/5 backdrop-blur-xl border border-white/10 p-10 rounded-3xl max-w-lg w-full text-center shadow-2xl"
+    >
+      <div
+        className={`mx-auto w-20 h-20 rounded-full ${color}/20 flex items-center justify-center text-4xl ${color} mb-6`}
+      >
+        {icon}
+      </div>
+      <h1 className="text-3xl font-black text-white mb-3">{title}</h1>
+      <p className="text-gray-400 mb-8 leading-relaxed">{message}</p>
+
+      <button
+        onClick={onRetry}
+        className="group relative inline-flex items-center justify-center px-8 py-3 font-bold text-white transition-all duration-200 bg-[#F47C26] font-lg rounded-xl hover:bg-[#d5671f] hover:scale-105 focus:outline-none ring-offset-2 focus:ring-2 ring-[#F47C26]"
+      >
+        <FaRedo className="mr-2 group-hover:rotate-180 transition-transform duration-500" />
+        System Retry
+      </button>
+    </motion.div>
+  </div>
+);
+
+// ==========================================
+// 🧩 THEME CONTEXT
+// ==========================================
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Check local storage or system preference
   const [theme, setTheme] = useState(
     localStorage.getItem("theme") ||
       (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -74,17 +141,13 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    if (theme === "dark") root.classList.add("dark");
+    else root.classList.remove("dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const toggleTheme = () => {
+  const toggleTheme = () =>
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
@@ -93,31 +156,36 @@ export const ThemeProvider = ({ children }) => {
   );
 };
 
-// --- Main Layout Component ---
+// ==========================================
+// 🏗️ MAIN LAYOUT
+// ==========================================
 const MainLayout = ({ children }) => {
   const location = useLocation();
-
-  // Define routes where Navbar/Footer should be hidden
-  // Note: Admin routes are handled by their own layout, but we check here just in case
   const isHiddenRoute =
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/login") ||
     location.pathname.startsWith("/register") ||
     location.pathname.startsWith("/forgot-password") ||
-    location.pathname.startsWith("/reset-password") ||
     location.pathname === "/suspended" ||
     location.pathname === "/unauthorized";
 
   return (
     <div className="flex flex-col min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-[#0a0f2d] text-gray-900 dark:text-white">
       <ScrollToTop />
-
       {!isHiddenRoute && <Navbar />}
-
       <main className={`flex-grow ${!isHiddenRoute ? "pt-16" : ""}`}>
-        {children}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </main>
-
       {!isHiddenRoute && <Footer />}
       <SocialMediaFloating />
       {!isHiddenRoute && <ChatButton />}
@@ -125,52 +193,96 @@ const MainLayout = ({ children }) => {
   );
 };
 
+// ==========================================
+// 🚀 APP COMPONENT
+// ==========================================
 function App() {
   const { ContactFormPopup } = useContactFormPopup();
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [serverOnline, setServerOnline] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => {
+      setIsOnline(false);
+      setIsChecking(false);
+    };
+
+    const checkServerStatus = async () => {
+      try {
+        const response = await fetch("/api/health"); // Ensure this endpoint exists
+        if (response.ok) setServerOnline(true);
+        else setServerOnline(false);
+      } catch (error) {
+        setServerOnline(false);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    if (navigator.onLine) checkServerStatus();
+    else setIsChecking(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  // --- Render States ---
+
+  if (isChecking) return <TrivixaLoader message="Establishing Connection..." />;
+
+  if (!isOnline) {
+    return (
+      <SystemStatusScreen
+        icon={<FaWifi />}
+        color="text-red-500 bg-red-500"
+        title="Connection Lost"
+        message="Unable to connect to the global network. Please verify your internet connection settings."
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
+  // Optional: You can uncomment this if you want to block the app completely when the backend is down
+  if (!serverOnline) {
+    return (
+      <SystemStatusScreen 
+        icon={<FaServer />}
+        color="text-yellow-500 bg-yellow-500"
+        title="Server Maintenance"
+        message="Our core systems are currently unreachable. Engineers have been notified. Please try again shortly."
+        onRetry={() => window.location.reload()}
+      />
+    );
+  } 
 
   return (
     <HelmetProvider>
       <ThemeProvider>
-        {/* Global Notifications */}
         <Toaster
           position="top-right"
           toastOptions={{
             duration: 4000,
             style: {
-              background: "#333",
+              background: "#0a0f2d",
               color: "#fff",
-              zIndex: 9999,
+              border: "1px solid rgba(255,255,255,0.1)",
             },
-            success: {
-              iconTheme: { primary: "#10B981", secondary: "white" },
-            },
-            error: {
-              iconTheme: { primary: "#EF4444", secondary: "white" },
-            },
+            success: { iconTheme: { primary: "#10B981", secondary: "white" } },
+            error: { iconTheme: { primary: "#EF4444", secondary: "white" } },
           }}
         />
-        <ToastContainer
-          position="bottom-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
-
-        {/* Global Popup */}
+        <ToastContainer theme="dark" />
         <ContactFormPopup />
 
         <Routes>
-          {/* ====================
-              PUBLIC ROUTES 
-          ==================== */}
-
-          {/* Landing & Info */}
+          {/* Public */}
           <Route
             path="/"
             element={
@@ -230,7 +342,7 @@ function App() {
             }
           />
 
-          {/* Services & Courses */}
+          {/* Services */}
           <Route
             path="/services"
             element={
@@ -256,7 +368,7 @@ function App() {
             }
           />
 
-          {/* Blog */}
+          {/* Content */}
           <Route
             path="/blog"
             element={
@@ -282,14 +394,20 @@ function App() {
             }
           />
 
-          {/* ====================
-              AUTH ROUTES 
-          ==================== */}
+          {/* Auth */}
           <Route
             path="/login"
             element={
               <MainLayout>
                 <LoginPage />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <MainLayout>
+                <RegisterPage />
               </MainLayout>
             }
           />
@@ -303,14 +421,8 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/register"
-            element={
-              <MainLayout>
-                <RegisterPage />
-              </MainLayout>
-            }
-          />
+
+          {/* Errors */}
           <Route
             path="/unauthorized"
             element={
@@ -328,9 +440,7 @@ function App() {
             }
           />
 
-          {/* ====================
-              ADMIN ROUTES (PROTECTED)
-          ==================== */}
+          {/* Admin Routes */}
           <Route
             element={
               <PrivateRoute allowedRoles={["admin"]}>
@@ -344,7 +454,6 @@ function App() {
             />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-            {/* Category Management */}
             <Route path="/admin/categories" element={<CategoriesList />} />
             <Route path="/admin/categories/new" element={<CategoryForm />} />
             <Route
@@ -352,17 +461,16 @@ function App() {
               element={<CategoryForm />}
             />
 
-            {/* Content Management */}
             <Route path="/admin/blog" element={<BlogPostList />} />
             <Route path="/admin/blog/new" element={<BlogPostForm />} />
             <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />
+
             <Route path="/admin/media-gallery" element={<ImageGallery />} />
             <Route
               path="/admin/media-gallery/upload"
               element={<MediaGallery />}
             />
 
-            {/* Communications */}
             <Route path="/admin/mail-sender" element={<Mailer />} />
             <Route
               path="/admin/mail-sender/brochure"
@@ -377,22 +485,17 @@ function App() {
               element={<EmailRecords />}
             />
 
-            {/* CRM & Sales */}
             <Route path="/admin/users" element={<Users />} />
             <Route path="/admin/inquiries" element={<ContactsList />} />
             <Route path="/admin/payments" element={<PaymentsList />} />
             <Route path="/admin/payments/:id" element={<PaymentDetails />} />
             <Route path="/admin/faqs" element={<FaqsPage />} />
-
-            {/* <Route path="emails" element={<EmailRecords />} /> */}
           </Route>
 
-          {/* Catch-all 404 */}
           <Route path="*" element={<Navigate to="/unauthorized" replace />} />
         </Routes>
       </ThemeProvider>
     </HelmetProvider>
   );
 }
-
 export default App;
