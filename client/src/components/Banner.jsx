@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   FaArrowRight,
   FaCheckCircle,
@@ -15,10 +15,44 @@ import {
   useSpring,
   useMotionValue,
   useMotionTemplate,
+  AnimatePresence,
 } from "framer-motion";
 
+// --- Carousel Configuration ---
+const CAROUSEL_IMAGES = [
+  {
+    src: "http://trivixa.in/api/upload/file/trivixa-banner-software-development-21122025-1625.jpg",
+    title: "Software Development",
+    tag: "On Your Need",
+  },
+  {
+    src: "http://trivixa.in/api/upload/file/trivixa-banner-cloud-data-solutions-21122025-1625.jpg",
+    title: "Cloud & Data Solutions",
+    tag: "AWS Ready",
+  },
+  {
+    src: "http://trivixa.in/api/upload/file/trivixa-banner-cybersecurity-21122025-1625.jpg",
+    title: "Cyber Security",
+    tag: "Neural v1.0",
+  },
+];
+
 const Banner = () => {
-  // --- 3D Tilt Logic for the Right Card ---
+  // --- Carousel State & Logic ---
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % CAROUSEL_IMAGES.length);
+    }, 5000); // Rotate every 5 seconds
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleDotClick = (index) => {
+    setCurrentIndex(index);
+  };
+
+  // --- 3D Tilt Logic ---
   const ref = useRef(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -74,7 +108,10 @@ const Banner = () => {
   };
 
   return (
-    <section className="relative w-full flex items-center justify-center bg-gray-50 dark:bg-[#030014] overflow-hidden px-6 perspective-1000 transition-colors duration-500">
+    <section
+      // Responsive Height Fix applied here
+      className="relative w-full lg:min-h-screen min-h-fit flex items-center justify-center bg-gray-50 dark:bg-[#030014] overflow-hidden py-20 lg:py-0 px-6 perspective-1000 transition-colors duration-500"
+    >
       {/* --- Futuristic Background --- */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light"></div>
@@ -91,15 +128,14 @@ const Banner = () => {
       </div>
 
       {/* --- Main Content --- */}
-      <div className="max-w-7xl w-full mx-auto relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 md:gap-16 lg:gap-24 pt-[80px] pb-[100px] lg:pt-[90px] lg:pb-[105px]">
+      <div className="max-w-7xl w-full mx-auto relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 md:gap-16 lg:gap-24">
         {/* Left Content: Typography & CTA */}
         <motion.div
-          className="lg:w-1/2 space-y-6 md:space-y-8 text-center lg:text-left pt-8 lg:pt-0"
+          className="lg:w-1/2 space-y-8 md:space-y-10 text-center lg:text-left pt-8 lg:pt-0"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {/* Badge */}
           <motion.div variants={itemVariants} className="inline-flex">
             <span className="relative inline-flex overflow-hidden rounded-full p-[1px]">
               <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#F47C26_0%,#393BB2_50%,#F47C26_100%)]" />
@@ -109,7 +145,6 @@ const Banner = () => {
             </span>
           </motion.div>
 
-          {/* Headline */}
           <motion.h1
             variants={itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight"
@@ -137,7 +172,6 @@ const Banner = () => {
             to scale your business.
           </motion.p>
 
-          {/* Feature List */}
           <motion.div
             variants={itemVariants}
             className="flex flex-wrap gap-x-6 gap-y-3 justify-center lg:justify-start text-sm font-medium text-gray-600 dark:text-gray-400"
@@ -152,12 +186,11 @@ const Banner = () => {
             )}
           </motion.div>
 
-          {/* Buttons */}
           <motion.div
             variants={itemVariants}
             className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start"
           >
-            <Link to="/services" className="group relative w-full sm:w-auto">
+            <Link to="/courses" className="group relative w-full sm:w-auto">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-[#F47C26] to-purple-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
               <button className="relative w-full px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all">
                 Start Building
@@ -165,18 +198,18 @@ const Banner = () => {
               </button>
             </Link>
 
-            {/* <Link to="/services" className="w-full sm:w-auto">
+            <Link to="/services" className="w-full sm:w-auto">
               <button className="w-full px-8 py-4 bg-transparent border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 dark:hover:bg-white/5 transition-all">
                 <span className="w-8 h-8 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center">
                   <FaPlay className="text-xs ml-0.5" />
                 </span>
                 Our Services
               </button>
-            </Link> */}
+            </Link>
           </motion.div>
         </motion.div>
 
-        {/* Right Content: Holographic 3D Card */}
+        {/* Right Content: Holographic 3D Carousel Card */}
         <motion.div
           className="lg:w-1/2 w-full flex justify-center lg:justify-end perspective-1000"
           initial={{ opacity: 0, x: 100 }}
@@ -195,29 +228,78 @@ const Banner = () => {
               {/* Internal Glow Gradient */}
               <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-gradient-to-br from-transparent via-white/10 dark:via-white/5 to-transparent rotate-45 pointer-events-none" />
 
-              {/* Main Image */}
+              {/* Main Image Carousel */}
               <div className="absolute inset-0 p-2">
                 <div className="w-full h-full rounded-2xl overflow-hidden relative group">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
-                  <img
-                    src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80"
-                    alt="Future Tech"
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                  />
+                  {/* Permanent Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 pointer-events-none" />
 
-                  {/* Overlay Content within Image */}
-                  <div className="absolute bottom-6 left-6 z-20">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentIndex}
+                      initial={{ opacity: 0, scale: 1.1 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.8, ease: "easeInOut" }}
+                      className="absolute inset-0"
+                    >
+                      <img
+                        src={CAROUSEL_IMAGES[currentIndex].src}
+                        alt="Carousel Slide"
+                        className="w-full h-full object-cover"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Overlay Content */}
+                  <div className="absolute bottom-6 left-6 z-20 w-full pr-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="px-2 py-1 rounded bg-[#F47C26] text-white text-[10px] font-bold uppercase">
                         Live
                       </span>
-                      <span className="text-white/80 text-xs font-mono">
-                        System.v.2.4
-                      </span>
+                      <motion.span
+                        key={`tag-${currentIndex}`}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-white/80 text-xs font-mono"
+                      >
+                        {CAROUSEL_IMAGES[currentIndex].tag}
+                      </motion.span>
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-white leading-tight">
-                      Full Stack <br /> Architecture
-                    </h3>
+
+                    <motion.h3
+                      key={`title-${currentIndex}`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-xl sm:text-2xl font-bold text-white leading-tight mb-4"
+                    >
+                      {CAROUSEL_IMAGES[currentIndex].title
+                        .split(" ")
+                        .map((word, i) => (
+                          <span key={i} className="block">
+                            {word}
+                          </span>
+                        ))}
+                    </motion.h3>
+
+                    {/* Dots Navigation */}
+                    <div className="flex gap-2 pointer-events-auto">
+                      {CAROUSEL_IMAGES.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDotClick(idx);
+                          }}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            idx === currentIndex
+                              ? "bg-[#F47C26] w-6"
+                              : "bg-white/30 w-1.5 hover:bg-white/60"
+                          }`}
+                          aria-label={`Go to slide ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -242,15 +324,8 @@ const Banner = () => {
             </motion.div>
 
             <motion.div
-              style={{ translateZ: 40 }}
-              className="absolute top-1/2 -right-4 sm:-right-12 p-3 rounded-xl bg-white/80 dark:bg-[#1a1f3c]/80 backdrop-blur-md border border-gray-100 dark:border-white/10 shadow-lg"
-            >
-              <FaNodeJs className="text-2xl sm:text-3xl text-green-600" />
-            </motion.div>
-
-            <motion.div
               style={{ translateZ: 80 }}
-              className="absolute -bottom-8 -left-4 bg-white dark:bg-[#1a1f3c] border border-gray-100 dark:border-white/10 p-4 sm:p-5 rounded-2xl shadow-2xl max-w-[160px] sm:max-w-[200px]"
+              className="absolute -bottom-18 -left-24 bg-white dark:bg-[#1a1f3c] border border-gray-100 dark:border-white/10 p-4 sm:p-5 rounded-2xl shadow-2xl max-w-[160px] sm:max-w-[200px]"
             >
               <div className="flex justify-between items-center mb-2">
                 <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
