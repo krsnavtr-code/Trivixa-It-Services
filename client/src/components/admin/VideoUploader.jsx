@@ -18,37 +18,49 @@ const VideoUploader = ({
   maxSizeMB = 100,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState("");
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef(null);
 
   // --- File Handling ---
-  const processFile = (selectedFile) => {
-    if (!selectedFile) return;
+  const processFiles = (newFiles) => {
+    if (!newFiles || newFiles.length === 0) return;
 
-    // Validate Type
     const validTypes = ["video/mp4", "video/webm", "video/quicktime"];
-    if (!validTypes.includes(selectedFile.type)) {
-      toast.error("Invalid codec. Accepted: MP4, WebM, MOV");
-      return;
-    }
-
-    // Validate Size
     const maxSize = maxSizeMB * 1024 * 1024;
-    if (selectedFile.size > maxSize) {
-      toast.error(`File exceeds bandwidth limit of ${maxSizeMB}MB`);
-      return;
-    }
+    const processedFiles = [];
+    const urls = [];
 
-    // Create Preview
-    const fileUrl = URL.createObjectURL(selectedFile);
-    setPreviewUrl(fileUrl);
-    setFile(selectedFile);
+    Array.from(newFiles).forEach((file) => {
+      // Validate Type
+      if (!validTypes.includes(file.type)) {
+        toast.error(
+          `Skipped ${file.name}: Invalid codec. Accepted: MP4, WebM, MOV`
+        );
+        return;
+      }
+
+      // Validate Size
+      if (file.size > maxSize) {
+        toast.error(`Skipped ${file.name}: Exceeds limit of ${maxSizeMB}MB`);
+        return;
+      }
+
+      // Create Preview
+      const fileUrl = URL.createObjectURL(file);
+      urls.push(fileUrl);
+      processedFiles.push(file);
+    });
+
+    if (processedFiles.length > 0) {
+      setFiles((prev) => [...prev, ...processedFiles]);
+      setPreviewUrls((prev) => [...prev, ...urls]);
+    }
   };
 
   const handleFileChange = (e) => {
-    processFile(e.target.files[0]);
+    processFiles(e.target.files);
   };
 
   // --- Drag & Drop ---
@@ -66,51 +78,82 @@ const VideoUploader = ({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processFiles(e.dataTransfer.files);
     }
   };
 
-  const removeVideo = () => {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl("");
-    setFile(null);
+  const removeVideo = (index) => {
+    // Revoke the object URL to avoid memory leaks
+    if (previewUrls[index]) URL.revokeObjectURL(previewUrls[index]);
+
+    // Remove the file and its preview URL
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+
+    // Reset file input if all files are removed
+    if (files.length <= 1 && inputRef.current) {
+      inputRef.current.value = "";
+    }
+  };
+
+  const clearAll = () => {
+    // Revoke all object URLs
+    previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    setFiles([]);
+    setPreviewUrls([]);
     if (inputRef.current) inputRef.current.value = "";
   };
 
   // --- Upload Logic ---
   const handleUpload = async () => {
-    if (!file) {
-      toast.error("No signal detected.");
+    if (files.length === 0) {
+      toast.error("No files selected.");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
       setIsUploading(true);
-      // NOTE: Using the same API utility as ImageUploader for consistency
-      // Ensure your backend route is correct ('/upload/video')
-      const response = await api.post("/upload/video", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        // Optional: Add onUploadProgress here if you want a progress bar
-      });
+      const results = [];
 
-      const data = response.data;
-      const result = data.data || data;
+      // Upload each file sequentially
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const formData = new FormData();
+        formData.append("file", file);
 
-      if (onUploadSuccess && result) {
-        onUploadSuccess({
-          url: result.url || result.path,
-          path: result.path,
-          name: result.name || file.name,
-          type: "video",
-        });
+        try {
+          const response = await api.post("/upload/video", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+          const data = response.data;
+          const result = data.data || data;
+          results.push({
+            url: result.url || result.path,
+            path: result.path,
+            name: result.name || file.name,
+            type: "video",
+          });
+
+          toast.success(`Uploaded: ${file.name}`);
+        } catch (error) {
+          console.error(`Error uploading ${file.name}:`, error);
+          toast.error(
+            `Failed to upload ${file.name}: ${
+              error.response?.data?.message || "Unknown error"
+            }`
+          );
+        }
       }
 
-      removeVideo();
-      toast.success("Video stream archived successfully.");
+      // Call success callback with all results
+      if (onUploadSuccess && results.length > 0) {
+        onUploadSuccess(results);
+      }
+
+      // Clear all files after successful upload
+      clearAll();
     } catch (error) {
       console.error("Upload error:", error);
       toast.error(error.response?.data?.message || "Transmission failed.");
@@ -133,41 +176,64 @@ const VideoUploader = ({
         onDragOver={handleDrag}
         onDrop={handleDrop}
       >
-        <AnimatePresence mode="wait">
-          {previewUrl ? (
+        <AnimatePresence mode="popLayout">
+          {previewUrls.length > 0 ? (
             // --- Preview State ---
-            <motion.div
-              key="preview"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="relative w-full aspect-video bg-black flex items-center justify-center"
-            >
-              <video
-                src={previewUrl}
-                className="w-full h-full object-contain"
-                controls
-              />
-
-              <div className="absolute top-3 right-3 flex gap-2 z-10">
+            <div className="w-full p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {files.length} {files.length === 1 ? "file" : "files"}{" "}
+                  selected
+                </h3>
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeVideo();
-                  }}
-                  className="p-2 bg-red-500/90 text-white rounded-lg hover:bg-red-600 transition-colors backdrop-blur-sm shadow-lg"
-                  title="Cut Feed"
+                  onClick={clearAll}
+                  className="text-xs text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
                 >
-                  <FaTimes />
+                  Clear all
                 </button>
               </div>
 
-              {/* File Info Overlay */}
-              <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-lg border border-white/10 z-10">
-                {file?.name} ({(file?.size / 1024 / 1024).toFixed(2)} MB)
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+                {previewUrls.map((url, index) => (
+                  <motion.div
+                    key={index}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="relative group bg-black/5 dark:bg-white/5 rounded-xl overflow-hidden aspect-video"
+                  >
+                    <video
+                      src={url}
+                      className="w-full h-full object-cover"
+                      controls
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                      <div className="w-full">
+                        <p className="text-xs text-white truncate">
+                          {files[index].name}
+                        </p>
+                        <p className="text-xs text-white/80">
+                          {(files[index].size / 1024 / 1024).toFixed(1)} MB
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeVideo(index);
+                        }}
+                        className="absolute top-1 right-1 p-1 bg-red-500/90 text-white rounded-full hover:bg-red-600 transition-colors"
+                        title="Remove"
+                      >
+                        <FaTimes size={12} />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </motion.div>
+            </div>
           ) : (
             // --- Idle State ---
             <motion.label
@@ -194,6 +260,7 @@ const VideoUploader = ({
                 type="file"
                 className="hidden"
                 accept="video/mp4,video/webm,video/quicktime"
+                multiple
                 onChange={handleFileChange}
                 disabled={isUploading}
               />
@@ -204,7 +271,7 @@ const VideoUploader = ({
 
       {/* --- Action Bar --- */}
       <AnimatePresence>
-        {file && (
+        {files.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -241,7 +308,7 @@ const VideoUploader = ({
       </AnimatePresence>
 
       {/* Diagram Context: Only show when idle */}
-      {!file && !isUploading && (
+      {files.length === 0 && !isUploading && (
         <div className="mt-4 opacity-50 hover:opacity-100 transition-opacity text-center cursor-help">
           <span className="text-[10px] uppercase tracking-widest text-gray-400 block mb-1">
             Stream Pipeline
