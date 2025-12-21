@@ -74,7 +74,7 @@ const Banner = () => {
   };
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#030014] overflow-hidden py-24 px-6 perspective-1000 transition-colors duration-500">
+    <section className="relative w-full flex items-center justify-center bg-gray-50 dark:bg-[#030014] overflow-hidden px-6 perspective-1000 transition-colors duration-500">
       {/* --- Futuristic Background --- */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light"></div>
@@ -91,10 +91,10 @@ const Banner = () => {
       </div>
 
       {/* --- Main Content --- */}
-      <div className="max-w-7xl w-full mx-auto relative z-10 flex flex-col-reverse lg:flex-row items-center gap-16 lg:gap-24">
+      <div className="max-w-7xl w-full mx-auto relative z-10 flex flex-col-reverse lg:flex-row items-center gap-12 md:gap-16 lg:gap-24 pt-[80px] pb-[100px] lg:pt-[90px] lg:pb-[105px]">
         {/* Left Content: Typography & CTA */}
         <motion.div
-          className="lg:w-1/2 space-y-10 text-center lg:text-left"
+          className="lg:w-1/2 space-y-6 md:space-y-8 text-center lg:text-left pt-8 lg:pt-0"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -112,7 +112,7 @@ const Banner = () => {
           {/* Headline */}
           <motion.h1
             variants={itemVariants}
-            className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight"
           >
             Forging the <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] via-purple-500 to-blue-600 animate-gradient-x">
@@ -122,7 +122,7 @@ const Banner = () => {
 
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light"
+            className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light"
           >
             Trivixa architects high-performance digital ecosystems. We blend
             <span className="font-semibold text-gray-900 dark:text-white">
@@ -140,7 +140,7 @@ const Banner = () => {
           {/* Feature List */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-wrap gap-x-8 gap-y-3 justify-center lg:justify-start text-sm font-medium text-gray-600 dark:text-gray-400"
+            className="flex flex-wrap gap-x-6 gap-y-3 justify-center lg:justify-start text-sm font-medium text-gray-600 dark:text-gray-400"
           >
             {["Next-Gen Stacks", "AI Integration", "Cloud Native"].map(
               (text, i) => (
@@ -155,24 +155,24 @@ const Banner = () => {
           {/* Buttons */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-5 pt-4 justify-center lg:justify-start"
+            className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start"
           >
-            <Link to="/courses" className="group relative">
+            <Link to="/services" className="group relative w-full sm:w-auto">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-[#F47C26] to-purple-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
-              <button className="relative w-full sm:w-auto px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all">
+              <button className="relative w-full px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all">
                 Start Building
                 <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
 
-            <Link to="/services">
-              <button className="w-full sm:w-auto px-8 py-4 bg-transparent border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 dark:hover:bg-white/5 transition-all">
+            {/* <Link to="/services" className="w-full sm:w-auto">
+              <button className="w-full px-8 py-4 bg-transparent border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 dark:hover:bg-white/5 transition-all">
                 <span className="w-8 h-8 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center">
                   <FaPlay className="text-xs ml-0.5" />
                 </span>
                 Our Services
               </button>
-            </Link>
+            </Link> */}
           </motion.div>
         </motion.div>
 
@@ -188,7 +188,7 @@ const Banner = () => {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-            className="relative w-full max-w-lg aspect-[4/5] sm:aspect-square md:aspect-[4/3] rounded-3xl"
+            className="relative w-full max-w-[320px] sm:max-w-md md:max-w-lg aspect-[4/5] sm:aspect-square md:aspect-[4/3] rounded-3xl"
           >
             {/* The Glass Card Body */}
             <div className="absolute inset-0 rounded-3xl bg-white/40 dark:bg-white/5 backdrop-blur-2xl border border-white/20 shadow-2xl dark:shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden">
@@ -215,7 +215,7 @@ const Banner = () => {
                         System.v.2.4
                       </span>
                     </div>
-                    <h3 className="text-2xl font-bold text-white leading-tight">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white leading-tight">
                       Full Stack <br /> Architecture
                     </h3>
                   </div>
@@ -226,12 +226,12 @@ const Banner = () => {
             {/* Floating Elements (Parallax) */}
             <motion.div
               style={{ translateZ: 60 }}
-              className="absolute -top-6 -right-6 p-4 rounded-2xl bg-white dark:bg-[#1a1f3c] border border-gray-100 dark:border-white/10 shadow-xl flex items-center gap-3"
+              className="absolute -top-6 -right-6 p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#1a1f3c] border border-gray-100 dark:border-white/10 shadow-xl flex items-center gap-3"
             >
-              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 text-lg sm:text-xl">
                 <FaReact />
               </div>
-              <div>
+              <div className="hidden sm:block">
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-mono">
                   Library
                 </p>
@@ -243,14 +243,14 @@ const Banner = () => {
 
             <motion.div
               style={{ translateZ: 40 }}
-              className="absolute top-1/2 -right-12 p-3 rounded-xl bg-white/80 dark:bg-[#1a1f3c]/80 backdrop-blur-md border border-gray-100 dark:border-white/10 shadow-lg"
+              className="absolute top-1/2 -right-4 sm:-right-12 p-3 rounded-xl bg-white/80 dark:bg-[#1a1f3c]/80 backdrop-blur-md border border-gray-100 dark:border-white/10 shadow-lg"
             >
-              <FaNodeJs className="text-3xl text-green-600" />
+              <FaNodeJs className="text-2xl sm:text-3xl text-green-600" />
             </motion.div>
 
             <motion.div
               style={{ translateZ: 80 }}
-              className="absolute -bottom-8 -left-4 bg-white dark:bg-[#1a1f3c] border border-gray-100 dark:border-white/10 p-5 rounded-2xl shadow-2xl max-w-[200px]"
+              className="absolute -bottom-8 -left-4 bg-white dark:bg-[#1a1f3c] border border-gray-100 dark:border-white/10 p-4 sm:p-5 rounded-2xl shadow-2xl max-w-[160px] sm:max-w-[200px]"
             >
               <div className="flex justify-between items-center mb-2">
                 <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
@@ -258,7 +258,7 @@ const Banner = () => {
                 </span>
                 <FaAws className="text-[#F47C26] text-lg" />
               </div>
-              <div className="text-2xl font-black text-gray-900 dark:text-white">
+              <div className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
                 99.9%
               </div>
               <div className="w-full bg-gray-200 dark:bg-white/10 h-1 mt-2 rounded-full overflow-hidden">
