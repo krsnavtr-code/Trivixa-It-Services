@@ -38,12 +38,6 @@ const NAV_ITEMS = [
         icon: <FaTachometerAlt />,
         activePaths: ["/admin/dashboard"],
       },
-      {
-        path: "/admin/users",
-        label: "Users",
-        icon: <FaTachometerAlt />,
-        activePaths: ["/admin/users"],
-      },
     ],
   },
   {
@@ -94,14 +88,12 @@ const NAV_ITEMS = [
         label: "Payments",
         icon: <FaCreditCard />,
         activePaths: ["/admin/payments"],
-        roles: ["super_admin", "finance"],
       },
       {
         path: "/admin/users",
-        label: "User Management",
+        label: "User",
         icon: <FaUserShield />,
         activePaths: ["/admin/users"],
-        roles: ["super_admin"],
       },
       {
         path: "/admin/faqs",

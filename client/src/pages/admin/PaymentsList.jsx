@@ -1,22 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
-import api from '../../api/axios';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
+import api from "../../api/axios";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaMoneyBillWave,
+  FaSearch,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaClock,
+  FaUser,
+  FaEye,
+} from "react-icons/fa";
 
 export default function PaymentsList() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const response = await api.get('/admin/payments');
+        const response = await api.get("/admin/payments");
         setPayments(response.data.payments);
       } catch (err) {
-        console.error('Error fetching payments:', err);
-        setError('Failed to load payments');
-        toast.error('Failed to load payments');
+        console.error("Error fetching payments:", err);
+        setError("Failed to load payments");
+        toast.error("Failed to load payments");
       } finally {
         setLoading(false);
       }
@@ -26,109 +37,231 @@ export default function PaymentsList() {
   }, []);
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString();
+    return new Date(dateString).toLocaleString("en-IN", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
+  // Animation Variants
+  const rowVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 },
+  };
 
-  if (error) {
-    return (
-      <div className="bg-red-50 border-l-4 border-red-400 p-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Status Styling Helper
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "completed":
+        return {
+          color: "text-green-600 dark:text-green-400",
+          bg: "bg-green-100 dark:bg-green-500/10",
+          border: "border-green-200 dark:border-green-500/20",
+          icon: <FaCheckCircle />,
+          label: "Paid",
+        };
+      case "failed":
+        return {
+          color: "text-red-600 dark:text-red-400",
+          bg: "bg-red-100 dark:bg-red-500/10",
+          border: "border-red-200 dark:border-red-500/20",
+          icon: <FaTimesCircle />,
+          label: "Failed",
+        };
+      default:
+        return {
+          color: "text-yellow-600 dark:text-yellow-400",
+          bg: "bg-yellow-100 dark:bg-yellow-500/10",
+          border: "border-yellow-200 dark:border-yellow-500/20",
+          icon: <FaClock />,
+          label: "Pending",
+        };
+    }
+  };
+
+  const filteredPayments = payments.filter(
+    (p) =>
+      p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.course?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8">
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-2xl font-semibold text-gray-900">Payment Records</h1>
-          <p className="mt-2 text-sm text-gray-700">
-            A list of all direct payments received through the payment form.
-          </p>
+    <div className="relative min-h-screen">
+      {/* Background Ambience */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <div className="px-6 py-8">
+        {/* --- Header --- */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-gray-900 dark:text-white">
+              Financial <span className="text-[#F47C26]">Ledger</span>
+            </h1>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Track direct course enrollments and transactions.
+            </p>
+          </div>
+
+          {/* Search */}
+          <div className="relative w-full md:w-72 group">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FaSearch className="text-gray-400 group-focus-within:text-[#F47C26] transition-colors" />
+            </div>
+            <input
+              type="text"
+              className="block w-full pl-10 pr-3 py-2.5 bg-white dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#F47C26] transition-all"
+              placeholder="Search transactions..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
-      </div>
-      <div className="mt-8 flex flex-col">
-        <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                      Name
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Course
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Amount
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Status
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Date
-                    </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                      <span className="sr-only">View</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {payments.map((payment) => (
-                    <tr key={payment._id}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        <div className="font-medium">{payment.name}</div>
-                        <div className="text-gray-500">{payment.email}</div>
-                        <div className="text-gray-500">{payment.phone}</div>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {payment.course}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        ₹{payment.paymentAmount?.toLocaleString('en-IN')}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                          payment.status === 'completed' 
-                            ? 'bg-green-100 text-green-800' 
-                            : payment.status === 'failed'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {payment.status}
-                        </span>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {formatDate(payment.paymentDate || payment.createdAt)}
-                      </td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <Link to={`/admin/payments/${payment._id}`} className="text-indigo-600 hover:text-indigo-900">
-                          View<span className="sr-only">, {payment.name}</span>
-                        </Link>
+
+        {/* Visual Context: Payment Flow */}
+        <div
+          className="mb-8 p-4 bg-white/50 dark:bg-black/20 rounded-2xl border border-dashed border-gray-300 dark:border-white/10 text-center opacity-80 hover:opacity-100 transition-opacity cursor-help"
+          title="View Flow"
+        >
+          <span className="text-xs text-gray-400 uppercase tracking-widest mb-2 block">
+            Transaction Lifecycle
+          </span>
+        </div>
+
+        {/* --- Data Grid --- */}
+        <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-xl dark:shadow-none">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-100 dark:divide-white/5">
+              <thead className="bg-gray-50 dark:bg-white/5">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Payer Details
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Course / Product
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-transparent">
+                <AnimatePresence>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="6" className="px-6 py-12 text-center">
+                        <div className="flex justify-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#F47C26]"></div>
+                        </div>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  ) : error ? (
+                    <tr>
+                      <td
+                        colSpan="6"
+                        className="px-6 py-12 text-center text-red-500"
+                      >
+                        {error}
+                      </td>
+                    </tr>
+                  ) : filteredPayments.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan="6"
+                        className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
+                      >
+                        No transactions found.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredPayments.map((payment) => {
+                      const statusStyle = getStatusBadge(payment.status);
+                      return (
+                        <motion.tr
+                          key={payment._id}
+                          variants={rowVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="hidden"
+                          className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group"
+                        >
+                          {/* Payer */}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-400 mr-3 border border-gray-200 dark:border-white/10">
+                                <FaUser />
+                              </div>
+                              <div>
+                                <div className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#F47C26] transition-colors">
+                                  {payment.name}
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  {payment.email}
+                                </div>
+                                <div className="text-xs text-gray-400 dark:text-gray-500">
+                                  {payment.phone}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Course */}
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300 font-medium">
+                            {payment.course}
+                          </td>
+
+                          {/* Amount */}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="font-mono font-bold text-gray-900 dark:text-white">
+                              ₹
+                              {payment.paymentAmount?.toLocaleString("en-IN") ||
+                                "0"}
+                            </span>
+                          </td>
+
+                          {/* Status */}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${statusStyle.bg} ${statusStyle.color} ${statusStyle.border}`}
+                            >
+                              {statusStyle.icon}
+                              {statusStyle.label}
+                            </span>
+                          </td>
+
+                          {/* Date */}
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {formatDate(
+                              payment.paymentDate || payment.createdAt
+                            )}
+                          </td>
+
+                          {/* Actions */}
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <Link
+                              to={`/admin/payments/${payment._id}`}
+                              className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-[#F47C26] hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all"
+                              title="View Receipt"
+                            >
+                              <FaEye />
+                            </Link>
+                          </td>
+                        </motion.tr>
+                      );
+                    })
+                  )}
+                </AnimatePresence>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
