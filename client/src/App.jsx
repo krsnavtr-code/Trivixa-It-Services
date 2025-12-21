@@ -13,6 +13,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import ChatButton from "./components/common/ChatButton";
+import SocialMediaFloating from "./components/common/SocialMediaFloating";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminLayout from "./components/admin/AdminLayout";
 
@@ -117,6 +118,7 @@ const MainLayout = ({ children }) => {
       </main>
 
       {!isHiddenRoute && <Footer />}
+      <SocialMediaFloating />
       {!isHiddenRoute && <ChatButton />}
     </div>
   );
