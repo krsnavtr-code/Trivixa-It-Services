@@ -19,9 +19,33 @@ const storage = multer.diskStorage({
         cb(null, uploadsDir);
     },
     filename: function (req, file, cb) {
-        // Create a unique filename with timestamp and original name
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'img-' + uniqueSuffix + path.extname(file.originalname));
+        // Make original filename URL-safe & lowercase
+        const originalName = file.originalname
+            .replace(/[^\w\d.-]/g, '-')
+            .toLowerCase();
+
+        // Separate name & extension
+        const ext = path.extname(originalName);
+        const nameWithoutExt = ext
+            ? originalName.replace(ext, '')
+            : originalName;
+
+        // Get today's date (DDMMYYYY)
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        const todayDate = `${day}${month}${year}`;
+
+        // Get current time (HHMM – 24 hour)
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const currentTime = `${hours}${minutes}`;
+
+        // Final unique filename
+        const finalName = `${nameWithoutExt}-${todayDate}-${currentTime}${ext}`;
+
+        cb(null, finalName);
     }
 });
 
@@ -29,7 +53,7 @@ const storage = multer.diskStorage({
 const imageUpload = multer({
     storage: storage,
     limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB limit for images
+        fileSize: 50 * 1024 * 1024, // 50MB limit for images
     },
     fileFilter: (req, file, cb) => {
         const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
