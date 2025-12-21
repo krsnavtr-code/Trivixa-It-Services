@@ -48,10 +48,9 @@ const uploadsDir = path.join(__dirname, "public", "uploads");
 const candidateProfileDir = path.join(publicDir, "candidate_profile");
 
 // --- Middleware Configuration ---
-
-// 1. Body Parser (Large limits for file/data uploads)
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+// Body Parser with increased payload size limit for file uploads
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // 2. Timeout (5 minutes)
 app.timeout = 300000;
