@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 import { getCategories } from "../../api/categoryApi";
-import { getCourses, deleteCourse } from "../../api/servicesApi";
+import { getCourses } from "../../api/servicesApi";
 import userApi from "../../api/userApi";
+import { getBlogPosts } from "../../api/blogApi";
+import { getUploadedImages } from "../../api/imageApi";
+import { getContacts } from "../../api/contactApi";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 import {
@@ -17,11 +19,13 @@ import {
 } from "react-icons/fa";
 
 const AdminDashboard = () => {
-  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [courses, setCourses] = useState([]);
   const [users, setUsers] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [media, setMedia] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // Animation Variants
@@ -38,30 +42,26 @@ const AdminDashboard = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
-  const handleDeleteCourse = async (id) => {
-    if (window.confirm("Are you sure you want to delete this course?")) {
-      try {
-        await deleteCourse(id);
-        const response = await getCourses();
-        setCourses(response.data || []);
-        toast.success("Course deleted successfully");
-      } catch (error) {
-        console.error("Error deleting course:", error);
-        toast.error("Failed to delete course");
-      }
-    }
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
         // Parallel fetching for speed
-        const [categoriesRes, coursesRes, usersRes] = await Promise.allSettled([
+        const [
+          categoriesRes,
+          coursesRes,
+          usersRes,
+          blogsRes,
+          mediaRes,
+          inquiriesRes,
+        ] = await Promise.allSettled([
           getCategories(),
           getCourses(),
           userApi.getUsers(),
+          getBlogPosts({ limit: 1 }),
+          getUploadedImages(),
+          getContacts(),
         ]);
 
         if (categoriesRes.status === "fulfilled") {
@@ -80,6 +80,25 @@ const AdminDashboard = () => {
           setUsers(usersRes.value.data || usersRes.value || []);
         } else {
           toast.error("Failed to load users");
+        }
+
+        if (blogsRes.status === "fulfilled") {
+          // Set the blogs count from the pagination total
+          setBlogs(Array(blogsRes.value.total || 0).fill({}));
+        } else {
+          toast.error("Failed to load blog posts");
+        }
+
+        if (mediaRes.status === "fulfilled") {
+          setMedia(mediaRes.value.data || mediaRes.value || []);
+        } else {
+          toast.error("Failed to load media files");
+        }
+
+        if (inquiriesRes.status === "fulfilled") {
+          setInquiries(inquiriesRes.value.data || inquiriesRes.value || []);
+        } else {
+          toast.error("Failed to load inquiries");
         }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -104,6 +123,15 @@ const AdminDashboard = () => {
 
   const stats = [
     {
+      label: "Active Users",
+      value: users.length,
+      icon: <FaUsers />,
+      color: "text-green-500",
+      bg: "bg-green-500/10",
+      border: "border-green-500/20",
+      link: "/admin/users",
+    },
+    {
       label: "Categories",
       value: categories.length,
       icon: <FaLayerGroup />,
@@ -113,7 +141,7 @@ const AdminDashboard = () => {
       link: "/admin/categories",
     },
     {
-      label: "Total Courses",
+      label: "Total Products",
       value: courses.length,
       icon: <FaBook />,
       color: "text-purple-500",
@@ -122,13 +150,31 @@ const AdminDashboard = () => {
       link: "/admin/services",
     },
     {
-      label: "Active Users",
-      value: users.length,
-      icon: <FaUsers />,
-      color: "text-green-500",
-      bg: "bg-green-500/10",
-      border: "border-green-500/20",
-      link: "/admin/users",
+      label: "Total Blogs",
+      value: blogs.length,
+      icon: <FaBook />,
+      color: "text-purple-500",
+      bg: "bg-purple-500/10",
+      border: "border-purple-500/20",
+      link: "/admin/blog",
+    },
+    {
+      label: "Total Media",
+      value: media.length,
+      icon: <FaBook />,
+      color: "text-purple-500",
+      bg: "bg-purple-500/10",
+      border: "border-purple-500/20",
+      link: "/admin/media-gallery",
+    },
+    {
+      label: "Total Inquiries",
+      value: inquiries.length,
+      icon: <FaBook />,
+      color: "text-purple-500",
+      bg: "bg-purple-500/10",
+      border: "border-purple-500/20",
+      link: "/admin/inquiries",
     },
     {
       label: "Total Revenue",
