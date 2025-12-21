@@ -49,6 +49,7 @@ import SendBrochure from "./pages/admin/SendBrochure";
 import SendProposal from "./pages/admin/SendProposal";
 import EmailRecords from "./pages/admin/EmailRecords";
 import FaqsPage from "./pages/admin/FaqsPage";
+import Faqs from "./pages/Faqs";
 
 // --- Blog Components ---
 import BlogListPage from "./pages/blog/BlogListPage";
@@ -265,6 +266,14 @@ function App() {
             element={
               <MainLayout>
                 <BlogDetailPage />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/faqs"
+            element={
+              <MainLayout>
+                <Faqs />
               </MainLayout>
             }
           />
