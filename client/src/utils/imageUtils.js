@@ -37,8 +37,8 @@ export const getImageUrl = (path) => {
   
   // If it's already a full URL
   if (path.startsWith('http')) {
-    // If it's from our own domain or firstvite.com, return as is
-    if (path.includes(window.location.hostname) || path.includes('firstvite.com')) {
+    // If it's from our own domain or trivixa.com, return as is
+    if (path.includes(window.location.hostname) || path.includes('trivixa.com')) {
       return path;
     }
     // For other external URLs, proxy through our backend

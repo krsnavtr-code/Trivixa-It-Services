@@ -40,9 +40,7 @@ export default function ContactSection() {
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-20">
-          <motion.span
-            className="inline-block px-5 py-1.5 rounded-full bg-orange-100 dark:bg-white/5 border border-orange-200 dark:border-white/10 text-[#F47C26] text-xs font-bold tracking-widest"
-          >
+          <motion.span className="inline-block px-5 py-1.5 rounded-full bg-orange-100 dark:bg-white/5 border border-orange-200 dark:border-white/10 text-[#F47C26] text-xs font-bold tracking-widest">
             CONTACT
           </motion.span>
           <motion.h2
@@ -79,7 +77,7 @@ export default function ContactSection() {
               {
                 icon: <FaEnvelope />,
                 title: "Email",
-                text: "info@firstvite.com",
+                text: "info@trivixa.com",
               },
             ].map((i, idx) => (
               <motion.div
@@ -103,19 +101,13 @@ export default function ContactSection() {
           </div>
 
           {/* Form */}
-          <motion.div
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-3"
-          >
+          <motion.div transition={{ delay: 0.2 }} className="lg:col-span-3">
             <div className="relative rounded-3xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 backdrop-blur-xl p-8 md:p-10 shadow-2xl">
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#F47C26] via-indigo-500 to-purple-500" />
 
               <AnimatePresence mode="wait">
                 {done ? (
-                  <motion.div
-                    key="done"
-                    className="text-center py-20"
-                  >
+                  <motion.div key="done" className="text-center py-20">
                     <div className="mx-auto h-20 w-20 flex items-center justify-center rounded-full bg-green-100 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
                       <FaCheck className="text-green-600 dark:text-green-400 text-2xl" />
                     </div>

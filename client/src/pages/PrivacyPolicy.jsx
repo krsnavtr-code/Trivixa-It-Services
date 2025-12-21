@@ -171,10 +171,10 @@ const PrivacyPolicy = () => {
                     Noida, Gautam Budh Nagar, UP 201301
                   </span>
                   <a
-                    href="mailto:info@firstvite.com"
+                    href="mailto:info@trivixa.com"
                     className="inline-flex items-center gap-2 text-[#F47C26] font-bold hover:text-[#d5671f] transition-colors"
                   >
-                    info@firstvite.com
+                    info@trivixa.com
                   </a>
                 </address>
               </section>

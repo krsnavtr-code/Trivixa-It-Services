@@ -259,11 +259,11 @@ const SendBrochure = () => {
     <span style="color: rgb(244, 124, 38);">First</span>
     <span style="color: rgb(30, 144, 255);">VITE</span> E-Learning Pvt. Ltd.
   </p>
-  <p style="margin: 0 0 4px 0;">📩 info@firstvite.com</p>
+  <p style="margin: 0 0 4px 0;">📩 info@trivixa.com</p>
   <p style="margin: 0;">
     🌐 
-    <a href="https://firstvite.com" style="color: rgb(30, 144, 255); text-decoration: none;">
-      www.firstvite.com
+    <a href="https://trivixa.com" style="color: rgb(30, 144, 255); text-decoration: none;">
+      www.trivixa.com
     </a>
   </p>
 </div>
@@ -317,11 +317,11 @@ const SendBrochure = () => {
     <span style="color: rgb(244, 124, 38);">First</span>
     <span style="color: rgb(30, 144, 255);">VITE</span> E-Learning Pvt. Ltd.
   </p>
-  <p style="margin: 0 0 4px 0;">📩 info@firstvite.com</p>
+  <p style="margin: 0 0 4px 0;">📩 info@trivixa.com</p>
   <p style="margin: 0;">
     🌐 
-    <a href="https://firstvite.com" style="color: rgb(30, 144, 255); text-decoration: none;">
-      www.firstvite.com
+    <a href="https://trivixa.com" style="color: rgb(30, 144, 255); text-decoration: none;">
+      www.trivixa.com
     </a>
   </p>
 </div>
@@ -379,8 +379,8 @@ const SendBrochure = () => {
     <span style="color: rgb(244, 124, 38)">First</span>
     <span style="color: rgb(30, 144, 255)">VITE</span> E-Learning Pvt. Ltd.
   </p>
-  <p style="margin: 0 0 4px 0;">📩 info@firstvite.com</p>
-  <p style="margin: 0;">🌐 <a href="https://firstvite.com" style="color: rgb(30, 144, 255); text-decoration: none;">www.firstvite.com</a></p>
+  <p style="margin: 0 0 4px 0;">📩 info@trivixa.com</p>
+  <p style="margin: 0;">🌐 <a href="https://trivixa.com" style="color: rgb(30, 144, 255); text-decoration: none;">www.trivixa.com</a></p>
 </div>
 `,
       },
@@ -464,8 +464,8 @@ const SendBrochure = () => {
   <p style="margin: 0 0 4px 0;">
     <span style="color: rgb(244, 124, 38)">First</span><span style="color: rgb(30, 144, 255)">VITE</span> E-Learning Pvt. Ltd.
   </p>
-  <p style="margin: 0 0 4px 0;">📧 info@firstvite.com</p>
-  <p style="margin: 0;">📞 +91-9990056799 | 🌐 www.firstvite.com</p>
+  <p style="margin: 0 0 4px 0;">📧 info@trivixa.com</p>
+  <p style="margin: 0;">📞 +91-9990056799 | 🌐 www.trivixa.com</p>
 </div>
 `,
       },
