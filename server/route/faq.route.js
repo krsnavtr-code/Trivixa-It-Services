@@ -21,11 +21,11 @@ const faqValidationRules = [
 router.get('/', faqController.getFAQs);
 
 // Admin routes (protected)
-router.get('/admin/faqs', protect, admin, faqController.getAllFAQs);
-router.get('/admin/faqs/:id', protect, admin, faqController.getFAQ);
-router.post('/admin/faqs', protect, admin, faqValidationRules, faqController.createFAQ);
-router.put('/admin/faqs/:id', protect, admin, faqValidationRules, faqController.updateFAQ);
-router.delete('/admin/faqs/:id', protect, admin, faqController.deleteFAQ);
-router.put('/admin/faqs/update-order', protect, admin, faqController.updateFAQOrder);
+router.get('/', protect, admin, faqController.getAllFAQs);
+router.get('/:id', protect, admin, faqController.getFAQ);
+router.post('/', protect, admin, faqValidationRules, faqController.createFAQ);
+router.put('/:id', protect, admin, faqValidationRules, faqController.updateFAQ);
+router.delete('/:id', protect, admin, faqController.deleteFAQ);
+router.put('/update-order', protect, admin, faqController.updateFAQOrder);
 
 export default router;

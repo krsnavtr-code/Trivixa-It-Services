@@ -48,6 +48,7 @@ import PaymentDetails from "./pages/admin/PaymentDetails";
 import SendBrochure from "./pages/admin/SendBrochure";
 import SendProposal from "./pages/admin/SendProposal";
 import EmailRecords from "./pages/admin/EmailRecords";
+import FaqsPage from "./pages/admin/FaqsPage";
 
 // --- Blog Components ---
 import BlogListPage from "./pages/blog/BlogListPage";
@@ -348,6 +349,8 @@ function App() {
             <Route path="/admin/email-records" element={<EmailRecords />} />
             <Route path="/admin/send-brochure" element={<SendBrochure />} />
             <Route path="/admin/send-proposal" element={<SendProposal />} />
+            <Route path="emails" element={<EmailRecords />} />
+            <Route path="/admin/faqs" element={<FaqsPage />} />
           </Route>
 
           {/* Catch-all 404 */}
