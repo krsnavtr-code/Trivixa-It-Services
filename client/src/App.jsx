@@ -39,7 +39,7 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import CategoriesList from "./pages/admin/Categories.jsx";
 import CategoryForm from "./components/admin/CategoryForm.jsx";
-import Users from "./components/admin/Users";
+import Users from "./pages/admin/Users.jsx";
 import ContactsList from "./pages/admin/Contacts.jsx";
 import MediaGallery from "./components/admin/MediaUploder.jsx";
 import ImageGallery from "./pages/admin/MediaGallery.jsx";

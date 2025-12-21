@@ -19,8 +19,11 @@ import {
   FaTimes,
   FaUserShield,
   FaChevronRight,
+  FaSun,
+  FaMoon,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../../contexts/ThemeContext";
 
 // --- Configuration ---
 
@@ -34,6 +37,12 @@ const NAV_ITEMS = [
         label: "Dashboard",
         icon: <FaTachometerAlt />,
         activePaths: ["/admin/dashboard"],
+      },
+      {
+        path: "/admin/users",
+        label: "Users",
+        icon: <FaTachometerAlt />,
+        activePaths: ["/admin/users"],
       },
     ],
   },
@@ -112,12 +121,32 @@ const NAV_ITEMS = [
 
 const AdminLayout = () => {
   const { currentUser, isAuthenticated, loading, logout } = useAuth();
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
   const navigate = useNavigate();
   const location = useLocation();
 
   // Responsive State
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+  // Close sidebar when clicking on a link in mobile view
+  const handleNavLinkClick = () => {
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  // --- Theme Effect ---
+  useEffect(() => {
+    const element = document.documentElement;
+    if (theme === "dark") {
+      element.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      element.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [theme]);
 
   // Handle Resize
   useEffect(() => {
@@ -191,15 +220,15 @@ const AdminLayout = () => {
         className={`fixed top-0 left-0 h-full bg-white dark:bg-[#0a0f2d] border-r border-gray-200 dark:border-white/10 flex flex-col z-50 transition-all duration-300 shadow-2xl
           ${
             isSidebarOpen
-              ? "w-72 translate-x-0"
+              ? "w-52 translate-x-0"
               : isMobile
-              ? "-translate-x-full w-72"
-              : "w-20 translate-x-0"
+              ? "-translate-x-full w-52"
+              : "w-16 translate-x-0"
           }
         `}
       >
         {/* Header */}
-        <div className="h-20 flex items-center justify-between px-6 border-b border-gray-100 dark:border-white/5 shrink-0">
+        <div className="h-12 flex items-center justify-between px-6 border-b border-gray-100 dark:border-white/5 shrink-0">
           <div
             className={`flex items-center gap-2 ${
               !isSidebarOpen && !isMobile && "mx-auto"
@@ -226,12 +255,12 @@ const AdminLayout = () => {
 
         {/* User Profile Snippet */}
         <div
-          className={`p-6 border-b border-gray-100 dark:border-white/5 shrink-0 ${
+          className={`px-6 py-2 border-b border-gray-100 dark:border-white/5 shrink-0 ${
             !isSidebarOpen && !isMobile && "flex flex-col items-center p-4"
           }`}
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-white/10 border border-gray-300 dark:border-white/20 flex items-center justify-center text-gray-500 dark:text-gray-300 shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-white/10 border border-gray-300 dark:border-white/20 flex items-center justify-center text-gray-500 dark:text-gray-300 shrink-0">
               {currentUser?.fullname?.charAt(0) || "A"}
             </div>
             {(isSidebarOpen || isMobile) && (
@@ -311,10 +340,10 @@ const AdminLayout = () => {
         </nav>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-gray-100 dark:border-white/5 shrink-0">
+        <div className="px-4 py-1 border-t border-gray-100 dark:border-white/5 shrink-0">
           <button
             onClick={handleLogout}
-            className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all ${
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all ${
               !isSidebarOpen && !isMobile && "justify-center"
             }`}
           >
@@ -329,11 +358,11 @@ const AdminLayout = () => {
       {/* --- Main Content Area --- */}
       <main
         className={`flex-1 flex flex-col min-h-screen transition-all duration-300 w-full ${
-          isSidebarOpen && !isMobile ? "ml-72" : !isMobile ? "ml-20" : ""
+          isSidebarOpen && !isMobile ? "ml-52" : !isMobile ? "ml-20" : ""
         }`}
       >
         {/* Top Bar */}
-        <div className="h-20 bg-white/80 dark:bg-[#05081a]/90 backdrop-blur-md border-b border-gray-200 dark:border-white/10 sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between">
+        <div className="h-12 bg-white/80 dark:bg-[#05081a]/90 backdrop-blur-md border-b border-gray-200 dark:border-white/10 sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Mobile Menu Toggle */}
             <button
@@ -344,10 +373,7 @@ const AdminLayout = () => {
             </button>
 
             {/* Breadcrumb / Title */}
-            <div>
-              <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white capitalize truncate">
-                {location.pathname.split("/").pop().replace(/-/g, " ")}
-              </h1>
+            <div className="flex items-center gap-4">
               <div className="hidden md:flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                 <span className="w-2 h-2 rounded-full bg-green-500"></span>
                 Online &bull;{" "}
@@ -364,11 +390,31 @@ const AdminLayout = () => {
           {/* System Context Trigger */}
           <div className="hidden md:block group relative">
             <div className="cursor-help opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 text-xs font-mono text-gray-500 dark:text-gray-400 bg-white dark:bg-white/5">
+              Currently working on
               <div className="w-1.5 h-1.5 rounded-full bg-[#F47C26] animate-pulse"></div>
-              v2.4.0 Stable
+              <span className="font-bold text-[#F47C26]">
+                {location.pathname.split("/").pop().replace(/-/g, " ")}
+              </span>
             </div>
-            {/* Diagram: Admin Architecture */}
-            <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#0a0f2d] border border-gray-200 dark:border-white/10 rounded-xl p-2 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"></div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-[#0B2545] dark:text-white hover:bg-[#0B2545]/5 dark:hover:bg-white/10 transition-all active:scale-95"
+            >
+              {theme === "dark" ? <FaMoon /> : <FaSun />}
+            </button>
+
+            {/* --- Mobile Toggle Button --- */}
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 rounded-md text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors lg:hidden"
+              aria-label="Toggle sidebar"
+            >
+              {isSidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+            </button>
           </div>
         </div>
 
