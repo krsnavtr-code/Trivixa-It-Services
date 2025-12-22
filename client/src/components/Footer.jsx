@@ -99,6 +99,7 @@ const Footer = () => {
             </h3>
             <ul className="space-y-3">
               <FooterLink to="/about" text="About Us" />
+              <FooterLink to="/careers" text="Careers" />
               <FooterLink to="/services" text="Our Services" />
               <FooterLink to="/portfolio" text="Portfolio" />
               <FooterLink to="/career" text="Careers" />

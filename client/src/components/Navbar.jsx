@@ -119,12 +119,24 @@ function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const topNavItems = [
+    { to: "/get-quote", label: "Get Quote" },
+    { to: "/products", label: "Products" },
+    { to: "/we-serve", label: "We Served" },
+    { to: "/portfolio", label: "Portfolio" },
+    { to: "/parlour", label: "Parlour" },
+  ];
+
   const navItems = [
     { to: "/", label: "Home" },
     { to: "/services", label: "Services" },
+    { to: "/web-services", label: "Web" },
+    { to: "/android-services", label: "Android" },
+    { to: "/technologies", label: "Technologies" },
     { to: "/free-courses", label: "Free Resources" },
-    { to: "/contact", label: "Contact" },
-    { to: "/blog", label: "Insights" },
+    { to: "/packages", label: "Pricing" },
+    // { to: "/contact", label: "Contact" },
+    // { to: "/blog", label: "Insights" },
     ...(isAdmin
       ? [{ to: "/admin", label: "Admin Panel", isPrimary: true }]
       : []),
@@ -216,6 +228,50 @@ function Navbar() {
                 </AnimatePresence>
               </div>
             </div>
+
+            <span>|</span>
+
+            {/* Mid Right  */}
+            {topNavItems.map((item) => {
+              const isActive = location.pathname === item.to;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onMouseEnter={() => setHoveredNav(item.to)}
+                  className={`relative px-3 py-1 text-sm font-medium transition-colors duration-200 z-10 ${
+                    isActive
+                      ? "text-[#F47C26]"
+                      : "text-[#0B2545] dark:text-gray-300 hover:text-[#0B2545] dark:hover:text-white"
+                  }`}
+                >
+                  {item.label}
+
+                  {/* Active Indicator */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-dot"
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#F47C26] rounded-full mb-1"
+                    />
+                  )}
+
+                  {/* Spotlight Hover Effect */}
+                  {hoveredNav === item.to && (
+                    <motion.div
+                      layoutId="nav-spotlight"
+                      className="absolute inset-0 bg-[#0B2545]/5 dark:bg-white/10 rounded-lg -z-10"
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+
+            <span>|</span>
 
             {/* Right Actions */}
             <div className="flex items-center gap-3">
