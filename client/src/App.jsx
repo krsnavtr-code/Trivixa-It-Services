@@ -34,7 +34,7 @@ import SuspendedAccount from "./pages/SuspendedAccount";
 import Faqs from "./pages/Faqs";
 
 // --- Pages (Portfolio) ---
-import Portfolio from "./pages/portfolio/Portfolio.jsx";
+import PHome from "./pages/portfolio/PHome.jsx";
 
 // --- Pages (Services/User) ---
 import ServicesByCategory from "./pages/user/ServicesByCategory.jsx";
@@ -268,7 +268,7 @@ function App() {
             {isPortfolioSubdomain && (
               <>
                 <Route path="/" element={<PortfolioLayout />}>
-                  <Route index element={<Portfolio />} />
+                  <Route index element={<PHome />} />
                   <Route path="projects" element={<div>Projects Page</div>} />
                   <Route path="about" element={<div>About Page</div>} />
                   <Route path="contact" element={<div>Contact Page</div>} />

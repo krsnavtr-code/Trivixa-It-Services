@@ -38,7 +38,7 @@ const projects = [
   },
 ];
 
-const Portfolio = () => {
+const PHome = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [filteredProjects, setFilteredProjects] = useState(projects);
   const [isHovered, setIsHovered] = useState(null);
@@ -192,4 +192,4 @@ const Portfolio = () => {
   );
 };
 
-export default Portfolio;
+export default PHome;

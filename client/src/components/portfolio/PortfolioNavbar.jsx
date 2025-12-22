@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaBars, FaTimes, FaCode } from "react-icons/fa";
 
-const PortfolioNavbar = () => {
+const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
-  // 🔑 Auto-detect base URL
-  const isPortfolioSubdomain =
-    window.location.hostname === "portfolio.trivixa.in";
-
-  const baseUrl = isPortfolioSubdomain ? "" : "/portfolio";
-
+  // Scroll Detection
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -21,57 +17,73 @@ const PortfolioNavbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
+
   const navItems = [
-    { to: `${baseUrl}/`, label: "Home" },
-    { to: `${baseUrl}/projects`, label: "Projects" },
-    { to: `${baseUrl}/about`, label: "About" },
-    { to: `${baseUrl}/contact`, label: "Contact" },
+    { to: `/`, label: "Home" },
+    { to: `/projects`, label: "Projects" },
+    { to: `/about`, label: "About" },
+    { to: `/contact`, label: "Contact" },
   ];
+
+  // Helper to check active state
+  const isActiveLink = (path) => {
+    // Exact match for home, or starts with for others (to handle nested routes if any)
+    if (path === baseUrl || path === `${baseUrl}/`) {
+      return location.pathname === path || location.pathname === `${path}`;
+    }
+    return location.pathname === path;
+  };
 
   return (
     <header
-      className={`fixed w-full z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-md py-2"
-          : "bg-transparent py-4"
+          ? "bg-[#05081a]/90 backdrop-blur-md border-b border-white/5 shadow-lg py-3"
+          : "bg-transparent py-5"
       }`}
     >
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center">
-          {/* Logo */}
+          {/* --- Logo --- */}
           <Link
-            to={baseUrl || "/"}
-            className="text-2xl font-bold text-indigo-600 dark:text-indigo-400"
+            to={baseUrl === "/" ? "/" : baseUrl}
+            className="group flex items-center gap-2 text-2xl font-black tracking-tight text-white"
           >
-            Portfolio
+            <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F47C26] to-purple-600 flex items-center justify-center text-white text-sm shadow-lg group-hover:rotate-12 transition-transform duration-300">
+              <FaCode />
+            </span>
+            <span>
+              PORT<span className="text-[#F47C26]">FOLIO</span>.
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* --- Desktop Navigation --- */}
+          <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => {
-              const isActive =
-                location.pathname === item.to ||
-                (item.to === `${baseUrl}/` && location.pathname === baseUrl);
+              const active = isActiveLink(item.to);
 
               return (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`relative px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive
-                      ? "text-indigo-600 dark:text-indigo-400"
-                      : "text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400"
+                  className={`relative text-sm font-bold uppercase tracking-wide transition-colors ${
+                    active ? "text-white" : "text-gray-400 hover:text-[#F47C26]"
                   }`}
                 >
                   {item.label}
-                  {isActive && (
-                    <motion.span
-                      layoutId="activeNavItem"
-                      className="absolute left-0 bottom-0 w-full h-0.5 bg-indigo-600 dark:bg-indigo-400"
-                      initial={false}
+
+                  {/* Active Indicator */}
+                  {active && (
+                    <motion.div
+                      layoutId="portfolio-nav-indicator"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#F47C26] shadow-[0_0_10px_#F47C26]"
                       transition={{
                         type: "spring",
-                        stiffness: 500,
+                        stiffness: 300,
                         damping: 30,
                       }}
                     />
@@ -79,64 +91,65 @@ const PortfolioNavbar = () => {
                 </Link>
               );
             })}
+
+            {/* CTA Button */}
+            <Link
+              to={`/contact`}
+              className="px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-[#F47C26] hover:border-[#F47C26] transition-all shadow-lg hover:shadow-orange-500/20"
+            >
+              Hire Me
+            </Link>
           </nav>
 
-          {/* Mobile menu button */}
+          {/* --- Mobile Menu Button --- */}
           <button
-            className="md:hidden p-2 text-gray-700 dark:text-gray-300"
+            className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              {isMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
+            {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
         </div>
+      </div>
 
-        {/* Mobile Navigation */}
+      {/* --- Mobile Navigation Drawer --- */}
+      <AnimatePresence>
         {isMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden mt-4 pb-4 space-y-2"
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-[#05081a] border-b border-white/10 overflow-hidden"
           >
-            {navItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  location.pathname === item.to
-                    ? "bg-indigo-50 text-indigo-700 dark:bg-gray-800 dark:text-indigo-400"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            <div className="px-6 py-6 space-y-4">
+              {navItems.map((item) => {
+                const active = isActiveLink(item.to);
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={`block text-lg font-bold transition-colors ${
+                      active
+                        ? "text-[#F47C26]"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+              <div className="pt-4 border-t border-white/10">
+                <Link
+                  to={`/contact`}
+                  className="block w-full py-3 text-center rounded-xl bg-[#F47C26] text-white font-bold shadow-lg"
+                >
+                  Start a Project
+                </Link>
+              </div>
+            </div>
           </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </header>
   );
 };
