@@ -7,6 +7,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
 import { FaWifi, FaServer, FaRedo, FaPowerOff } from "react-icons/fa";
 
+// --- Portfolio Components ---
+import Portfolio from "./pages/portfolio/Portfolio.jsx";
+import PortfolioLayout from "./layouts/PortfolioLayout";
+
 // --- Contexts & Hooks ---
 import useContactFormPopup from "./hooks/useContactFormPopup.jsx";
 
@@ -254,7 +258,7 @@ function App() {
   // Optional: You can uncomment this if you want to block the app completely when the backend is down
   if (!serverOnline) {
     return (
-      <SystemStatusScreen 
+      <SystemStatusScreen
         icon={<FaServer />}
         color="text-yellow-500 bg-yellow-500"
         title="Server Maintenance"
@@ -262,7 +266,7 @@ function App() {
         onRetry={() => window.location.reload()}
       />
     );
-  } 
+  }
 
   return (
     <HelmetProvider>
@@ -294,6 +298,19 @@ function App() {
                 <MainLayout>
                   <Home />
                 </MainLayout>
+              }
+            />
+            <Route
+              path="/portfolio/*"
+              element={
+                <PortfolioLayout>
+                  <Routes>
+                    <Route index element={<Portfolio />} />
+                    <Route path="projects" element={<div>Projects Page</div>} />
+                    <Route path="about" element={<div>About Page</div>} />
+                    <Route path="contact" element={<div>Contact Page</div>} />
+                  </Routes>
+                </PortfolioLayout>
               }
             />
             <Route
