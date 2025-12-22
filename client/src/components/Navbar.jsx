@@ -7,11 +7,9 @@ import {
   FaTimes,
   FaBars,
   FaSignInAlt,
-  FaCheck,
-  FaExclamationCircle,
   FaChevronRight,
   FaSignOutAlt,
-  FaGraduationCap,
+  FaChevronDown,
 } from "react-icons/fa";
 import { FiSun, FiMoon } from "react-icons/fi";
 import CourseMenu from "./CourseMenu";
@@ -22,12 +20,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useChat } from "../context/ChatContext";
 
 function Navbar() {
-  const { authUser, isAuthenticated, isAdmin, isApproved, logout } = useAuth();
+  const { authUser, isAuthenticated, isAdmin, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [hoveredNav, setHoveredNav] = useState(null);
+  const [mobileCategoryOpen, setMobileCategoryOpen] = useState(false);
 
   // Chat Bot AI
   const { openChat } = useChat();
@@ -48,9 +47,10 @@ function Navbar() {
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef(null);
 
-  // Handle open chat
+  // --- Handlers ---
   const handleQuoteClick = (e, to) => {
     e.preventDefault();
+    setIsMobileMenuOpen(false); // Close mobile menu if open
     if (to === "/get-quote") {
       openChat();
     } else {
@@ -58,7 +58,7 @@ function Navbar() {
     }
   };
 
-  // --- Theme Effect ---
+  // --- Effects ---
   useEffect(() => {
     const element = document.documentElement;
     if (theme === "dark") {
@@ -70,7 +70,6 @@ function Navbar() {
     }
   }, [theme]);
 
-  // --- Scroll Effect ---
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -119,9 +118,11 @@ function Navbar() {
       navigate(`/course/${courseId}`);
       setSearchQuery("");
       setShowResults(false);
+      setIsMobileMenuOpen(false);
     }
   };
 
+  // Click Outside Listener
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target))
@@ -133,6 +134,7 @@ function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // --- Data ---
   const topNavItems = [
     { to: "/get-quote", label: "Get Quote" },
     { to: "/products", label: "Products" },
@@ -149,8 +151,6 @@ function Navbar() {
     { to: "/technologies", label: "Technologies" },
     { to: "/free-courses", label: "Free Resources" },
     { to: "/packages", label: "Pricing" },
-    // { to: "/contact", label: "Contact" },
-    // { to: "/blog", label: "Insights" },
     ...(isAdmin
       ? [{ to: "/admin", label: "Admin Panel", isPrimary: true }]
       : []),
@@ -158,16 +158,14 @@ function Navbar() {
 
   return (
     <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300`}
-      >
+      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         {/* =================================================================================
-            PART 1: TOP COMMAND BAR (Logo, Search, Auth)
-            Colors: White (Light Mode) / #0B2545 (Dark Mode)
+            PART 1: TOP COMMAND BAR 
+            Visible on all screens, but layout changes based on breakpoint
            ================================================================================= */}
         <div className="bg-white dark:bg-[#0B2545] border-b border-gray-200 dark:border-white/10 transition-colors duration-300 relative z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between gap-4">
-            {/* Logo */}
+          <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-4">
+            {/* 1. Logo */}
             <Link
               to="/"
               className="flex-shrink-0 group flex items-center gap-2"
@@ -176,14 +174,14 @@ function Navbar() {
                 <img
                   src="/images/trivixa-fix-size-brand-logo.png"
                   alt="Trivixa"
-                  className="h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                  className="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
             </Link>
 
-            {/* Search Bar */}
+            {/* 2. Desktop Search (Hidden on Mobile/Tablet < 1024px) */}
             <div
-              className="hidden md:block flex-1 max-w-xl mx-auto relative z-50"
+              className="hidden lg:block flex-1 max-w-xl mx-auto relative z-50"
               ref={searchRef}
             >
               <div className="relative group">
@@ -195,11 +193,11 @@ function Navbar() {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onFocus={() => setShowResults(true)}
-                  className="w-full h-9 pl-10 pr-4 bg-[#0B2545]/5 dark:bg-white/10 border border-transparent dark:border-white/10 rounded-xl text-sm text-[#0B2545] dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:bg-white dark:focus:bg-[#0B2545] focus:ring-2 focus:ring-[#F47C26]/50 focus:border-[#F47C26] transition-all duration-300 shadow-inner"
-                  placeholder="Search..."
+                  className="w-full h-10 pl-10 pr-4 bg-[#0B2545]/5 dark:bg-white/10 border border-transparent dark:border-white/10 rounded-xl text-sm text-[#0B2545] dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:bg-white dark:focus:bg-[#0B2545] focus:ring-2 focus:ring-[#F47C26]/50 focus:border-[#F47C26] transition-all duration-300 shadow-inner"
+                  placeholder="Search courses, services..."
                 />
 
-                {/* Search Dropdown */}
+                {/* Desktop Search Results Dropdown */}
                 <AnimatePresence>
                   {showResults && searchQuery.trim() && (
                     <motion.div
@@ -243,53 +241,23 @@ function Navbar() {
               </div>
             </div>
 
-            <span>|</span>
-
-            {/* Mid Right  */}
-            {topNavItems.map((item) => {
-              const isActive = location.pathname === item.to;
-              return (
+            {/* 3. Desktop Top Links (Hidden on Mobile/Tablet < 1024px) */}
+            <div className="hidden lg:flex items-center gap-4 text-sm font-medium text-[#0B2545] dark:text-gray-300">
+              {topNavItems.map((item) => (
                 <Link
                   key={item.to}
                   to={item.to}
                   onClick={(e) => handleQuoteClick(e, item.to)}
-                  onMouseEnter={() => setHoveredNav(item.to)}
-                  className={`relative px-3 py-1 text-sm font-medium transition-colors duration-200 z-10 ${
-                    isActive
-                      ? "text-[#F47C26]"
-                      : "text-[#0B2545] dark:text-gray-300 hover:text-[#0B2545] dark:hover:text-white"
-                  }`}
+                  className="hover:text-[#F47C26] transition-colors relative group"
                 >
                   {item.label}
-
-                  {/* Active Indicator */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="active-dot"
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#F47C26] rounded-full mb-1"
-                    />
-                  )}
-
-                  {/* Spotlight Hover Effect */}
-                  {hoveredNav === item.to && (
-                    <motion.div
-                      layoutId="nav-spotlight"
-                      className="absolute inset-0 bg-[#0B2545]/5 dark:bg-white/10 rounded-lg -z-10"
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 30,
-                      }}
-                    />
-                  )}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#F47C26] transition-all group-hover:w-full"></span>
                 </Link>
-              );
-            })}
+              ))}
+            </div>
 
-            <span>|</span>
-
-            {/* Right Actions */}
-            <div className="flex items-center gap-3">
+            {/* 4. Right Actions (Theme, Auth, Hamburger) */}
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Theme Toggle */}
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -298,7 +266,7 @@ function Navbar() {
                 {theme === "dark" ? <FiMoon /> : <FiSun />}
               </button>
 
-              {/* User Profile / Login */}
+              {/* Desktop Auth (Hidden on Mobile < 640px) */}
               {isAuthenticated ? (
                 <div className="relative profile-menu-container z-50">
                   <button
@@ -308,7 +276,7 @@ function Navbar() {
                     <span className="text-xs font-semibold text-[#0B2545] dark:text-white hidden sm:block max-w-[80px] truncate">
                       {authUser?.name?.split(" ")[0]}
                     </span>
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#F47C26] to-[#0B2545] flex items-center justify-center text-white text-xs font-bold shadow-md">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#F47C26] to-[#0B2545] flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white dark:ring-[#0B2545]">
                       {authUser?.name?.charAt(0)}
                     </div>
                   </button>
@@ -357,57 +325,54 @@ function Navbar() {
                 <Link
                   to="/login"
                   state={{ from: location }}
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#F47C26] hover:bg-[#d5671f] text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40"
+                  className="hidden sm:flex items-center gap-2 px-5 py-2 bg-[#F47C26] hover:bg-[#d5671f] text-white text-xs font-bold rounded-lg transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40"
                 >
                   <FaSignInAlt /> Login
                 </Link>
               )}
 
+              {/* Hamburger Button (Visible < 1024px) */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 text-[#0B2545] dark:text-white hover:bg-[#0B2545]/5 dark:hover:bg-white/10 rounded-lg"
+                className="lg:hidden p-2 text-[#0B2545] dark:text-white hover:bg-[#0B2545]/5 dark:hover:bg-white/10 rounded-lg transition-colors"
+                aria-label="Toggle Menu"
               >
-                {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+                {isMobileMenuOpen ? (
+                  <FaTimes size={20} />
+                ) : (
+                  <FaBars size={20} />
+                )}
               </button>
             </div>
           </div>
         </div>
 
         {/* =================================================================================
-            PART 2: BOTTOM NAV RAIL (Links)
-            Colors: White (Light) / #0B2545 (Dark) with Brand Highlights
+            PART 2: BOTTOM NAV RAIL (Desktop Only >= 1024px)
            ================================================================================= */}
-        <div className="relative">
+        <div className="hidden lg:block relative">
           <div
-            className={`hidden md:block w-full border-b border-gray-200 dark:border-white/5 transition-all duration-500 z-40 ${
+            className={`w-full border-b border-gray-200 dark:border-white/5 transition-all duration-500 z-40 ${
               isScrolled
-                ? "bg-white/80 dark:bg-[#0B2545]/80 backdrop-blur-xl h-10 rounded-b-[60%] overflow-visible"
+                ? "bg-white/90 dark:bg-[#0B2545]/90 backdrop-blur-xl h-12 shadow-sm"
                 : "bg-white dark:bg-[#0B2545] h-12"
             }`}
           >
-            <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-center">
+            <div className="max-w-[1920px] mx-auto px-4 h-full flex items-center justify-center">
               <nav
-                className="flex items-center gap-1 p-1 rounded-full"
+                className="flex items-center gap-2"
                 onMouseLeave={() => setHoveredNav(null)}
               >
-                {/* Category Dropdown Trigger */}
-                <div
-                  className="relative group px-4 py-1.5 cursor-pointer flex items-center gap-2 text-sm font-semibold text-[#0B2545] dark:text-white hover:text-[#F47C26] transition-colors border-r border-gray-200 dark:border-white/10 pr-6 mr-2"
-                  style={{ zIndex: 60 }}
-                >
+                {/* Explore Dropdown */}
+                <div className="relative group px-4 py-1.5 cursor-pointer flex items-center gap-2 text-sm font-semibold text-[#0B2545] dark:text-white hover:text-[#F47C26] transition-colors border-r border-gray-200 dark:border-white/10 pr-6 mr-2">
                   <span className="w-2 h-2 rounded-full bg-[#F47C26] animate-pulse"></span>
                   Explore
-                  <div
-                    className="absolute top-full left-0 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2"
-                    style={{
-                      zIndex: 50,
-                      pointerEvents: "auto",
-                    }}
-                  >
+                  <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2 z-[60]">
                     <CourseMenu />
                   </div>
                 </div>
 
+                {/* Main Links */}
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.to;
                   return (
@@ -415,23 +380,19 @@ function Navbar() {
                       key={item.to}
                       to={item.to}
                       onMouseEnter={() => setHoveredNav(item.to)}
-                      className={`relative px-3 py-1 text-sm font-medium transition-colors duration-200 z-10 ${
+                      className={`relative px-4 py-1.5 text-sm font-medium transition-colors duration-200 rounded-lg ${
                         isActive
                           ? "text-[#F47C26]"
                           : "text-[#0B2545] dark:text-gray-300 hover:text-[#0B2545] dark:hover:text-white"
                       }`}
                     >
                       {item.label}
-
-                      {/* Active Indicator */}
                       {isActive && (
                         <motion.div
                           layoutId="active-dot"
-                          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#F47C26] rounded-full mb-1"
+                          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#F47C26] rounded-full"
                         />
                       )}
-
-                      {/* Spotlight Hover Effect */}
                       {hoveredNav === item.to && (
                         <motion.div
                           layoutId="nav-spotlight"
@@ -452,81 +413,164 @@ function Navbar() {
         </div>
       </header>
 
-      {/* --- Mobile Menu Overlay --- */}
+      {/* =================================================================================
+          PART 3: UNIFIED MOBILE DRAWER (All Links + Search)
+          Visible only on Mobile/Tablet when toggled
+         ================================================================================= */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[100] bg-white dark:bg-[#0B2545] pt-20 px-6 overflow-y-auto"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className="fixed inset-0 z-[100] bg-white dark:bg-[#0B2545] lg:hidden flex flex-col"
           >
-            <div className="flex flex-col space-y-6 mt-4">
+            {/* Mobile Header */}
+            <div className="h-16 px-6 flex items-center justify-between border-b border-gray-100 dark:border-white/10">
+              <span className="text-lg font-bold text-[#0B2545] dark:text-white">
+                Menu
+              </span>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 bg-gray-100 dark:bg-white/10 rounded-full text-gray-600 dark:text-white"
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            {/* Mobile Content */}
+            <div className="flex-1 overflow-y-auto px-6 py-6 pb-24">
               {/* Mobile Search */}
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="w-full h-12 pl-4 pr-10 bg-[#0B2545]/5 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-[#0B2545] dark:text-white focus:outline-none focus:border-[#F47C26]"
-                  placeholder="Search courses..."
-                />
-                <FaSearch className="absolute right-4 top-4 text-gray-400" />
+              <div className="mb-8">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    className="w-full h-12 pl-4 pr-12 bg-gray-100 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-xl text-[#0B2545] dark:text-white focus:outline-none focus:border-[#F47C26]"
+                    placeholder="Search for anything..."
+                  />
+                  <FaSearch className="absolute right-4 top-4 text-gray-400" />
+                </div>
+                {/* Mobile Search Results */}
+                {searchQuery.trim() && (
+                  <div className="mt-2 bg-white dark:bg-black/20 rounded-lg border border-gray-100 dark:border-white/10 overflow-hidden">
+                    {isSearching ? (
+                      <div className="p-4 text-center text-xs text-gray-500">
+                        Searching...
+                      </div>
+                    ) : searchResults.courses.length > 0 ? (
+                      searchResults.courses.map((course) => (
+                        <button
+                          key={course._id}
+                          onClick={() => handleResultClick(course)}
+                          className="w-full text-left px-4 py-3 text-sm text-[#0B2545] dark:text-white border-b border-gray-100 dark:border-white/5 last:border-0"
+                        >
+                          {course.title}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-xs text-gray-500">
+                        No results
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
-              {/* Mobile Links */}
-              <div className="space-y-1">
-                <div className="pb-4 border-b border-gray-100 dark:border-white/10">
-                  <div className="text-gray-500 text-xs uppercase tracking-widest font-bold mb-2">
-                    Categories
-                  </div>
-                  <CourseMenu
-                    isMobile={true}
-                    onItemClick={() => setIsMobileMenuOpen(false)}
-                  />
+              {/* Mobile Navigation Links */}
+              <div className="space-y-6">
+                {/* 1. Explore (Categories) Accordion */}
+                <div>
+                  <button
+                    onClick={() => setMobileCategoryOpen(!mobileCategoryOpen)}
+                    className="flex items-center justify-between w-full text-lg font-bold text-[#0B2545] dark:text-white mb-2"
+                  >
+                    <span>Categories</span>
+                    <FaChevronDown
+                      className={`text-xs transition-transform ${
+                        mobileCategoryOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  <AnimatePresence>
+                    {mobileCategoryOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden pl-2"
+                      >
+                        <CourseMenu
+                          isMobile={true}
+                          onItemClick={() => setIsMobileMenuOpen(false)}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
-                <div className="pt-4">
-                  <div className="text-gray-500 text-xs uppercase tracking-widest font-bold mb-2">
-                    Menu
+                <div className="h-px bg-gray-100 dark:bg-white/10" />
+
+                {/* 2. Main Navigation */}
+                <div className="space-y-4">
+                  <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                    Main Menu
                   </div>
                   {navItems.map((item) => (
                     <Link
                       key={item.to}
                       to={item.to}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center justify-between py-3 text-lg font-medium text-[#0B2545] dark:text-gray-200 border-b border-gray-100 dark:border-white/5 last:border-0 hover:text-[#F47C26] transition-colors"
+                      className="flex items-center justify-between text-base font-medium text-[#0B2545] dark:text-gray-200 hover:text-[#F47C26] transition-colors"
                     >
-                      {item.label}{" "}
-                      <FaChevronRight className="text-xs opacity-50" />
+                      {item.label}
+                      <FaChevronRight className="text-xs text-gray-400 opacity-50" />
                     </Link>
                   ))}
                 </div>
+
+                <div className="h-px bg-gray-100 dark:bg-white/10" />
+
+                {/* 3. Quick Links (Top Bar Items) */}
+                <div className="space-y-4">
+                  <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                    Quick Links
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {topNavItems.map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        onClick={(e) => handleQuoteClick(e, item.to)}
+                        className="px-3 py-2 bg-gray-50 dark:bg-white/5 rounded-lg text-sm text-[#0B2545] dark:text-gray-300 text-center"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 4. Mobile Auth (If not logged in) */}
+                {!isAuthenticated && (
+                  <div className="pt-4">
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#F47C26] text-white font-bold rounded-xl shadow-lg"
+                    >
+                      <FaSignInAlt /> Login / Register
+                    </Link>
+                  </div>
+                )}
               </div>
-
-              {!isAuthenticated && (
-                <Link
-                  to="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#F47C26] text-white font-bold rounded-xl shadow-lg"
-                >
-                  <FaSignInAlt /> Login / Register
-                </Link>
-              )}
-
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="absolute top-6 right-6 p-2 bg-gray-100 dark:bg-white/10 rounded-full"
-              >
-                <FaTimes />
-              </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Payment Modal */}
+      {/* Payment Modal Overlay */}
       {showPaymentForm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
           <PaymentForm onClose={() => setShowPaymentForm(false)} />
