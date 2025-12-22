@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getContacts, updateContactStatus } from "../../api/contactApi";
 import { format, parseISO } from "date-fns";
 import { toast } from "react-hot-toast";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { saveAs } from "file-saver";
 import { motion, AnimatePresence } from "framer-motion";
 import {

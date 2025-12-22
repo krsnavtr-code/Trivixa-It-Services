@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaBars, FaTimes, FaCode } from "react-icons/fa";
+import { FaBars, FaTimes, FaCode, FaSun, FaMoon } from "react-icons/fa";
+import { useTheme } from "../../context/ThemeContext";
 
 const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+
+  // Using the theme hook
+  const { theme, toggleTheme } = useTheme();
 
   // Scroll Detection
   useEffect(() => {
@@ -31,27 +35,36 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
 
   // Helper to check active state
   const isActiveLink = (path) => {
-    // Exact match for home, or starts with for others (to handle nested routes if any)
     if (path === baseUrl || path === `${baseUrl}/`) {
       return location.pathname === path || location.pathname === `${path}`;
     }
     return location.pathname === path;
   };
 
+  // --- Dynamic Styles based on Theme ---
+  const headerBg = isScrolled
+    ? theme === "dark"
+      ? "bg-[#05081a]/90 border-white/5 shadow-lg"
+      : "bg-white/90 border-gray-200 shadow-sm"
+    : "bg-transparent border-transparent";
+
+  const textColor = theme === "dark" ? "text-white" : "text-gray-900";
+  const subTextColor = theme === "dark" ? "text-gray-400" : "text-gray-600";
+  const mobileBg =
+    theme === "dark"
+      ? "bg-[#05081a] border-white/10"
+      : "bg-white border-gray-200";
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-[#05081a]/90 backdrop-blur-md border-b border-white/5 shadow-lg py-3"
-          : "bg-transparent py-5"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-md border-b ${headerBg} py-3`}
     >
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center">
           {/* --- Logo --- */}
           <Link
-            to={baseUrl === "/" ? "/" : baseUrl}
-            className="group flex items-center gap-2 text-2xl font-black tracking-tight text-white"
+            to="/"
+            className={`group flex items-center gap-2 text-2xl font-black tracking-tight ${textColor}`}
           >
             <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F47C26] to-purple-600 flex items-center justify-center text-white text-sm shadow-lg group-hover:rotate-12 transition-transform duration-300">
               <FaCode />
@@ -62,7 +75,7 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
           </Link>
 
           {/* --- Desktop Navigation --- */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             {navItems.map((item) => {
               const active = isActiveLink(item.to);
 
@@ -71,7 +84,7 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
                   key={item.to}
                   to={item.to}
                   className={`relative text-sm font-bold uppercase tracking-wide transition-colors ${
-                    active ? "text-white" : "text-gray-400 hover:text-[#F47C26]"
+                    active ? textColor : `${subTextColor} hover:text-[#F47C26]`
                   }`}
                 >
                   {item.label}
@@ -92,10 +105,31 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
               );
             })}
 
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-colors border ${
+                theme === "dark"
+                  ? "bg-white/5 border-white/10 text-gray-300 hover:text-white hover:bg-white/10"
+                  : "bg-gray-100 border-gray-200 text-gray-600 hover:text-black hover:bg-gray-200"
+              }`}
+              aria-label="Toggle Theme"
+            >
+              {theme === "light" ? (
+                <FaMoon className="w-4 h-4" />
+              ) : (
+                <FaSun className="w-4 h-4" />
+              )}
+            </button>
+
             {/* CTA Button */}
             <Link
               to={`/contact`}
-              className="px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-[#F47C26] hover:border-[#F47C26] transition-all shadow-lg hover:shadow-orange-500/20"
+              className={`px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-lg ${
+                theme === "dark"
+                  ? "bg-white/5 border-white/10 text-white hover:bg-[#F47C26] hover:border-[#F47C26]"
+                  : "bg-gray-900 border-gray-900 text-white hover:bg-[#F47C26] hover:border-[#F47C26]"
+              }`}
             >
               Hire Me
             </Link>
@@ -103,7 +137,11 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
 
           {/* --- Mobile Menu Button --- */}
           <button
-            className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+            className={`md:hidden p-2 rounded-lg transition-colors ${
+              theme === "dark"
+                ? "text-white hover:bg-white/10"
+                : "text-gray-900 hover:bg-gray-100"
+            }`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -119,7 +157,7 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#05081a] border-b border-white/10 overflow-hidden"
+            className={`md:hidden border-b overflow-hidden ${mobileBg}`}
           >
             <div className="px-6 py-6 space-y-4">
               {navItems.map((item) => {
@@ -131,14 +169,32 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
                     className={`block text-lg font-bold transition-colors ${
                       active
                         ? "text-[#F47C26]"
-                        : "text-gray-400 hover:text-white"
+                        : `${subTextColor} hover:text-[#F47C26]`
                     }`}
                   >
                     {item.label}
                   </Link>
                 );
               })}
-              <div className="pt-4 border-t border-white/10">
+
+              <div
+                className={`pt-4 border-t space-y-4 ${
+                  theme === "dark" ? "border-white/10" : "border-gray-200"
+                }`}
+              >
+                {/* Mobile Theme Toggle */}
+                <button
+                  onClick={toggleTheme}
+                  className={`w-full flex items-center justify-center gap-2 p-3 rounded-lg border font-medium transition-colors ${
+                    theme === "dark"
+                      ? "bg-white/5 border-white/10 text-gray-300"
+                      : "bg-gray-100 border-gray-200 text-gray-700"
+                  }`}
+                >
+                  {theme === "light" ? <FaMoon /> : <FaSun />}
+                  {theme === "light" ? "Dark Mode" : "Light Mode"}
+                </button>
+
                 <Link
                   to={`/contact`}
                   className="block w-full py-3 text-center rounded-xl bg-[#F47C26] text-white font-bold shadow-lg"

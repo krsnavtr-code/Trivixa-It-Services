@@ -6,7 +6,7 @@ import i18n from "./i18n";
 import App from "./App.jsx";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 
 // Check if we're on the portfolio subdomain or local development
 const isPortfolioSubdomain =

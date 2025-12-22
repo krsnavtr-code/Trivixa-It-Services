@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext } from "react";
+import React, { useEffect, useState } from "react";
 import { HelmetProvider } from "react-helmet-async";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
 import { FaWifi, FaServer, FaRedo } from "react-icons/fa";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 
 // --- Contexts ---
 import { ChatProvider } from "./context/ChatContext";
@@ -123,32 +124,6 @@ const SystemStatusScreen = ({ icon, title, message, onRetry, color }) => (
 );
 
 // ==========================================
-// 🧩 THEME CONTEXT
-// ==========================================
-export const ThemeContext = createContext();
-export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(
-    localStorage.getItem("theme") ||
-      (window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light")
-  );
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === "dark") root.classList.add("dark");
-    else root.classList.remove("dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-  const toggleTheme = () =>
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
-
-// ==========================================
 // 🏗️ MAIN LAYOUT
 // ==========================================
 const MainLayout = ({ children }) => {
@@ -239,277 +214,273 @@ function App() {
       />
     );
 
-  return (
-    <HelmetProvider>
-      <ThemeProvider>
-        <ChatProvider>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: "#0a0f2d",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,0.1)",
-              },
-              success: {
-                iconTheme: { primary: "#10B981", secondary: "white" },
-              },
-              error: { iconTheme: { primary: "#EF4444", secondary: "white" } },
-            }}
-          />
-          <ToastContainer theme="dark" />
-          <ContactFormPopup />
+  // Wrap the entire app with ThemeProvider
+  const AppContent = () => (
+    <ThemeProvider>
+      <ChatProvider>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#0a0f2d",
+              color: "#fff",
+              border: "1px solid rgba(255,255,255,0.1)",
+            },
+            success: {
+              iconTheme: { primary: "#10B981", secondary: "white" },
+            },
+            error: { iconTheme: { primary: "#EF4444", secondary: "white" } },
+          }}
+        />
+        <ToastContainer theme="dark" />
+        <ContactFormPopup />
 
-          <Routes>
-            {/* ==========================================================
+        <Routes>
+          {/* ==========================================================
                 BRANCH 1: PORTFOLIO SUBDOMAIN (portfolio.trivixa.in)
                ========================================================== */}
-            {isPortfolioSubdomain && (
-              <>
-                <Route path="/" element={<PortfolioLayout />}>
-                  <Route index element={<PHome />} />
-                  <Route path="projects" element={<div>Projects Page</div>} />
-                  <Route path="about" element={<div>About Page</div>} />
-                  <Route path="contact" element={<div>Contact Page</div>} />
-                </Route>
-                <Route path="*" element={<Navigate to="/" />} />
-              </>
-            )}
+          {isPortfolioSubdomain && (
+            <>
+              <Route path="/" element={<PortfolioLayout />}>
+                <Route index element={<PHome />} />
+                <Route path="projects" element={<div>Projects Page</div>} />
+                <Route path="about" element={<div>About Page</div>} />
+                <Route path="contact" element={<div>Contact Page</div>} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" />} />
+            </>
+          )}
 
-            {/* ==========================================================
+          {/* ==========================================================
                 BRANCH 2: MAIN SITE (trivixa.in)
                ========================================================== */}
-            {!isPortfolioSubdomain && (
-              <>
-                <Route
-                  path="/"
-                  element={
-                    <MainLayout>
-                      <Home />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/about"
-                  element={
-                    <MainLayout>
-                      <About />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/contact"
-                  element={
-                    <MainLayout>
-                      <Contact />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/thank-you"
-                  element={
-                    <MainLayout>
-                      <ThankYouPage />
-                    </MainLayout>
-                  }
-                />
+          {!isPortfolioSubdomain && (
+            <>
+              <Route
+                path="/"
+                element={
+                  <MainLayout>
+                    <Home />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <MainLayout>
+                    <About />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <MainLayout>
+                    <Contact />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/thank-you"
+                element={
+                  <MainLayout>
+                    <ThankYouPage />
+                  </MainLayout>
+                }
+              />
 
-                {/* Services */}
-                <Route
-                  path="/services"
-                  element={
-                    <MainLayout>
-                      <ServicesByCategory />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/services/category/:categoryName"
-                  element={
-                    <MainLayout>
-                      <ServicesByCategory />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/categories"
-                  element={
-                    <MainLayout>
-                      <AllCategories />
-                    </MainLayout>
-                  }
-                />
+              {/* Services */}
+              <Route
+                path="/services"
+                element={
+                  <MainLayout>
+                    <ServicesByCategory />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/services/category/:categoryName"
+                element={
+                  <MainLayout>
+                    <ServicesByCategory />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/categories"
+                element={
+                  <MainLayout>
+                    <AllCategories />
+                  </MainLayout>
+                }
+              />
 
-                {/* Content */}
-                <Route
-                  path="/blog"
-                  element={
-                    <MainLayout>
-                      <BlogListPage />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/blog/:slug"
-                  element={
-                    <MainLayout>
-                      <BlogDetailPage />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/faqs"
-                  element={
-                    <MainLayout>
-                      <Faqs />
-                    </MainLayout>
-                  }
-                />
+              {/* Content */}
+              <Route
+                path="/blog"
+                element={
+                  <MainLayout>
+                    <BlogListPage />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/blog/:slug"
+                element={
+                  <MainLayout>
+                    <BlogDetailPage />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/faqs"
+                element={
+                  <MainLayout>
+                    <Faqs />
+                  </MainLayout>
+                }
+              />
 
-                {/* Legal */}
-                <Route
-                  path="/privacy-policy"
-                  element={
-                    <MainLayout>
-                      <PrivacyPolicy />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/terms-of-service"
-                  element={
-                    <MainLayout>
-                      <TermsOfService />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/payment-t-and-c"
-                  element={
-                    <MainLayout>
-                      <PaymentTAndC />
-                    </MainLayout>
-                  }
-                />
+              {/* Legal */}
+              <Route
+                path="/privacy-policy"
+                element={
+                  <MainLayout>
+                    <PrivacyPolicy />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/terms-of-service"
+                element={
+                  <MainLayout>
+                    <TermsOfService />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/payment-t-and-c"
+                element={
+                  <MainLayout>
+                    <PaymentTAndC />
+                  </MainLayout>
+                }
+              />
 
-                {/* Auth */}
-                <Route
-                  path="/login"
-                  element={
+              {/* Auth */}
+              <Route
+                path="/login"
+                element={
+                  <MainLayout>
+                    <LoginPage />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <MainLayout>
+                    <RegisterPage />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute>
                     <MainLayout>
-                      <LoginPage />
+                      <Profile />
                     </MainLayout>
-                  }
-                />
-                <Route
-                  path="/register"
-                  element={
-                    <MainLayout>
-                      <RegisterPage />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <PrivateRoute>
-                      <MainLayout>
-                        <Profile />
-                      </MainLayout>
-                    </PrivateRoute>
-                  }
-                />
+                  </PrivateRoute>
+                }
+              />
 
-                {/* System Pages */}
-                <Route
-                  path="/unauthorized"
-                  element={
-                    <MainLayout>
-                      <Unauthorized />
-                    </MainLayout>
-                  }
-                />
-                <Route
-                  path="/suspended"
-                  element={
-                    <MainLayout>
-                      <SuspendedAccount />
-                    </MainLayout>
-                  }
-                />
+              {/* System Pages */}
+              <Route
+                path="/unauthorized"
+                element={
+                  <MainLayout>
+                    <Unauthorized />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/suspended"
+                element={
+                  <MainLayout>
+                    <SuspendedAccount />
+                  </MainLayout>
+                }
+              />
 
-                {/* Admin Routes */}
+              {/* Admin Routes */}
+              <Route
+                element={
+                  <PrivateRoute allowedRoles={["admin"]}>
+                    <AdminLayout />
+                  </PrivateRoute>
+                }
+              >
                 <Route
-                  element={
-                    <PrivateRoute allowedRoles={["admin"]}>
-                      <AdminLayout />
-                    </PrivateRoute>
-                  }
-                >
-                  <Route
-                    path="/admin"
-                    element={<Navigate to="dashboard" replace />}
-                  />
-                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                  <Route
-                    path="/admin/categories"
-                    element={<CategoriesList />}
-                  />
-                  <Route
-                    path="/admin/categories/new"
-                    element={<CategoryForm />}
-                  />
-                  <Route
-                    path="/admin/categories/:id/edit"
-                    element={<CategoryForm />}
-                  />
-                  <Route path="/admin/blog" element={<BlogPostList />} />
-                  <Route path="/admin/blog/new" element={<BlogPostForm />} />
-                  <Route
-                    path="/admin/blog/edit/:id"
-                    element={<BlogPostForm />}
-                  />
-                  <Route
-                    path="/admin/media-gallery"
-                    element={<ImageGallery />}
-                  />
-                  <Route
-                    path="/admin/media-gallery/upload"
-                    element={<MediaGallery />}
-                  />
-                  <Route path="/admin/mail-sender" element={<Mailer />} />
-                  <Route
-                    path="/admin/mail-sender/brochure"
-                    element={<SendBrochure />}
-                  />
-                  <Route
-                    path="/admin/mail-sender/proposal"
-                    element={<SendProposal />}
-                  />
-                  <Route
-                    path="/admin/mail-sender/email-records"
-                    element={<EmailRecords />}
-                  />
-                  <Route path="/admin/users" element={<Users />} />
-                  <Route path="/admin/inquiries" element={<ContactsList />} />
-                  <Route path="/admin/payments" element={<PaymentsList />} />
-                  <Route
-                    path="/admin/payments/:id"
-                    element={<PaymentDetails />}
-                  />
-                  <Route path="/admin/faqs" element={<FaqsPage />} />
-                </Route>
-
-                <Route
-                  path="*"
-                  element={<Navigate to="/unauthorized" replace />}
+                  path="/admin"
+                  element={<Navigate to="dashboard" replace />}
                 />
-              </>
-            )}
-          </Routes>
-        </ChatProvider>
-      </ThemeProvider>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/categories" element={<CategoriesList />} />
+                <Route
+                  path="/admin/categories/new"
+                  element={<CategoryForm />}
+                />
+                <Route
+                  path="/admin/categories/:id/edit"
+                  element={<CategoryForm />}
+                />
+                <Route path="/admin/blog" element={<BlogPostList />} />
+                <Route path="/admin/blog/new" element={<BlogPostForm />} />
+                <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />
+                <Route path="/admin/media-gallery" element={<ImageGallery />} />
+                <Route
+                  path="/admin/media-gallery/upload"
+                  element={<MediaGallery />}
+                />
+                <Route path="/admin/mail-sender" element={<Mailer />} />
+                <Route
+                  path="/admin/mail-sender/brochure"
+                  element={<SendBrochure />}
+                />
+                <Route
+                  path="/admin/mail-sender/proposal"
+                  element={<SendProposal />}
+                />
+                <Route
+                  path="/admin/mail-sender/email-records"
+                  element={<EmailRecords />}
+                />
+                <Route path="/admin/users" element={<Users />} />
+                <Route path="/admin/inquiries" element={<ContactsList />} />
+                <Route path="/admin/payments" element={<PaymentsList />} />
+                <Route
+                  path="/admin/payments/:id"
+                  element={<PaymentDetails />}
+                />
+                <Route path="/admin/faqs" element={<FaqsPage />} />
+              </Route>
+
+              <Route
+                path="*"
+                element={<Navigate to="/unauthorized" replace />}
+              />
+            </>
+          )}
+        </Routes>
+      </ChatProvider>
+    </ThemeProvider>
+  );
+
+  return (
+    <HelmetProvider>
+      <AppContent />
     </HelmetProvider>
   );
 }

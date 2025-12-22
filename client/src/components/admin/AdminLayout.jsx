@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import {
   FaTachometerAlt,
   FaBook,
@@ -23,7 +23,7 @@ import {
   FaMoon,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "../../contexts/ThemeContext";
+import { useTheme } from "../../context/ThemeContext";
 
 // --- Configuration ---
 
