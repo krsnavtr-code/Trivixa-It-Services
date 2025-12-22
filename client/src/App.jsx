@@ -202,7 +202,7 @@ const MainLayout = ({ children }) => {
 // ==========================================
 // 🚀 APP COMPONENT
 // ==========================================
-function App() {
+function App({ isPortfolioSubdomain }) {
   const { ContactFormPopup } = useContactFormPopup();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [serverOnline, setServerOnline] = useState(false);
@@ -292,27 +292,54 @@ function App() {
 
           <Routes>
             {/* Public */}
-            <Route
-              path="/"
-              element={
-                <MainLayout>
-                  <Home />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/portfolio/*"
-              element={
-                <PortfolioLayout>
-                  <Routes>
-                    <Route index element={<Portfolio />} />
-                    <Route path="projects" element={<div>Projects Page</div>} />
-                    <Route path="about" element={<div>About Page</div>} />
-                    <Route path="contact" element={<div>Contact Page</div>} />
-                  </Routes>
-                </PortfolioLayout>
-              }
-            />
+            {!isPortfolioSubdomain ? (
+              <>
+                <Route
+                  path="/"
+                  element={
+                    <MainLayout>
+                      <Home />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/portfolio/*"
+                  element={
+                    <PortfolioLayout>
+                      <Routes>
+                        <Route index element={<Portfolio />} />
+                        <Route
+                          path="projects"
+                          element={<div>Projects Page</div>}
+                        />
+                        <Route path="about" element={<div>About Page</div>} />
+                        <Route
+                          path="contact"
+                          element={<div>Contact Page</div>}
+                        />
+                      </Routes>
+                    </PortfolioLayout>
+                  }
+                />
+              </>
+            ) : (
+              <Route
+                path="/*"
+                element={
+                  <PortfolioLayout>
+                    <Routes>
+                      <Route index element={<Portfolio />} />
+                      <Route
+                        path="projects"
+                        element={<div>Projects Page</div>}
+                      />
+                      <Route path="about" element={<div>About Page</div>} />
+                      <Route path="contact" element={<div>Contact Page</div>} />
+                    </Routes>
+                  </PortfolioLayout>
+                }
+              />
+            )}
             <Route
               path="/about"
               element={

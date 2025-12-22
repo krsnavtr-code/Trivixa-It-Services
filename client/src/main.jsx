@@ -8,6 +8,11 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 
+// Check if we're on the portfolio subdomain or local development
+const isPortfolioSubdomain =
+  window.location.hostname === "portfolio.trivixa.in" ||
+  (window.location.hostname === "localhost" && window.location.port === "3001");
+
 // A loading component to show while translations are being loaded
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -19,11 +24,17 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Suspense fallback={<LoadingFallback />}>
       <I18nextProvider i18n={i18n}>
-        <BrowserRouter>
+        <BrowserRouter basename={isPortfolioSubdomain ? "/" : "/"}>
           <HelmetProvider>
             <AuthProvider>
-              <div className="dark:bg-slate-900 dark:text-white">
-                <App />
+              <div
+                className={`${
+                  !isPortfolioSubdomain
+                    ? "dark:bg-slate-900 dark:text-white"
+                    : ""
+                }`}
+              >
+                <App isPortfolioSubdomain={isPortfolioSubdomain} />
               </div>
             </AuthProvider>
           </HelmetProvider>
