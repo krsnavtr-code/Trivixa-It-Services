@@ -62,6 +62,8 @@ import BlogDetailPage from "./pages/blog/BlogDetailPage";
 import BlogPostList from "./pages/admin/Blog.jsx";
 import BlogPostForm from "./components/admin/BlogForm.jsx";
 
+import { ChatProvider } from "./context/ChatContext";
+
 // ==========================================
 // 🎨 UI COMPONENTS (Internal)
 // ==========================================
@@ -265,235 +267,239 @@ function App() {
   return (
     <HelmetProvider>
       <ThemeProvider>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: "#0a0f2d",
-              color: "#fff",
-              border: "1px solid rgba(255,255,255,0.1)",
-            },
-            success: { iconTheme: { primary: "#10B981", secondary: "white" } },
-            error: { iconTheme: { primary: "#EF4444", secondary: "white" } },
-          }}
-        />
-        <ToastContainer theme="dark" />
-        <ContactFormPopup />
+        <ChatProvider>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: "#0a0f2d",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.1)",
+              },
+              success: {
+                iconTheme: { primary: "#10B981", secondary: "white" },
+              },
+              error: { iconTheme: { primary: "#EF4444", secondary: "white" } },
+            }}
+          />
+          <ToastContainer theme="dark" />
+          <ContactFormPopup />
 
-        <Routes>
-          {/* Public */}
-          <Route
-            path="/"
-            element={
-              <MainLayout>
-                <Home />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/about"
-            element={
-              <MainLayout>
-                <About />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/contact"
-            element={
-              <MainLayout>
-                <Contact />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/thank-you"
-            element={
-              <MainLayout>
-                <ThankYouPage />
-              </MainLayout>
-            }
-          />
-
-          {/* Legal */}
-          <Route
-            path="/privacy-policy"
-            element={
-              <MainLayout>
-                <PrivacyPolicy />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/terms-of-service"
-            element={
-              <MainLayout>
-                <TermsOfService />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/payment-t-and-c"
-            element={
-              <MainLayout>
-                <PaymentTAndC />
-              </MainLayout>
-            }
-          />
-
-          {/* Services */}
-          <Route
-            path="/services"
-            element={
-              <MainLayout>
-                <ServicesByCategory />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/services/category/:categoryName"
-            element={
-              <MainLayout>
-                <ServicesByCategory />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/categories"
-            element={
-              <MainLayout>
-                <AllCategories />
-              </MainLayout>
-            }
-          />
-
-          {/* Content */}
-          <Route
-            path="/blog"
-            element={
-              <MainLayout>
-                <BlogListPage />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/blog/:slug"
-            element={
-              <MainLayout>
-                <BlogDetailPage />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/faqs"
-            element={
-              <MainLayout>
-                <Faqs />
-              </MainLayout>
-            }
-          />
-
-          {/* Auth */}
-          <Route
-            path="/login"
-            element={
-              <MainLayout>
-                <LoginPage />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <MainLayout>
-                <RegisterPage />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
+          <Routes>
+            {/* Public */}
+            <Route
+              path="/"
+              element={
                 <MainLayout>
-                  <Profile />
+                  <Home />
                 </MainLayout>
-              </PrivateRoute>
-            }
-          />
-
-          {/* Errors */}
-          <Route
-            path="/unauthorized"
-            element={
-              <MainLayout>
-                <Unauthorized />
-              </MainLayout>
-            }
-          />
-          <Route
-            path="/suspended"
-            element={
-              <MainLayout>
-                <SuspendedAccount />
-              </MainLayout>
-            }
-          />
-
-          {/* Admin Routes */}
-          <Route
-            element={
-              <PrivateRoute allowedRoles={["admin"]}>
-                <AdminLayout />
-              </PrivateRoute>
-            }
-          >
-            <Route
-              path="/admin"
-              element={<Navigate to="dashboard" replace />}
-            />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-
-            <Route path="/admin/categories" element={<CategoriesList />} />
-            <Route path="/admin/categories/new" element={<CategoryForm />} />
-            <Route
-              path="/admin/categories/:id/edit"
-              element={<CategoryForm />}
-            />
-
-            <Route path="/admin/blog" element={<BlogPostList />} />
-            <Route path="/admin/blog/new" element={<BlogPostForm />} />
-            <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />
-
-            <Route path="/admin/media-gallery" element={<ImageGallery />} />
-            <Route
-              path="/admin/media-gallery/upload"
-              element={<MediaGallery />}
-            />
-
-            <Route path="/admin/mail-sender" element={<Mailer />} />
-            <Route
-              path="/admin/mail-sender/brochure"
-              element={<SendBrochure />}
+              }
             />
             <Route
-              path="/admin/mail-sender/proposal"
-              element={<SendProposal />}
+              path="/about"
+              element={
+                <MainLayout>
+                  <About />
+                </MainLayout>
+              }
             />
             <Route
-              path="/admin/mail-sender/email-records"
-              element={<EmailRecords />}
+              path="/contact"
+              element={
+                <MainLayout>
+                  <Contact />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/thank-you"
+              element={
+                <MainLayout>
+                  <ThankYouPage />
+                </MainLayout>
+              }
             />
 
-            <Route path="/admin/users" element={<Users />} />
-            <Route path="/admin/inquiries" element={<ContactsList />} />
-            <Route path="/admin/payments" element={<PaymentsList />} />
-            <Route path="/admin/payments/:id" element={<PaymentDetails />} />
-            <Route path="/admin/faqs" element={<FaqsPage />} />
-          </Route>
+            {/* Legal */}
+            <Route
+              path="/privacy-policy"
+              element={
+                <MainLayout>
+                  <PrivacyPolicy />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/terms-of-service"
+              element={
+                <MainLayout>
+                  <TermsOfService />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/payment-t-and-c"
+              element={
+                <MainLayout>
+                  <PaymentTAndC />
+                </MainLayout>
+              }
+            />
 
-          <Route path="*" element={<Navigate to="/unauthorized" replace />} />
-        </Routes>
+            {/* Services */}
+            <Route
+              path="/services"
+              element={
+                <MainLayout>
+                  <ServicesByCategory />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/services/category/:categoryName"
+              element={
+                <MainLayout>
+                  <ServicesByCategory />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/categories"
+              element={
+                <MainLayout>
+                  <AllCategories />
+                </MainLayout>
+              }
+            />
+
+            {/* Content */}
+            <Route
+              path="/blog"
+              element={
+                <MainLayout>
+                  <BlogListPage />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/blog/:slug"
+              element={
+                <MainLayout>
+                  <BlogDetailPage />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/faqs"
+              element={
+                <MainLayout>
+                  <Faqs />
+                </MainLayout>
+              }
+            />
+
+            {/* Auth */}
+            <Route
+              path="/login"
+              element={
+                <MainLayout>
+                  <LoginPage />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <MainLayout>
+                  <RegisterPage />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <MainLayout>
+                    <Profile />
+                  </MainLayout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Errors */}
+            <Route
+              path="/unauthorized"
+              element={
+                <MainLayout>
+                  <Unauthorized />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/suspended"
+              element={
+                <MainLayout>
+                  <SuspendedAccount />
+                </MainLayout>
+              }
+            />
+
+            {/* Admin Routes */}
+            <Route
+              element={
+                <PrivateRoute allowedRoles={["admin"]}>
+                  <AdminLayout />
+                </PrivateRoute>
+              }
+            >
+              <Route
+                path="/admin"
+                element={<Navigate to="dashboard" replace />}
+              />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+              <Route path="/admin/categories" element={<CategoriesList />} />
+              <Route path="/admin/categories/new" element={<CategoryForm />} />
+              <Route
+                path="/admin/categories/:id/edit"
+                element={<CategoryForm />}
+              />
+
+              <Route path="/admin/blog" element={<BlogPostList />} />
+              <Route path="/admin/blog/new" element={<BlogPostForm />} />
+              <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />
+
+              <Route path="/admin/media-gallery" element={<ImageGallery />} />
+              <Route
+                path="/admin/media-gallery/upload"
+                element={<MediaGallery />}
+              />
+
+              <Route path="/admin/mail-sender" element={<Mailer />} />
+              <Route
+                path="/admin/mail-sender/brochure"
+                element={<SendBrochure />}
+              />
+              <Route
+                path="/admin/mail-sender/proposal"
+                element={<SendProposal />}
+              />
+              <Route
+                path="/admin/mail-sender/email-records"
+                element={<EmailRecords />}
+              />
+
+              <Route path="/admin/users" element={<Users />} />
+              <Route path="/admin/inquiries" element={<ContactsList />} />
+              <Route path="/admin/payments" element={<PaymentsList />} />
+              <Route path="/admin/payments/:id" element={<PaymentDetails />} />
+              <Route path="/admin/faqs" element={<FaqsPage />} />
+            </Route>
+
+            <Route path="*" element={<Navigate to="/unauthorized" replace />} />
+          </Routes>
+        </ChatProvider>
       </ThemeProvider>
     </HelmetProvider>
   );

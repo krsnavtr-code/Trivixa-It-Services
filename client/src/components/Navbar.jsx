@@ -19,6 +19,7 @@ import { debounce } from "lodash";
 import api from "../api/axios";
 import PaymentForm from "./PaymentForm";
 import { motion, AnimatePresence } from "framer-motion";
+import { useChat } from "../context/ChatContext";
 
 function Navbar() {
   const { authUser, isAuthenticated, isAdmin, isApproved, logout } = useAuth();
@@ -27,6 +28,9 @@ function Navbar() {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [hoveredNav, setHoveredNav] = useState(null);
+
+  // Chat Bot AI
+  const { openChat } = useChat();
 
   // Theme State
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
@@ -43,6 +47,16 @@ function Navbar() {
   const [showResults, setShowResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef(null);
+
+  // Handle open chat
+  const handleQuoteClick = (e, to) => {
+    e.preventDefault();
+    if (to === "/get-quote") {
+      openChat();
+    } else {
+      navigate(to);
+    }
+  };
 
   // --- Theme Effect ---
   useEffect(() => {
@@ -238,6 +252,7 @@ function Navbar() {
                 <Link
                   key={item.to}
                   to={item.to}
+                  onClick={(e) => handleQuoteClick(e, item.to)}
                   onMouseEnter={() => setHoveredNav(item.to)}
                   className={`relative px-3 py-1 text-sm font-medium transition-colors duration-200 z-10 ${
                     isActive
