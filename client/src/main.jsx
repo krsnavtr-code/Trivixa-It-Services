@@ -9,7 +9,8 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 
 // Check if we're on the portfolio subdomain or local development
-const isPortfolioSubdomain = false;
+const isPortfolioSubdomain =
+  window.location.hostname === "portfolio.trivixa.in";
 
 // A loading component to show while translations are being loaded
 const LoadingFallback = () => (
