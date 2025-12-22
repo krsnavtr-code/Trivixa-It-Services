@@ -1,20 +1,17 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import { HelmetProvider } from "react-helmet-async";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { ToastContainer } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
-import { FaWifi, FaServer, FaRedo, FaPowerOff } from "react-icons/fa";
+import { FaWifi, FaServer, FaRedo } from "react-icons/fa";
 
-// --- Portfolio Components ---
-import Portfolio from "./pages/portfolio/Portfolio.jsx";
-import PortfolioLayout from "./layouts/PortfolioLayout";
-
-// --- Contexts & Hooks ---
+// --- Contexts ---
+import { ChatProvider } from "./context/ChatContext";
 import useContactFormPopup from "./hooks/useContactFormPopup.jsx";
 
-// --- Layouts & Common Components ---
+// --- Layouts ---
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
@@ -22,8 +19,9 @@ import ChatButton from "./components/common/ChatButton";
 import SocialMediaFloating from "./components/common/SocialMediaFloating";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminLayout from "./components/admin/AdminLayout";
+import PortfolioLayout from "./layouts/PortfolioLayout"; // Ensure this exists
 
-// --- Public Pages ---
+// --- Pages (Public) ---
 import Home from "./home/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -35,16 +33,19 @@ import Unauthorized from "./pages/Unauthorized";
 import SuspendedAccount from "./pages/SuspendedAccount";
 import Faqs from "./pages/Faqs";
 
-// --- Service Pages ---
+// --- Pages (Portfolio) ---
+import Portfolio from "./pages/portfolio/Portfolio.jsx";
+
+// --- Pages (Services/User) ---
 import ServicesByCategory from "./pages/user/ServicesByCategory.jsx";
 import AllCategories from "./pages/user/AllCategories";
-
-// --- Auth Pages ---
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
 import Profile from "./pages/user/Profile";
 
-// --- Admin Components & Pages ---
+// --- Pages (Auth) ---
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+
+// --- Pages (Admin) ---
 import AdminDashboard from "./components/admin/AdminDashboard";
 import CategoriesList from "./pages/admin/Categories.jsx";
 import CategoryForm from "./components/admin/CategoryForm.jsx";
@@ -59,14 +60,10 @@ import SendProposal from "./components/admin/SendProposal";
 import EmailRecords from "./components/admin/EmailRecords.jsx";
 import FaqsPage from "./pages/admin/FaqsPage";
 import Mailer from "./pages/admin/MailSender.jsx";
-
-// --- Blog Components ---
 import BlogListPage from "./pages/blog/BlogListPage";
 import BlogDetailPage from "./pages/blog/BlogDetailPage";
 import BlogPostList from "./pages/admin/Blog.jsx";
 import BlogPostForm from "./components/admin/BlogForm.jsx";
-
-import { ChatProvider } from "./context/ChatContext";
 
 // ==========================================
 // 🎨 UI COMPONENTS (Internal)
@@ -75,11 +72,8 @@ import { ChatProvider } from "./context/ChatContext";
 // 1. High-Tech Loader
 const TrivixaLoader = ({ message = "Initializing System..." }) => (
   <div className="fixed inset-0 z-[9999] bg-[#0a0f2d] flex flex-col items-center justify-center text-white overflow-hidden">
-    {/* Background Grid */}
     <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#F47C26]/10 rounded-full blur-[120px]"></div>
-
-    {/* Spinner */}
     <div className="relative w-24 h-24 mb-8">
       <div className="absolute inset-0 border-4 border-[#F47C26]/30 rounded-full"></div>
       <div className="absolute inset-0 border-4 border-t-[#F47C26] rounded-full animate-spin"></div>
@@ -88,8 +82,6 @@ const TrivixaLoader = ({ message = "Initializing System..." }) => (
         <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
       </div>
     </div>
-
-    {/* Text */}
     <motion.h2
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -101,13 +93,12 @@ const TrivixaLoader = ({ message = "Initializing System..." }) => (
   </div>
 );
 
-// 2. System Status Screen (Offline/Error)
+// 2. System Status Screen
 const SystemStatusScreen = ({ icon, title, message, onRetry, color }) => (
   <div className="min-h-screen bg-[#0a0f2d] flex items-center justify-center p-6 relative overflow-hidden">
     <div
       className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] ${color}/10 rounded-full blur-[120px]`}
     ></div>
-
     <motion.div
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -120,12 +111,11 @@ const SystemStatusScreen = ({ icon, title, message, onRetry, color }) => (
       </div>
       <h1 className="text-3xl font-black text-white mb-3">{title}</h1>
       <p className="text-gray-400 mb-8 leading-relaxed">{message}</p>
-
       <button
         onClick={onRetry}
         className="group relative inline-flex items-center justify-center px-8 py-3 font-bold text-white transition-all duration-200 bg-[#F47C26] font-lg rounded-xl hover:bg-[#d5671f] hover:scale-105 focus:outline-none ring-offset-2 focus:ring-2 ring-[#F47C26]"
       >
-        <FaRedo className="mr-2 group-hover:rotate-180 transition-transform duration-500" />
+        <FaRedo className="mr-2 group-hover:rotate-180 transition-transform duration-500" />{" "}
         System Retry
       </button>
     </motion.div>
@@ -136,7 +126,6 @@ const SystemStatusScreen = ({ icon, title, message, onRetry, color }) => (
 // 🧩 THEME CONTEXT
 // ==========================================
 export const ThemeContext = createContext();
-
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(
     localStorage.getItem("theme") ||
@@ -144,17 +133,14 @@ export const ThemeProvider = ({ children }) => {
         ? "dark"
         : "light")
   );
-
   useEffect(() => {
     const root = window.document.documentElement;
     if (theme === "dark") root.classList.add("dark");
     else root.classList.remove("dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
-
   const toggleTheme = () =>
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
-
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
@@ -171,7 +157,6 @@ const MainLayout = ({ children }) => {
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/login") ||
     location.pathname.startsWith("/register") ||
-    location.pathname.startsWith("/forgot-password") ||
     location.pathname === "/suspended" ||
     location.pathname === "/unauthorized";
 
@@ -202,11 +187,15 @@ const MainLayout = ({ children }) => {
 // ==========================================
 // 🚀 APP COMPONENT
 // ==========================================
-function App({ isPortfolioSubdomain }) {
+function App() {
   const { ContactFormPopup } = useContactFormPopup();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [serverOnline, setServerOnline] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
+
+  // --- SUBDOMAIN LOGIC ---
+  const hostname = window.location.hostname;
+  const isPortfolioSubdomain = hostname.startsWith("portfolio.");
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -217,7 +206,7 @@ function App({ isPortfolioSubdomain }) {
 
     const checkServerStatus = async () => {
       try {
-        const response = await fetch("/api/health"); // Ensure this endpoint exists
+        const response = await fetch("/api/health");
         if (response.ok) setServerOnline(true);
         else setServerOnline(false);
       } catch (error) {
@@ -232,41 +221,23 @@ function App({ isPortfolioSubdomain }) {
 
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
-
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
-  // --- Render States ---
-
   if (isChecking) return <TrivixaLoader message="Establishing Connection..." />;
-
-  if (!isOnline) {
+  if (!isOnline)
     return (
       <SystemStatusScreen
         icon={<FaWifi />}
         color="text-red-500 bg-red-500"
         title="Connection Lost"
-        message="Unable to connect to the global network. Please verify your internet connection settings."
+        message="Unable to connect to the global network."
         onRetry={() => window.location.reload()}
       />
     );
-  }
-
-  // Optional: You can uncomment this if you want to block the app completely when the backend is down
-  if (!serverOnline) {
-    return (
-      <SystemStatusScreen
-        icon={<FaServer />}
-        color="text-yellow-500 bg-yellow-500"
-        title="Server Maintenance"
-        message="Our core systems are currently unreachable. Engineers have been notified. Please try again shortly."
-        onRetry={() => window.location.reload()}
-      />
-    );
-  }
 
   return (
     <HelmetProvider>
@@ -291,8 +262,25 @@ function App({ isPortfolioSubdomain }) {
           <ContactFormPopup />
 
           <Routes>
-            {/* Public */}
-            {!isPortfolioSubdomain ? (
+            {/* ==========================================================
+                BRANCH 1: PORTFOLIO SUBDOMAIN (portfolio.trivixa.in)
+               ========================================================== */}
+            {isPortfolioSubdomain && (
+              <>
+                <Route path="/" element={<PortfolioLayout />}>
+                  <Route index element={<Portfolio />} />
+                  <Route path="projects" element={<div>Projects Page</div>} />
+                  <Route path="about" element={<div>About Page</div>} />
+                  <Route path="contact" element={<div>Contact Page</div>} />
+                </Route>
+                <Route path="*" element={<Navigate to="/" />} />
+              </>
+            )}
+
+            {/* ==========================================================
+                BRANCH 2: MAIN SITE (trivixa.in)
+               ========================================================== */}
+            {!isPortfolioSubdomain && (
               <>
                 <Route
                   path="/"
@@ -303,249 +291,227 @@ function App({ isPortfolioSubdomain }) {
                   }
                 />
                 <Route
-                  path="/portfolio/*"
+                  path="/about"
                   element={
-                    <PortfolioLayout>
-                      <Routes>
-                        <Route index element={<Portfolio />} />
-                        <Route
-                          path="projects"
-                          element={<div>Projects Page</div>}
-                        />
-                        <Route path="about" element={<div>About Page</div>} />
-                        <Route
-                          path="contact"
-                          element={<div>Contact Page</div>}
-                        />
-                      </Routes>
-                    </PortfolioLayout>
+                    <MainLayout>
+                      <About />
+                    </MainLayout>
                   }
                 />
+                <Route
+                  path="/contact"
+                  element={
+                    <MainLayout>
+                      <Contact />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/thank-you"
+                  element={
+                    <MainLayout>
+                      <ThankYouPage />
+                    </MainLayout>
+                  }
+                />
+
+                {/* Services */}
+                <Route
+                  path="/services"
+                  element={
+                    <MainLayout>
+                      <ServicesByCategory />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/services/category/:categoryName"
+                  element={
+                    <MainLayout>
+                      <ServicesByCategory />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/categories"
+                  element={
+                    <MainLayout>
+                      <AllCategories />
+                    </MainLayout>
+                  }
+                />
+
+                {/* Content */}
+                <Route
+                  path="/blog"
+                  element={
+                    <MainLayout>
+                      <BlogListPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/blog/:slug"
+                  element={
+                    <MainLayout>
+                      <BlogDetailPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/faqs"
+                  element={
+                    <MainLayout>
+                      <Faqs />
+                    </MainLayout>
+                  }
+                />
+
+                {/* Legal */}
+                <Route
+                  path="/privacy-policy"
+                  element={
+                    <MainLayout>
+                      <PrivacyPolicy />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/terms-of-service"
+                  element={
+                    <MainLayout>
+                      <TermsOfService />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/payment-t-and-c"
+                  element={
+                    <MainLayout>
+                      <PaymentTAndC />
+                    </MainLayout>
+                  }
+                />
+
+                {/* Auth */}
+                <Route
+                  path="/login"
+                  element={
+                    <MainLayout>
+                      <LoginPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/register"
+                  element={
+                    <MainLayout>
+                      <RegisterPage />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <PrivateRoute>
+                      <MainLayout>
+                        <Profile />
+                      </MainLayout>
+                    </PrivateRoute>
+                  }
+                />
+
+                {/* System Pages */}
+                <Route
+                  path="/unauthorized"
+                  element={
+                    <MainLayout>
+                      <Unauthorized />
+                    </MainLayout>
+                  }
+                />
+                <Route
+                  path="/suspended"
+                  element={
+                    <MainLayout>
+                      <SuspendedAccount />
+                    </MainLayout>
+                  }
+                />
+
+                {/* Admin Routes */}
+                <Route
+                  element={
+                    <PrivateRoute allowedRoles={["admin"]}>
+                      <AdminLayout />
+                    </PrivateRoute>
+                  }
+                >
+                  <Route
+                    path="/admin"
+                    element={<Navigate to="dashboard" replace />}
+                  />
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route
+                    path="/admin/categories"
+                    element={<CategoriesList />}
+                  />
+                  <Route
+                    path="/admin/categories/new"
+                    element={<CategoryForm />}
+                  />
+                  <Route
+                    path="/admin/categories/:id/edit"
+                    element={<CategoryForm />}
+                  />
+                  <Route path="/admin/blog" element={<BlogPostList />} />
+                  <Route path="/admin/blog/new" element={<BlogPostForm />} />
+                  <Route
+                    path="/admin/blog/edit/:id"
+                    element={<BlogPostForm />}
+                  />
+                  <Route
+                    path="/admin/media-gallery"
+                    element={<ImageGallery />}
+                  />
+                  <Route
+                    path="/admin/media-gallery/upload"
+                    element={<MediaGallery />}
+                  />
+                  <Route path="/admin/mail-sender" element={<Mailer />} />
+                  <Route
+                    path="/admin/mail-sender/brochure"
+                    element={<SendBrochure />}
+                  />
+                  <Route
+                    path="/admin/mail-sender/proposal"
+                    element={<SendProposal />}
+                  />
+                  <Route
+                    path="/admin/mail-sender/email-records"
+                    element={<EmailRecords />}
+                  />
+                  <Route path="/admin/users" element={<Users />} />
+                  <Route path="/admin/inquiries" element={<ContactsList />} />
+                  <Route path="/admin/payments" element={<PaymentsList />} />
+                  <Route
+                    path="/admin/payments/:id"
+                    element={<PaymentDetails />}
+                  />
+                  <Route path="/admin/faqs" element={<FaqsPage />} />
+                </Route>
+
+                <Route
+                  path="*"
+                  element={<Navigate to="/unauthorized" replace />}
+                />
               </>
-            ) : (
-              <Route
-                path="/*"
-                element={
-                  <PortfolioLayout>
-                    <Routes>
-                      <Route index element={<Portfolio />} />
-                      <Route
-                        path="projects"
-                        element={<div>Projects Page</div>}
-                      />
-                      <Route path="about" element={<div>About Page</div>} />
-                      <Route path="contact" element={<div>Contact Page</div>} />
-                    </Routes>
-                  </PortfolioLayout>
-                }
-              />
             )}
-            <Route
-              path="/about"
-              element={
-                <MainLayout>
-                  <About />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <MainLayout>
-                  <Contact />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/thank-you"
-              element={
-                <MainLayout>
-                  <ThankYouPage />
-                </MainLayout>
-              }
-            />
-
-            {/* Legal */}
-            <Route
-              path="/privacy-policy"
-              element={
-                <MainLayout>
-                  <PrivacyPolicy />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/terms-of-service"
-              element={
-                <MainLayout>
-                  <TermsOfService />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/payment-t-and-c"
-              element={
-                <MainLayout>
-                  <PaymentTAndC />
-                </MainLayout>
-              }
-            />
-
-            {/* Services */}
-            <Route
-              path="/services"
-              element={
-                <MainLayout>
-                  <ServicesByCategory />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/services/category/:categoryName"
-              element={
-                <MainLayout>
-                  <ServicesByCategory />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/categories"
-              element={
-                <MainLayout>
-                  <AllCategories />
-                </MainLayout>
-              }
-            />
-
-            {/* Content */}
-            <Route
-              path="/blog"
-              element={
-                <MainLayout>
-                  <BlogListPage />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/blog/:slug"
-              element={
-                <MainLayout>
-                  <BlogDetailPage />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/faqs"
-              element={
-                <MainLayout>
-                  <Faqs />
-                </MainLayout>
-              }
-            />
-
-            {/* Auth */}
-            <Route
-              path="/login"
-              element={
-                <MainLayout>
-                  <LoginPage />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/register"
-              element={
-                <MainLayout>
-                  <RegisterPage />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <PrivateRoute>
-                  <MainLayout>
-                    <Profile />
-                  </MainLayout>
-                </PrivateRoute>
-              }
-            />
-
-            {/* Errors */}
-            <Route
-              path="/unauthorized"
-              element={
-                <MainLayout>
-                  <Unauthorized />
-                </MainLayout>
-              }
-            />
-            <Route
-              path="/suspended"
-              element={
-                <MainLayout>
-                  <SuspendedAccount />
-                </MainLayout>
-              }
-            />
-
-            {/* Admin Routes */}
-            <Route
-              element={
-                <PrivateRoute allowedRoles={["admin"]}>
-                  <AdminLayout />
-                </PrivateRoute>
-              }
-            >
-              <Route
-                path="/admin"
-                element={<Navigate to="dashboard" replace />}
-              />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-
-              <Route path="/admin/categories" element={<CategoriesList />} />
-              <Route path="/admin/categories/new" element={<CategoryForm />} />
-              <Route
-                path="/admin/categories/:id/edit"
-                element={<CategoryForm />}
-              />
-
-              <Route path="/admin/blog" element={<BlogPostList />} />
-              <Route path="/admin/blog/new" element={<BlogPostForm />} />
-              <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />
-
-              <Route path="/admin/media-gallery" element={<ImageGallery />} />
-              <Route
-                path="/admin/media-gallery/upload"
-                element={<MediaGallery />}
-              />
-
-              <Route path="/admin/mail-sender" element={<Mailer />} />
-              <Route
-                path="/admin/mail-sender/brochure"
-                element={<SendBrochure />}
-              />
-              <Route
-                path="/admin/mail-sender/proposal"
-                element={<SendProposal />}
-              />
-              <Route
-                path="/admin/mail-sender/email-records"
-                element={<EmailRecords />}
-              />
-
-              <Route path="/admin/users" element={<Users />} />
-              <Route path="/admin/inquiries" element={<ContactsList />} />
-              <Route path="/admin/payments" element={<PaymentsList />} />
-              <Route path="/admin/payments/:id" element={<PaymentDetails />} />
-              <Route path="/admin/faqs" element={<FaqsPage />} />
-            </Route>
-
-            <Route path="*" element={<Navigate to="/unauthorized" replace />} />
           </Routes>
         </ChatProvider>
       </ThemeProvider>
     </HelmetProvider>
   );
 }
+
 export default App;
