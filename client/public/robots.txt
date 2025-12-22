@@ -1,10 +1,48 @@
+# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow: /wp-admin/
-Disallow: /cart/
-Disallow: /checkout/
-Disallow: /my-account/
-Disallow: /?s=
 
+# Allow all pages to be crawled
 Allow: /
 
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /admin-*
+Disallow: /wp-admin/
+Disallow: /wp-json/
+Disallow: /wp-includes/
+Disallow: /wp-content/plugins/
+Disallow: /wp-content/themes/
+Disallow: /wp-login.php
+Disallow: /wp-signup.php
+Disallow: /xmlrpc.php
+Disallow: /feed/
+Disallow: /*/feed/
+Disallow: /trackback/
+Disallow: /*/trackback/
+Disallow: /*?*
+Disallow: /*?s=
+Disallow: /*.js$
+Disallow: /*.css$
+Disallow: /*.svg$
+Disallow: /*.png$
+Disallow: /*.jpg$
+Disallow: /*.jpeg$
+Disallow: /*.gif$
+Disallow: /*.webp$
+Disallow: /*.ico$
+
+# Allow media and assets
+Allow: /wp-content/uploads/
+Allow: /images/
+Allow: /assets/
+
+# Crawl-delay: 10  # Uncomment and adjust if needed to limit crawl rate
+
+# Sitemaps
 Sitemap: https://trivixa.com/sitemap.xml
+Sitemap: https://trivixa.com/sitemap-news.xml
+Sitemap: https://trivixa.com/sitemap-video.xml
+Sitemap: https://trivixa.com/sitemap-image.xml
+
+# Host
+Host: https://trivixa.com
