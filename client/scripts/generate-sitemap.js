@@ -1,7 +1,11 @@
-const { SitemapStream, streamToPromise } = require('sitemap');
-const { createWriteStream } = require('fs');
-const { join } = require('path');
-const { createGzip } = require('zlib');
+import { SitemapStream, streamToPromise } from 'sitemap';
+import { createWriteStream } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { createGzip } from 'zlib';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Define your site URL
 const siteUrl = 'https://trivixa.in'; 
@@ -29,7 +33,7 @@ async function generateSitemap() {
     });
 
     // Create a write stream to save the sitemap
-    const writeStream = createWriteStream(join('dist', 'sitemap.xml'));
+      const writeStream = createWriteStream(new URL('../dist/sitemap.xml', import.meta.url).pathname);
 
     // Pipe the sitemap to the write stream
     sitemapStream.pipe(createGzip()).pipe(writeStream);
