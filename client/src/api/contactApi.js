@@ -144,8 +144,8 @@ const submitContactForm = async (formData) => {
       ...(formData.courseTitle && formData.courseTitle.trim() !== '' && { 
         courseTitle: formData.courseTitle.trim() 
       }),
-      ...(formData.subject && formData.subject.trim() !== '' && { 
-        subject: formData.subject.trim() 
+      ...(formData.inquiryType && formData.inquiryType.trim() !== '' && {
+        subject: formData.inquiryType.trim()
       }),
     };
 

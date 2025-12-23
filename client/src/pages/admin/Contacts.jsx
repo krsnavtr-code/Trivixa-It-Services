@@ -354,11 +354,11 @@ const ContactsList = () => {
                           </div>
                         </td>
 
-                        {/* Context */}
+                        {/* Inquiry for */}
                         <td className="px-6 py-4">
-                          {contact.courseTitle && (
+                          {contact.subject && (
                             <span className="inline-block px-2 py-1 rounded bg-gray-100 dark:bg-white/10 text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                              {contact.courseTitle}
+                              {contact.subject}
                             </span>
                           )}
                           <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 italic">
