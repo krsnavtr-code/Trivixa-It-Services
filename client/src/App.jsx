@@ -34,9 +34,6 @@ import Unauthorized from "./pages/Unauthorized";
 import SuspendedAccount from "./pages/SuspendedAccount";
 import Faqs from "./pages/Faqs";
 
-// --- Pages (Portfolio) ---
-import PHome from "./pages/portfolio/PHome.jsx";
-
 // --- Pages (Services/User) ---
 import ServicesByCategory from "./pages/user/ServicesByCategory.jsx";
 import AllCategories from "./pages/user/AllCategories";
@@ -65,6 +62,16 @@ import BlogListPage from "./pages/blog/BlogListPage";
 import BlogDetailPage from "./pages/blog/BlogDetailPage";
 import BlogPostList from "./pages/admin/Blog.jsx";
 import BlogPostForm from "./components/admin/BlogForm.jsx";
+
+
+// ==========================================
+// 🎨 Import Portfolio Pages ---
+// ==========================================
+
+import PHome from "./pages/portfolio/PHome.jsx";
+import PAbout from "./pages/portfolio/About.jsx";
+import PContact from "./pages/portfolio/Contact.jsx";
+import PWork from "./pages/portfolio/Work.jsx";
 
 // ==========================================
 // 🎨 UI COMPONENTS (Internal)
@@ -244,9 +251,9 @@ function App() {
             <>
               <Route path="/" element={<PortfolioLayout />}>
                 <Route index element={<PHome />} />
-                <Route path="projects" element={<div>Projects Page</div>} />
-                <Route path="about" element={<div>About Page</div>} />
-                <Route path="contact" element={<div>Contact Page</div>} />
+                <Route path="projects" element={<PWork />} />
+                <Route path="about" element={<PAbout />} />
+                <Route path="contact" element={<PContact />} />
               </Route>
               <Route path="*" element={<Navigate to="/" />} />
             </>

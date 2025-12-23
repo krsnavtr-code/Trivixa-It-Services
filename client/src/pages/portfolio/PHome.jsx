@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
@@ -6,7 +6,6 @@ import {
   FaReact,
   FaNodeJs,
   FaAws,
-  FaFigma,
   FaDocker,
 } from "react-icons/fa";
 import { SiNextdotjs, SiTailwindcss, SiTypescript } from "react-icons/si";
@@ -87,21 +86,26 @@ const PHome = () => {
 
   // --- Dynamic Styles ---
   const isDark = theme === "dark";
-  const bgClass = isDark ? "bg-[#05081a]" : "bg-gray-50";
+  
+  // Colors
+  const emeraldDark = "#074F3E"; // Deep Green
+  const emeraldLight = "#34d399"; // Mint Highlight
+  
+  const bgClass = isDark ? "bg-[#020e0a]" : "bg-gray-50"; // Matches Navbar bg
   const textMain = isDark ? "text-white" : "text-gray-900";
   const textSub = isDark ? "text-gray-400" : "text-gray-600";
 
   // Cards
   const cardBg = isDark
-    ? "bg-[#0a0f2d] border-white/5"
+    ? "bg-[#051a12] border-[#074F3E]/30"
     : "bg-white border-gray-200 shadow-xl";
   const overlayCardBg = isDark
-    ? "bg-[#0f163a]/90 backdrop-blur-xl border-white/10"
+    ? "bg-[#020e0a]/90 backdrop-blur-xl border-[#074F3E]/30"
     : "bg-white/95 backdrop-blur-xl border-gray-100 shadow-2xl";
 
   // Filter Buttons
   const filterContainerBg = isDark
-    ? "bg-white/5 border-white/5"
+    ? "bg-[#074F3E]/10 border-[#074F3E]/20"
     : "bg-white border-gray-200 shadow-sm";
   const filterInactiveText = isDark
     ? "text-gray-400 hover:text-white"
@@ -109,22 +113,24 @@ const PHome = () => {
 
   return (
     <div
-      className={`min-h-screen pt-24 pb-20 overflow-hidden relative transition-colors duration-300 ${bgClass}`}
+      className={`min-h-screen pt-24 pb-20 overflow-hidden relative transition-colors duration-500 ${bgClass}`}
     >
       {/* --- Background Ambience --- */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        {/* Top Right Green Glow */}
         <div
           className={`absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full blur-[120px] ${
-            isDark ? "bg-[#F47C26]/10" : "bg-[#F47C26]/5"
+            isDark ? "bg-[#074F3E]/20" : "bg-[#074F3E]/5"
           }`}
         ></div>
+        {/* Bottom Left Mint Glow */}
         <div
           className={`absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full blur-[120px] ${
-            isDark ? "bg-blue-600/10" : "bg-blue-600/5"
+            isDark ? "bg-[#34d399]/10" : "bg-[#34d399]/5"
           }`}
         ></div>
         {isDark && (
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light"></div>
         )}
       </div>
 
@@ -136,8 +142,13 @@ const PHome = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#F47C26]/30 bg-[#F47C26]/10 text-[#F47C26] text-xs font-bold uppercase tracking-widest mb-6">
-              <span className="w-2 h-2 rounded-full bg-[#F47C26] animate-pulse"></span>
+            {/* Status Badge */}
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-widest mb-6 ${
+              isDark 
+                ? "border-[#34d399]/30 bg-[#074F3E]/20 text-[#34d399]"
+                : "border-[#074F3E]/20 bg-[#074F3E]/5 text-[#074F3E]"
+            }`}>
+              <span className="w-2 h-2 rounded-full bg-[#34d399] animate-pulse"></span>
               Available for Hire
             </div>
 
@@ -145,7 +156,7 @@ const PHome = () => {
               className={`text-5xl md:text-7xl font-black tracking-tight mb-6 leading-tight ${textMain}`}
             >
               Building the <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] via-purple-500 to-blue-600 animate-gradient-x">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#074F3E] via-[#10b981] to-[#34d399] animate-gradient-x">
                 Digital Future
               </span>
             </h1>
@@ -160,7 +171,11 @@ const PHome = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-5">
               <Link
                 to="/contact"
-                className="px-8 py-4 bg-[#F47C26] text-white font-bold rounded-full hover:bg-[#d5671f] transition-all shadow-lg shadow-orange-500/20 transform hover:scale-105"
+                className={`px-8 py-4 font-bold rounded-full transition-all shadow-lg transform hover:scale-105 ${
+                    isDark 
+                    ? "bg-[#074F3E] text-white hover:bg-[#0a6650] shadow-[#074F3E]/20"
+                    : "bg-[#074F3E] text-white hover:bg-[#0a6650]"
+                }`}
               >
                 Start a Project
               </Link>
@@ -196,7 +211,7 @@ const PHome = () => {
                 <div
                   className={`text-3xl md:text-4xl transition-colors transform group-hover:scale-110 duration-300 ${
                     isDark ? "text-white" : "text-gray-800"
-                  } group-hover:text-[#F47C26]`}
+                  } group-hover:text-[#34d399]`}
                 >
                   {tech.icon}
                 </div>
@@ -229,15 +244,18 @@ const PHome = () => {
           <div
             className={`rounded-3xl p-8 backdrop-blur-sm relative overflow-hidden group transition-colors duration-300 ${
               isDark
-                ? "bg-white/5 border border-white/10 shadow-2xl"
+                ? "bg-[#051a12]/50 border border-[#074F3E]/30 shadow-2xl"
                 : "bg-white border border-gray-200 shadow-xl"
             }`}
           >
             {/* Decorative glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-[#F47C26] to-transparent opacity-50"></div>
+            <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-[#074F3E] to-transparent opacity-50`}></div>
 
-            {/* Diagram Container */}
-            <div className="flex justify-center items-center py-8 grayscale group-hover:grayscale-0 transition-all duration-700 opacity-80 group-hover:opacity-100"></div>
+            {/* Placeholder for a diagram or graphic */}
+             <div className="h-32 flex items-center justify-center text-sm italic opacity-50">
+               {/* You can insert a real diagram here later */}
+               [Process Visualization Area]
+             </div>
           </div>
         </motion.section>
 
@@ -257,7 +275,7 @@ const PHome = () => {
                 {activeFilter === cat.id && (
                   <motion.div
                     layoutId="activeFilter"
-                    className="absolute inset-0 bg-[#F47C26] rounded-full -z-10"
+                    className="absolute inset-0 bg-[#074F3E] rounded-full -z-10"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
@@ -281,14 +299,14 @@ const PHome = () => {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3 }}
                 key={project.id}
-                className={`group relative rounded-[2rem] overflow-hidden transition-all duration-500 hover:border-[#F47C26]/30 border ${cardBg}`}
+                className={`group relative rounded-[2rem] overflow-hidden transition-all duration-500 hover:border-[#34d399]/50 border ${cardBg}`}
               >
                 {/* Image Area */}
                 <div className="relative h-72 sm:h-96 overflow-hidden">
                   <div
                     className={`absolute inset-0 bg-gradient-to-t via-transparent to-transparent z-10 transition-opacity duration-500 ${
                       isDark
-                        ? "from-[#0a0f2d] opacity-80 group-hover:opacity-40"
+                        ? "from-[#020e0a] opacity-90 group-hover:opacity-60"
                         : "from-white opacity-60 group-hover:opacity-20"
                     }`}
                   ></div>
@@ -305,7 +323,7 @@ const PHome = () => {
                         key={tag}
                         className={`px-3 py-1 text-[10px] uppercase font-bold backdrop-blur-md border rounded-full tracking-wider ${
                           isDark
-                            ? "bg-black/60 border-white/10 text-white"
+                            ? "bg-[#074F3E]/80 border-[#34d399]/30 text-white"
                             : "bg-white/90 border-gray-200 text-gray-900 shadow-sm"
                         }`}
                       >
@@ -323,7 +341,7 @@ const PHome = () => {
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <h3
-                          className={`text-2xl font-bold mb-2 group-hover:text-[#F47C26] transition-colors ${textMain}`}
+                          className={`text-2xl font-bold mb-2 group-hover:text-[#34d399] transition-colors ${textMain}`}
                         >
                           {project.title}
                         </h3>
@@ -333,13 +351,15 @@ const PHome = () => {
                           {project.description}
                         </p>
                       </div>
-                      <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full bg-[#F47C26] text-white transform -rotate-45 group-hover:rotate-0 transition-transform duration-300 shadow-lg shadow-orange-500/30">
+                      <div className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full text-white transform -rotate-45 group-hover:rotate-0 transition-transform duration-300 shadow-lg ${
+                          isDark ? "bg-[#074F3E] shadow-[#074F3E]/40" : "bg-[#074F3E]"
+                      }`}>
                         <FaArrowRight />
                       </div>
                     </div>
                     <Link
                       to={`/projects/${project.id}`}
-                      className="text-xs font-bold uppercase tracking-widest text-[#F47C26] hover:text-[#d5671f] transition-colors"
+                      className="text-xs font-bold uppercase tracking-widest text-[#34d399] hover:text-[#074F3E] transition-colors"
                     >
                       View Case Study
                     </Link>
@@ -357,15 +377,15 @@ const PHome = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className={`mt-32 relative rounded-3xl overflow-hidden border group ${
-            isDark ? "border-white/10" : "border-gray-200 shadow-2xl"
+            isDark ? "border-[#34d399]/20" : "border-gray-200 shadow-2xl"
           }`}
         >
           {/* CTA Background Gradient */}
           <div
             className={`absolute inset-0 bg-gradient-to-r backdrop-blur-3xl group-hover:opacity-80 transition-opacity duration-500 ${
               isDark
-                ? "from-[#F47C26]/20 to-purple-600/20"
-                : "from-[#F47C26]/10 to-purple-600/10"
+                ? "from-[#074F3E]/30 to-[#34d399]/10"
+                : "from-[#074F3E]/10 to-[#34d399]/10"
             }`}
           ></div>
 
@@ -381,8 +401,8 @@ const PHome = () => {
               to="/contact"
               className={`inline-flex items-center gap-3 px-10 py-4 font-bold rounded-full transition-all transform hover:scale-105 shadow-lg ${
                 isDark
-                  ? "bg-white text-black hover:bg-gray-100"
-                  : "bg-[#F47C26] text-white hover:bg-[#d5671f]"
+                  ? "bg-white text-[#074F3E] hover:bg-gray-100"
+                  : "bg-[#074F3E] text-white hover:bg-[#0a6650]"
               }`}
             >
               Start a Conversation <FaArrowRight />

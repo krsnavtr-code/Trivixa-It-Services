@@ -9,7 +9,6 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
-  // Using the theme hook
   const { theme, toggleTheme } = useTheme();
 
   // Scroll Detection
@@ -21,19 +20,17 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location]);
 
   const navItems = [
     { to: `/`, label: "Home" },
-    { to: `/projects`, label: "Projects" },
+    { to: `/projects`, label: "Work" },
     { to: `/about`, label: "About" },
     { to: `/contact`, label: "Contact" },
   ];
 
-  // Helper to check active state
   const isActiveLink = (path) => {
     if (path === baseUrl || path === `${baseUrl}/`) {
       return location.pathname === path || location.pathname === `${path}`;
@@ -41,99 +38,119 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
     return location.pathname === path;
   };
 
-  // --- Dynamic Styles based on Theme ---
-  const headerBg = isScrolled
-    ? theme === "dark"
-      ? "bg-[#05081a]/90 border-white/5 shadow-lg"
-      : "bg-white/90 border-gray-200 shadow-sm"
-    : "bg-transparent border-transparent";
+  // --- THEME CONFIGURATION ---
 
-  const textColor = theme === "dark" ? "text-white" : "text-gray-900";
-  const subTextColor = theme === "dark" ? "text-gray-400" : "text-gray-600";
-  const mobileBg =
-    theme === "dark"
-      ? "bg-[#05081a] border-white/10"
-      : "bg-white border-gray-200";
+  // Your Color: #074F3E (Deep Emerald)
+  // We use this for Borders, Buttons, and Accents
+  const primaryBrandColor = "#074F3E";
+
+  // We need a lighter green for Text visibility on dark backgrounds
+  const textHighlight = "text-[#34d399]";
+
+  // Dark Mode Background: We go darker than #074F3E for the main bg to create contrast
+  const darkBg = `bg-[#020e0a]/90 border-[#074F3E]/50 shadow-2xl shadow-[#074F3E]/20`;
+  const lightBg = "bg-white/90 border-gray-200 shadow-sm";
+
+  const headerClasses = isScrolled
+    ? theme === "dark"
+      ? `${darkBg} backdrop-blur-xl`
+      : `${lightBg} backdrop-blur-xl`
+    : "bg-transparent border-transparent backdrop-blur-sm";
+
+  const textColor = theme === "dark" ? "text-gray-100" : "text-gray-800";
+  const subTextColor = theme === "dark" ? "text-gray-400" : "text-gray-500";
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-md border-b ${headerBg} py-3`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b ${headerClasses} py-4`}
     >
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center">
           {/* --- Logo --- */}
           <Link
             to="/"
-            className={`group flex items-center gap-2 text-2xl font-black tracking-tight ${textColor}`}
+            className={`group flex items-center gap-2.5 text-xl font-bold tracking-tight ${textColor}`}
           >
-            <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F47C26] to-purple-600 flex items-center justify-center text-white text-sm shadow-lg group-hover:rotate-12 transition-transform duration-300">
-              <FaCode />
-            </span>
-            <span>
-              PORT<span className="text-[#F47C26]">FOLIO</span>.
+            {/* Logo Box */}
+            <div
+              className={`relative flex items-center justify-center w-10 h-10 rounded-xl text-white shadow-lg transition-transform duration-300 group-hover:scale-105 overflow-hidden`}
+            >
+              {/* Using your color in the gradient */}
+              <div
+                className={`absolute inset-0 bg-gradient-to-tr from-[#074F3E] to-[#10b981]`}
+              />
+              <FaCode className="relative z-10 text-sm" />
+            </div>
+
+            <span className="hidden sm:block">
+              KRISHNA<span className={textHighlight}>.portfolio</span>
             </span>
           </Link>
 
           {/* --- Desktop Navigation --- */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-1 bg-black/5 dark:bg-white/5 rounded-full px-2 py-1.5 border border-transparent dark:border-[#074F3E]/30 backdrop-blur-sm">
             {navItems.map((item) => {
               const active = isActiveLink(item.to);
-
               return (
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`relative text-sm font-bold uppercase tracking-wide transition-colors ${
-                    active ? textColor : `${subTextColor} hover:text-[#F47C26]`
-                  }`}
+                  className={`relative px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                    active
+                      ? theme === "dark"
+                        ? "text-white"
+                        : "text-[#074F3E]"
+                      : subTextColor
+                  } hover:${textHighlight} hover:bg-white/5`}
                 >
-                  {item.label}
-
-                  {/* Active Indicator */}
+                  {/* Active Pill using your color */}
                   {active && (
                     <motion.div
-                      layoutId="portfolio-nav-indicator"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#F47C26] shadow-[0_0_10px_#F47C26]"
+                      layoutId="nav-pill"
+                      className={`absolute inset-0 rounded-full shadow-sm ${
+                        theme === "dark"
+                          ? `bg-[#074F3E] shadow-[0_0_10px_#074F3E]` // Glowing effect
+                          : "bg-white shadow-gray-200"
+                      }`}
                       transition={{
                         type: "spring",
-                        stiffness: 300,
-                        damping: 30,
+                        bounce: 0.2,
+                        duration: 0.6,
                       }}
                     />
                   )}
+                  <span className="relative z-10">{item.label}</span>
                 </Link>
               );
             })}
+          </nav>
 
-            {/* Theme Toggle Button */}
+          {/* --- Actions --- */}
+          <div className="hidden md:flex items-center gap-4">
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className={`p-2 rounded-lg transition-colors border ${
+              className={`p-2.5 rounded-full transition-all duration-300 border ${
                 theme === "dark"
-                  ? "bg-white/5 border-white/10 text-gray-300 hover:text-white hover:bg-white/10"
-                  : "bg-gray-100 border-gray-200 text-gray-600 hover:text-black hover:bg-gray-200"
+                  ? "bg-[#074F3E]/20 border-[#074F3E] text-[#34d399] hover:bg-[#074F3E]/40"
+                  : "bg-gray-100 border-gray-200 text-slate-600 hover:bg-gray-200"
               }`}
-              aria-label="Toggle Theme"
             >
-              {theme === "light" ? (
-                <FaMoon className="w-4 h-4" />
-              ) : (
-                <FaSun className="w-4 h-4" />
-              )}
+              {theme === "light" ? <FaMoon size={14} /> : <FaSun size={14} />}
             </button>
 
-            {/* CTA Button */}
+            {/* Hire Me Button - Using your exact color */}
             <Link
-              to={`/contact`}
-              className={`px-5 py-2 rounded-xl text-sm font-bold border transition-all shadow-lg ${
+              to="/contact"
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 border shadow-lg ${
                 theme === "dark"
-                  ? "bg-white/5 border-white/10 text-white hover:bg-[#F47C26] hover:border-[#F47C26]"
-                  : "bg-gray-900 border-gray-900 text-white hover:bg-[#F47C26] hover:border-[#F47C26]"
+                  ? `bg-[#074F3E] border-[#074F3E] text-white hover:bg-[#0a6650] hover:shadow-[0_0_20px_#074F3E]`
+                  : `bg-[#074F3E] border-[#074F3E] text-white hover:bg-[#0a6650]`
               }`}
             >
               Hire Me
             </Link>
-          </nav>
+          </div>
 
           {/* --- Mobile Menu Button --- */}
           <button
@@ -143,63 +160,63 @@ const PortfolioNavbar = ({ baseUrl = "/portfolio" }) => {
                 : "text-gray-900 hover:bg-gray-100"
             }`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
           >
             {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
         </div>
       </div>
 
-      {/* --- Mobile Navigation Drawer --- */}
+      {/* --- Mobile Drawer --- */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className={`md:hidden border-b overflow-hidden ${mobileBg}`}
+            className={`md:hidden overflow-hidden border-b ${
+              theme === "dark"
+                ? "bg-[#020e0a] border-[#074F3E]/30" // Deep bg with your border color
+                : "bg-white border-gray-100"
+            }`}
           >
-            <div className="px-6 py-6 space-y-4">
-              {navItems.map((item) => {
-                const active = isActiveLink(item.to);
-                return (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    className={`block text-lg font-bold transition-colors ${
-                      active
-                        ? "text-[#F47C26]"
-                        : `${subTextColor} hover:text-[#F47C26]`
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
+            <div className="p-6 space-y-6">
+              <div className="flex flex-col space-y-2">
+                {navItems.map((item) => {
+                  const active = isActiveLink(item.to);
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className={`text-2xl font-bold tracking-tight ${
+                        active ? textHighlight : subTextColor
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
 
-              <div
-                className={`pt-4 border-t space-y-4 ${
-                  theme === "dark" ? "border-white/10" : "border-gray-200"
-                }`}
-              >
-                {/* Mobile Theme Toggle */}
+              <div className="h-px bg-gradient-to-r from-transparent via-[#074F3E] to-transparent opacity-50" />
+
+              <div className="flex items-center justify-between gap-4">
                 <button
                   onClick={toggleTheme}
-                  className={`w-full flex items-center justify-center gap-2 p-3 rounded-lg border font-medium transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border ${
                     theme === "dark"
-                      ? "bg-white/5 border-white/10 text-gray-300"
-                      : "bg-gray-100 border-gray-200 text-gray-700"
+                      ? "bg-[#074F3E]/10 border-[#074F3E]/50 text-[#34d399]"
+                      : "border-gray-200 text-gray-700"
                   }`}
                 >
                   {theme === "light" ? <FaMoon /> : <FaSun />}
-                  {theme === "light" ? "Dark Mode" : "Light Mode"}
+                  <span>{theme === "light" ? "Dark" : "Light"}</span>
                 </button>
 
                 <Link
-                  to={`/contact`}
-                  className="block w-full py-3 text-center rounded-xl bg-[#F47C26] text-white font-bold shadow-lg"
+                  to="/contact"
+                  className={`flex-1 py-3 text-center rounded-xl text-white font-bold shadow-lg transition-colors bg-[#074F3E] hover:bg-[#0a6650]`}
                 >
-                  Start a Project
+                  Let's Talk
                 </Link>
               </div>
             </div>

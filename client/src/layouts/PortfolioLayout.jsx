@@ -12,7 +12,8 @@ const PortfolioLayout = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+    // Updated dark mode background to match the Navbar's deep emerald theme
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-[#020e0a] transition-colors duration-500">
       <PortfolioNavbar baseUrl={getBaseUrl()} />
       <main className="flex-grow pt-16">
         <Outlet />

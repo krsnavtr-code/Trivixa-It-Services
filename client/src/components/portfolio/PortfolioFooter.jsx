@@ -8,6 +8,7 @@ import {
   FaEnvelope,
   FaMapMarkerAlt,
   FaArrowRight,
+  FaCode,
 } from "react-icons/fa";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -36,30 +37,40 @@ const PortfolioFooter = ({ baseUrl = "/portfolio" }) => {
     },
   ];
 
-  // --- Dynamic Theme Styles ---
+  // --- Theme Colors (Emerald Edition) ---
+  const brandDark = "#074F3E";
+  const brandLight = "#34d399"; // Mint green for text highlights
+
   const bgClass =
     theme === "dark"
-      ? "bg-[#05081a] border-white/5"
+      ? "bg-[#020e0a] border-[#074F3E]/30" // Deep jungle bg
       : "bg-gray-50 border-gray-200";
+
   const textMain = theme === "dark" ? "text-white" : "text-gray-900";
   const textSub = theme === "dark" ? "text-gray-400" : "text-gray-600";
-  const glowColor = theme === "dark" ? "bg-[#F47C26]/5" : "bg-[#F47C26]/10";
+
+  // Green Glow in background
+  const glowColor = theme === "dark" ? "bg-[#074F3E]/20" : "bg-[#074F3E]/5";
+
+  // Social Buttons
   const socialBg =
     theme === "dark"
-      ? "bg-white/5 hover:bg-[#F47C26] hover:text-white"
-      : "bg-white border border-gray-200 hover:bg-[#F47C26] hover:text-white hover:border-[#F47C26]";
+      ? `bg-white/5 hover:bg-[#074F3E] hover:text-white`
+      : `bg-white border border-gray-200 hover:bg-[#074F3E] hover:text-white hover:border-[#074F3E]`;
+
+  // CTA Button
   const ctaButtonClass =
     theme === "dark"
-      ? "bg-white/5 border-white/10 text-white hover:bg-[#F47C26]"
-      : "bg-white border-gray-200 text-gray-900 hover:bg-[#F47C26] hover:text-white hover:border-[#F47C26]";
+      ? `bg-[#074F3E]/10 border-[#074F3E] text-[#34d399] hover:bg-[#074F3E] hover:text-white`
+      : `bg-white border-gray-200 text-gray-900 hover:bg-[#074F3E] hover:text-white hover:border-[#074F3E]`;
 
   return (
     <footer
-      className={`relative pt-20 pb-10 overflow-hidden border-t transition-colors duration-300 ${bgClass}`}
+      className={`relative pt-20 pb-10 overflow-hidden border-t transition-colors duration-500 ${bgClass}`}
     >
       {/* Background Glow */}
       <div
-        className={`absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[100px] pointer-events-none ${glowColor}`}
+        className={`absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px] pointer-events-none ${glowColor}`}
       ></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -68,7 +79,7 @@ const PortfolioFooter = ({ baseUrl = "/portfolio" }) => {
           <div>
             <h2 className={`text-3xl md:text-4xl font-black mb-4 ${textMain}`}>
               Let’s build something <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-purple-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#074F3E] via-[#10b981] to-[#34d399]">
                 extraordinary.
               </span>
             </h2>
@@ -85,16 +96,18 @@ const PortfolioFooter = ({ baseUrl = "/portfolio" }) => {
             >
               <span className="relative z-10">Start a Conversation</span>
               <FaArrowRight className="relative z-10 group-hover:translate-x-1 transition-transform" />
+
               {/* Button Glow Effect */}
-              <div className="absolute inset-0 bg-[#F47C26] opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
+              <div className="absolute inset-0 bg-[#074F3E] opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md"></div>
             </Link>
           </div>
         </div>
 
+        {/* Separator Line */}
         <div
           className={`h-px w-full mb-12 ${
             theme === "dark"
-              ? "bg-gradient-to-r from-transparent via-white/10 to-transparent"
+              ? "bg-gradient-to-r from-transparent via-[#074F3E]/50 to-transparent"
               : "bg-gradient-to-r from-transparent via-gray-300 to-transparent"
           }`}
         ></div>
@@ -103,11 +116,18 @@ const PortfolioFooter = ({ baseUrl = "/portfolio" }) => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand Column */}
           <div className="md:col-span-2 space-y-6">
-            <Link to={baseUrl} className="inline-block">
+            <Link to={baseUrl} className="inline-flex items-center gap-2 group">
+              <div
+                className={`p-2 rounded-lg ${
+                  theme === "dark" ? "bg-[#074F3E]" : "bg-[#074F3E] text-white"
+                }`}
+              >
+                <FaCode />
+              </div>
               <span
                 className={`text-2xl font-black tracking-tight ${textMain}`}
               >
-                PORT<span className="text-[#F47C26]">FOLIO</span>.
+                PORT<span className="text-[#34d399]">FOLIO</span>.
               </span>
             </Link>
             <p className={`text-sm max-w-xs leading-relaxed ${textSub}`}>
@@ -167,14 +187,14 @@ const PortfolioFooter = ({ baseUrl = "/portfolio" }) => {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-sm transition-colors hover:text-[#F47C26] ${textSub}`}
+                        className={`text-sm transition-colors hover:text-[#34d399] ${textSub}`}
                       >
                         {link.name}
                       </a>
                     ) : (
                       <Link
                         to={link.href}
-                        className={`text-sm transition-colors hover:text-[#F47C26] ${textSub}`}
+                        className={`text-sm transition-colors hover:text-[#34d399] ${textSub}`}
                       >
                         {link.name}
                       </Link>
@@ -190,19 +210,19 @@ const PortfolioFooter = ({ baseUrl = "/portfolio" }) => {
         <div
           className={`pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 text-xs ${
             theme === "dark"
-              ? "border-white/5 text-gray-600"
+              ? "border-[#074F3E]/20 text-gray-500"
               : "border-gray-200 text-gray-500"
           }`}
         >
-          <p>&copy; {currentYear} Trivixa Portfolio. All rights reserved.</p>
+          <p>&copy; {currentYear} Krishna Avtar. All rights reserved.</p>
           <div className="flex gap-6">
             <div className="flex items-center gap-2">
-              <FaMapMarkerAlt className="text-[#F47C26]" />
-              <span>Remote / Worldwide</span>
+              <FaMapMarkerAlt className="text-[#34d399]" />
+              <span>Remote / India</span>
             </div>
             <div className="flex items-center gap-2">
-              <FaEnvelope className="text-[#F47C26]" />
-              <span>hello@trivixa.in</span>
+              <FaEnvelope className="text-[#34d399]" />
+              <span>krishna.trivixa@gmail.com</span>
             </div>
           </div>
         </div>
