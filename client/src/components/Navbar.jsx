@@ -139,7 +139,7 @@ function Navbar() {
     { to: "/get-quote", label: "Get Quote" },
     { to: "/products", label: "Products" },
     { to: "/we-serve", label: "We Served" },
-    { to: "/portfolio", label: "Portfolio" },
+    { to: "https://portfolio.trivixa.in", label: "Portfolio" },
     { to: "/parlour", label: "Parlour" },
   ];
 
