@@ -49,8 +49,15 @@ function Navbar() {
 
   // --- Handlers ---
   const handleQuoteClick = (e, to) => {
+    // If it's an external link (starts with http), let default behavior happen (don't preventDefault)
+    if (to.startsWith("http")) {
+      setIsMobileMenuOpen(false);
+      return;
+    }
+
     e.preventDefault();
     setIsMobileMenuOpen(false); // Close mobile menu if open
+
     if (to === "/get-quote") {
       openChat();
     } else {
@@ -140,7 +147,7 @@ function Navbar() {
     { to: "/products", label: "Products" },
     { to: "/we-serve", label: "We Served" },
     { to: "https://portfolio.trivixa.in", label: "Portfolio" },
-    { to: "/parlour", label: "Parlour" },
+    { to: "https://parlour.trivixa.in", label: "Parlour" },
   ];
 
   const navItems = [
@@ -161,7 +168,6 @@ function Navbar() {
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         {/* =================================================================================
             PART 1: TOP COMMAND BAR 
-            Visible on all screens, but layout changes based on breakpoint
            ================================================================================= */}
         <div className="bg-white dark:bg-[#0B2545] border-b border-gray-200 dark:border-white/10 transition-colors duration-300 relative z-50">
           <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-4">
@@ -179,7 +185,7 @@ function Navbar() {
               </div>
             </Link>
 
-            {/* 2. Desktop Search (Hidden on Mobile/Tablet < 1024px) */}
+            {/* 2. Desktop Search */}
             <div
               className="hidden lg:block flex-1 max-w-xl mx-auto relative z-50"
               ref={searchRef}
@@ -241,22 +247,43 @@ function Navbar() {
               </div>
             </div>
 
-            {/* 3. Desktop Top Links (Hidden on Mobile/Tablet < 1024px) */}
+            {/* 3. Desktop Top Links */}
             <div className="hidden lg:flex items-center gap-4 text-sm font-medium text-[#0B2545] dark:text-gray-300">
-              {topNavItems.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={(e) => handleQuoteClick(e, item.to)}
-                  className="hover:text-[#F47C26] transition-colors relative group"
-                >
-                  {item.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#F47C26] transition-all group-hover:w-full"></span>
-                </Link>
-              ))}
+              {topNavItems.map((item) => {
+                const isExternal = item.to.startsWith("http");
+                const commonClasses =
+                  "hover:text-[#F47C26] transition-colors relative group";
+
+                if (isExternal) {
+                  return (
+                    <a
+                      key={item.to}
+                      href={item.to}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={commonClasses}
+                    >
+                      {item.label}
+                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#F47C26] transition-all group-hover:w-full"></span>
+                    </a>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={(e) => handleQuoteClick(e, item.to)}
+                    className={commonClasses}
+                  >
+                    {item.label}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#F47C26] transition-all group-hover:w-full"></span>
+                  </Link>
+                );
+              })}
             </div>
 
-            {/* 4. Right Actions (Theme, Auth, Hamburger) */}
+            {/* 4. Right Actions */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Theme Toggle */}
               <button
@@ -266,7 +293,7 @@ function Navbar() {
                 {theme === "dark" ? <FiMoon /> : <FiSun />}
               </button>
 
-              {/* Desktop Auth (Hidden on Mobile < 640px) */}
+              {/* Desktop Auth */}
               {isAuthenticated ? (
                 <div className="relative profile-menu-container z-50">
                   <button
@@ -331,7 +358,7 @@ function Navbar() {
                 </Link>
               )}
 
-              {/* Hamburger Button (Visible < 1024px) */}
+              {/* Hamburger Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="lg:hidden p-2 text-[#0B2545] dark:text-white hover:bg-[#0B2545]/5 dark:hover:bg-white/10 rounded-lg transition-colors"
@@ -415,7 +442,6 @@ function Navbar() {
 
       {/* =================================================================================
           PART 3: UNIFIED MOBILE DRAWER (All Links + Search)
-          Visible only on Mobile/Tablet when toggled
          ================================================================================= */}
       <AnimatePresence>
         {isMobileMenuOpen && (
@@ -481,7 +507,7 @@ function Navbar() {
 
               {/* Mobile Navigation Links */}
               <div className="space-y-6">
-                {/* 1. Explore (Categories) Accordion */}
+                {/* 1. Explore Accordion */}
                 <div>
                   <button
                     onClick={() => setMobileCategoryOpen(!mobileCategoryOpen)}
@@ -533,26 +559,47 @@ function Navbar() {
 
                 <div className="h-px bg-gray-100 dark:bg-white/10" />
 
-                {/* 3. Quick Links (Top Bar Items) */}
+                {/* 3. Quick Links (Top Bar Items) - FIXED */}
                 <div className="space-y-4">
                   <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                     Quick Links
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    {topNavItems.map((item) => (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        onClick={(e) => handleQuoteClick(e, item.to)}
-                        className="px-3 py-2 bg-gray-50 dark:bg-white/5 rounded-lg text-sm text-[#0B2545] dark:text-gray-300 text-center"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+                    {topNavItems.map((item) => {
+                      const isExternal = item.to.startsWith("http");
+                      const commonClasses =
+                        "px-3 py-2 bg-gray-50 dark:bg-white/5 rounded-lg text-sm text-[#0B2545] dark:text-gray-300 text-center block";
+
+                      if (isExternal) {
+                        return (
+                          <a
+                            key={item.to}
+                            href={item.to}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={commonClasses}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            {item.label}
+                          </a>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={(e) => handleQuoteClick(e, item.to)}
+                          className={commonClasses}
+                        >
+                          {item.label}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* 4. Mobile Auth (If not logged in) */}
+                {/* 4. Mobile Auth */}
                 {!isAuthenticated && (
                   <div className="pt-4">
                     <Link
