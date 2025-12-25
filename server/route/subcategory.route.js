@@ -7,9 +7,8 @@ import {
     deleteSubCategory,
     getAllSubCategories,
     getSubCategoryById
-} from "../controller/subCategory.controller.js"; // Adjust path as needed
+} from "../controller/subcategory.controller.js";  
 import { isAdmin } from "../middleware/admin.js";
-// import { protect } from "../middleware/auth.js"; // Uncomment if you need authentication
 
 const router = express.Router();
 
