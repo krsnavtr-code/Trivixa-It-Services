@@ -47,6 +47,8 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import CategoriesList from "./pages/admin/Categories.jsx";
 import CategoryForm from "./components/admin/CategoryForm.jsx";
+import SubcategoriesList from "./pages/admin/SubCategories.jsx";
+import SubCategoryForm from "./components/admin/SubCategoryForm.jsx";
 import Users from "./pages/admin/Users.jsx";
 import ContactsList from "./pages/admin/Contacts.jsx";
 import MediaGallery from "./components/admin/MediaUploder.jsx";
@@ -62,7 +64,6 @@ import BlogListPage from "./pages/blog/BlogListPage";
 import BlogDetailPage from "./pages/blog/BlogDetailPage";
 import BlogPostList from "./pages/admin/Blog.jsx";
 import BlogPostForm from "./components/admin/BlogForm.jsx";
-
 
 // ==========================================
 // 🎨 Import Portfolio Pages ---
@@ -443,6 +444,19 @@ function App() {
                   path="/admin/categories/:id/edit"
                   element={<CategoryForm />}
                 />
+                <Route
+                  path="/admin/subcategories"
+                  element={<SubcategoriesList />}
+                />
+                <Route
+                  path="/admin/subcategories/new"
+                  element={<SubCategoryForm />}
+                />
+                <Route
+                  path="/admin/subcategories/:id/edit"
+                  element={<SubCategoryForm />}
+                />
+
                 <Route path="/admin/blog" element={<BlogPostList />} />
                 <Route path="/admin/blog/new" element={<BlogPostForm />} />
                 <Route path="/admin/blog/edit/:id" element={<BlogPostForm />} />

@@ -50,6 +50,12 @@ const NAV_ITEMS = [
         activePaths: ["/admin/categories"],
       },
       {
+        path: "/admin/subcategories",
+        label: "Sub Categories",
+        icon: <FaList />,
+        activePaths: ["/admin/subcategories"],
+      },
+      {
         path: "/admin/blog",
         label: "Blog",
         icon: <FaBlog />,
@@ -77,7 +83,7 @@ const NAV_ITEMS = [
         label: "Mail Sender",
         icon: <FaPaperPlane />,
         activePaths: ["/admin/mail-sender"],
-      }
+      },
     ],
   },
   {
