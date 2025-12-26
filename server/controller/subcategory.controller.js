@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import SubCategory from "../model/subCategory.model.js";
+import SubCategory from "../model/subcategory.model.js";
 import Category from "../model/category.model.js"; // Needed to validate parent category
 import { validationResult } from 'express-validator';
 
