@@ -1,20 +1,59 @@
 import api from './axios';
 
 // Get all projects
-// Get all projects
 export const getProjects = async (filters = {}) => {
     try {
-        const response = await api.get('/projects', { params: filters });
-        if (response.data) {
-            return {
-                success: true,
-                data: response.data.data || [],
-                pagination: response.data.pagination || { total: response.data.data?.length || 0 }
-            };
+        // console.log('Fetching projects with filters:', filters);
+
+        // Make sure we're not sending undefined or null values
+        const cleanFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+            if (value !== undefined && value !== null) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
+
+        // console.log('Sending request to /projects with params:', cleanFilters);
+        const response = await api.get('/projects', {
+            params: cleanFilters,
+            paramsSerializer: params => {
+                return Object.entries(params)
+                    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+                    .join('&');
+            }
+        });
+
+        // console.log('Projects API response:', response);
+
+        // Handle different response formats
+        let projects = [];
+        if (Array.isArray(response.data)) {
+            projects = response.data;
+        } else if (response.data && Array.isArray(response.data.data)) {
+            projects = response.data.data;
+        } else if (response.data && response.data.results && Array.isArray(response.data.results)) {
+            projects = response.data.results;
         }
-        throw new Error('Failed to fetch projects');
+
+        // console.log('Extracted projects:', projects);
+
+        return {
+            success: true,
+            data: projects,
+            pagination: response.data.pagination || {
+                total: projects.length,
+                page: 1,
+                limit: projects.length
+            }
+        };
     } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error('Error fetching projects:', {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status,
+            config: error.config
+        });
+
         return {
             success: false,
             message: error.response?.data?.message || 'Failed to fetch projects',
@@ -73,7 +112,7 @@ export const createProject = async (projectData) => {
             }
         }
 
-        console.log('Sending project data:', requestData); 
+        // console.log('Sending project data:', requestData); 
 
         const response = await api.post('/projects', requestData, config);
         return response.data;

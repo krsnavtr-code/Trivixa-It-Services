@@ -583,44 +583,62 @@ export const downloadBrochure = async (courseId) => {
 
 export const getCategoriesForForm = async () => {   
     try {
-        // console.log('Fetching categories for form');
+        // First, fetch all categories
+        const categoriesResponse = await axios.get('/categories');
+        let categories = [];
         
-        // First, try with a simple query to get all categories
-        // console.log('Making API call to /categories');
-        const response = await axios.get('/categories');
-        
-        // console.log('Raw categories API response:', response);
-        // console.log('Response data:', response.data);
-        
-        // Check if we have a data property with an array
-        if (response.data && Array.isArray(response.data)) {
-            // console.log('Found categories directly in response.data');
-            return response.data.map(cat => ({
-                value: cat._id,
-                label: cat.title || cat.name || 'Unnamed Category'
-            }));
+        // Handle different response formats
+        if (categoriesResponse.data && Array.isArray(categoriesResponse.data)) {
+            categories = categoriesResponse.data;
+        } else if (categoriesResponse.data?.data && Array.isArray(categoriesResponse.data.data)) {
+            categories = categoriesResponse.data.data;
+        } else if (categoriesResponse.data?.results && Array.isArray(categoriesResponse.data.results)) {
+            categories = categoriesResponse.data.results;
+        } else {
+            console.warn('No categories found in the expected format');
+            return [];
         }
         
-        // Check for nested data property
-        if (response.data?.data && Array.isArray(response.data.data)) {
-            // console.log('Found categories in response.data.data');
-            return response.data.data.map(cat => ({
-                value: cat._id,
-                label: cat.title || cat.name || 'Unnamed Category'
-            }));
-        }
+        // Fetch subcategories for each category
+        const categoriesWithSubs = await Promise.all(categories.map(async (cat) => {
+            try {
+                const subResponse = await axios.get(`/subcategories?categoryId=${cat._id}`);
+                let subcategories = [];
+
+                // Handle different response formats for subcategories
+                if (subResponse.data && Array.isArray(subResponse.data)) {
+                    subcategories = subResponse.data;
+                } else if (subResponse.data?.data && Array.isArray(subResponse.data.data)) {
+                    subcategories = subResponse.data.data;
+                } else if (subResponse.data?.results && Array.isArray(subResponse.data.results)) {
+                    subcategories = subResponse.data.results;
+                }
+
+                return {
+                    _id: cat._id,
+                    value: cat._id,
+                    name: cat.name || 'Unnamed Category',
+                    label: cat.name || 'Unnamed Category',
+                    subcategories: subcategories.map(sub => ({
+                        _id: sub._id,
+                        value: sub._id,
+                        name: sub.name || 'Unnamed Subcategory',
+                        label: sub.name || 'Unnamed Subcategory'
+                    }))
+                };
+            } catch (error) {
+                console.error(`Error fetching subcategories for category ${cat._id}:`, error);
+                return {
+                    _id: cat._id,
+                    value: cat._id,
+                    name: cat.name || 'Unnamed Category',
+                    label: cat.name || 'Unnamed Category',
+                    subcategories: []
+                };
+            }
+        }));
         
-        // Check for results property (some APIs use this)
-        if (response.data?.results && Array.isArray(response.data.results)) {
-            // console.log('Found categories in response.data.results');
-            return response.data.results.map(cat => ({
-                value: cat._id,
-                label: cat.title || cat.name || 'Unnamed Category'
-            }));
-        }
-        
-        console.warn('No categories found in the expected format');
-        return [];
+        return categoriesWithSubs;
     } catch (error) {
         console.error('Error fetching categories:', error);
         if (error.response) {

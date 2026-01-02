@@ -35,9 +35,10 @@ import SuspendedAccount from "./pages/SuspendedAccount";
 import Faqs from "./pages/Faqs";
 
 // --- Pages (Services/User) ---
-import ServicesByCategory from "./pages/user/ServicesByCategory.jsx";
 import AllCategories from "./pages/user/AllCategories";
 import Profile from "./pages/user/Profile";
+import Services from "./pages/user/Services.jsx";
+import ServiceDetail from "./pages/user/ServiceDetail.jsx";
 
 // --- Pages (Auth) ---
 import LoginPage from "./pages/auth/LoginPage";
@@ -305,15 +306,15 @@ function App() {
                 path="/services"
                 element={
                   <MainLayout>
-                    <ServicesByCategory />
+                    <Services />
                   </MainLayout>
                 }
               />
               <Route
-                path="/services/category/:categoryName"
+                path="/services/:id"
                 element={
                   <MainLayout>
-                    <ServicesByCategory />
+                    <ServiceDetail />
                   </MainLayout>
                 }
               />
