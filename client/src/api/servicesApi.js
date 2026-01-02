@@ -483,24 +483,61 @@ export const deleteCourse = async (id) => {
 // Get courses by category
 // If no categoryId is provided, returns all published courses
 export const getServicesByCategory = async (categoryId = '') => {
-  try {
-    const params = {
-      fields: 'title,description,price,originalPrice,thumbnail,duration,level,instructor,rating,enrolledStudents,isFeatured,category,slug,whatYouWillLearn,requirements,whoIsThisFor,curriculum,reviews,isFeatured,status'
-    };
-    
-    // Add category filter if provided
-    if (categoryId) {
-      params.category = categoryId;
+    try {
+        const params = new URLSearchParams();
+
+        if (categoryId) {
+            params.append('category', categoryId);
+        }
+
+        // Only include published courses for non-admin users
+        if (!params.has('admin') && !params.has('status')) {
+            params.append('isPublished', 'true');
+        }
+
+        const response = await axios.get(`/services?${params.toString()}`);
+
+        // Handle different response formats
+        if (Array.isArray(response.data)) {
+            return response.data;
+        } else if (response.data && Array.isArray(response.data.data)) {
+            return response.data.data;
+        }
+
+        return [];
+    } catch (error) {
+        console.error('Error fetching courses by category:', error);
+        throw error;
     }
-    
-    // // console.log('Fetching courses with params:', params);
-    const response = await axios.get('/services', { params });
-    // // console.log('Courses fetched successfully:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching courses by category:', error);
-    throw error;
-  }
+};
+
+// Get services by subcategory ID
+export const getServicesBySubCategory = async (subCategoryId) => {
+    try {
+        if (!subCategoryId) {
+            throw new Error('Subcategory ID is required');
+        }
+
+        const params = new URLSearchParams({
+            subCategory: subCategoryId,
+            isPublished: 'true', // Only get published services
+            fields: 'title,description,shortDescription,thumbnail,price,duration,rating,slug,isFeatured'
+        });
+
+        const response = await axios.get(`/services?${params.toString()}`);
+
+        // Handle different response formats
+        if (Array.isArray(response.data)) {
+            return response.data;
+        } else if (response.data && Array.isArray(response.data.data)) {
+            return response.data.data;
+        }
+
+        return [];
+    } catch (error) {
+        console.error('Error fetching services by subcategory:', error);
+        throw error;
+    }
 };
 
 // Get all categories for course form

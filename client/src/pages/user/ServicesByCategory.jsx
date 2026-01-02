@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import SEO from "../../components/SEO";
-import { getServicesByCategory } from "../../api/servicesApi";
-import { getCategories } from "../../api/categoryApi";
+import {
+  getServicesByCategory,
+  getServicesBySubCategory,
+} from "../../api/servicesApi";
+import { getCategories, getSubCategories } from "../../api/categoryApi";
 import { toast } from "react-hot-toast";
 import { getImageUrl } from "../../utils/imageUtils";
 import {
@@ -16,8 +19,22 @@ import {
   FaMobile,
   FaPaintBrush,
   FaLayerGroup,
+  FaCheck,
+  FaFilter,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+
+// --- Helper: Hide Scrollbar CSS ---
+// Add this to your global CSS or keep it here for simplicity
+const scrollbarHideStyles = `
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+  .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+`;
 
 // Helper to get icon for a service category
 const getCategoryIcon = (name) => {
@@ -35,8 +52,27 @@ const ServicesByCategory = () => {
   const { categoryName } = useParams();
   const [courses, setCourses] = useState([]);
   const [category, setCategory] = useState(null);
+  const [subCategories, setSubCategories] = useState([]);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [allCategories, setAllCategories] = useState([]);
+  const activeCategoryRef = useRef(null);
+  const sidebarRef = useRef(null);
+
+  // Scroll to active category when it changes
+  useEffect(() => {
+    if (activeCategoryRef.current && sidebarRef.current) {
+      // Calculate the position to scroll to
+      const sidebar = sidebarRef.current;
+      const activeItem = activeCategoryRef.current;
+      
+      // Scroll the sidebar to position the active item at the top
+      sidebar.scrollTo({
+        top: activeItem.offsetTop - 24, // 24px offset from top
+        behavior: 'smooth'
+      });
+    }
+  }, [category?._id]);
 
   // Animation Variants
   const containerVariants = {
@@ -48,16 +84,51 @@ const ServicesByCategory = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
+  // Fetch subcategories when a category is selected
+  useEffect(() => {
+    const fetchSubCategories = async () => {
+      if (!category?._id) {
+        setSubCategories([]);
+        setSelectedSubCategory(null);
+        return;
+      }
+
+      try {
+        const response = await getSubCategories({
+          categoryId: category._id,
+          limit: 100,
+          isActive: true,
+          fields: "_id,name,slug",
+          sort: "name",
+        });
+        setSubCategories(
+          Array.isArray(response) ? response : response?.data || []
+        );
+      } catch (error) {
+        console.error("Error fetching subcategories:", error);
+        toast.error("Failed to load subcategories");
+        setSubCategories([]);
+      }
+    };
+
+    fetchSubCategories();
+  }, [category]);
+
+  // Fetch services based on category and subcategory
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await getCategories({ limit: 100 });
-        const categoriesData = response.data || [];
+        setSelectedSubCategory(null);
+
+        // First, get all categories for the sidebar
+        const categoriesResponse = await getCategories({ limit: 100 });
+        const categoriesData = categoriesResponse.data || [];
         setAllCategories(categoriesData);
         setCategory(null);
 
         if (categoryName) {
+          // Find the selected category
           let categoryData = categoriesData.find(
             (cat) => cat?.slug?.toLowerCase() === categoryName.toLowerCase()
           );
@@ -72,6 +143,8 @@ const ServicesByCategory = () => {
 
           if (categoryData) {
             setCategory(categoryData);
+
+            // Fetch services for this category
             const coursesResponse = await getServicesByCategory(
               categoryData._id
             );
@@ -83,12 +156,12 @@ const ServicesByCategory = () => {
           }
         }
 
+        // If no specific category or subcategory, fetch all services
         const allCoursesResponse = await getServicesByCategory();
         const allCourses = Array.isArray(allCoursesResponse)
           ? allCoursesResponse
           : allCoursesResponse.data || [];
         setCourses(allCourses);
-        setCategory(null);
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to load services.");
@@ -100,7 +173,43 @@ const ServicesByCategory = () => {
     fetchData();
   }, [categoryName]);
 
-  if (loading) {
+  // Handle subcategory selection
+  const handleSubCategorySelect = async (subCategory) => {
+    try {
+      setLoading(true);
+
+      // Toggle logic: If clicking the active one, deselect it (show all)
+      const isDeselecting =
+        subCategory === null ||
+        (selectedSubCategory && subCategory._id === selectedSubCategory);
+      const newSelectionId = isDeselecting ? null : subCategory._id;
+
+      setSelectedSubCategory(newSelectionId);
+
+      if (isDeselecting) {
+        // Show all services in the category
+        const response = await getServicesByCategory(category._id);
+        const coursesData = Array.isArray(response)
+          ? response
+          : response?.data || [];
+        setCourses(coursesData);
+      } else {
+        // Show services for the selected subcategory
+        const response = await getServicesBySubCategory(subCategory._id);
+        const coursesData = Array.isArray(response)
+          ? response
+          : response?.data || [];
+        setCourses(coursesData);
+      }
+    } catch (error) {
+      console.error("Error filtering by subcategory:", error);
+      toast.error("Failed to filter services");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading && allCategories.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-[#0a0f2d]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#F47C26]"></div>
@@ -121,6 +230,7 @@ const ServicesByCategory = () => {
 
   return (
     <div className="min-h-screen mt-10 bg-gray-50 dark:bg-[#0a0f2d] relative overflow-hidden transition-colors duration-500">
+      <style>{scrollbarHideStyles}</style>
       <SEO
         title={seoTitle}
         description={seoDescription}
@@ -142,46 +252,63 @@ const ServicesByCategory = () => {
       </div>
 
       <div className="relative z-10 py-12 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12">
-          {/* --- Sidebar: Categories Menu --- */}
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
+          {/* --- Sidebar: Main Categories Menu --- */}
           <div className="w-full lg:w-1/4">
-            <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-xl p-6 sticky top-24">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6 border-b border-gray-100 dark:border-white/10 pb-4">
-                Service Domains
+            <div 
+              ref={sidebarRef}
+              className="bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-lg p-6 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:overflow-y-auto lg:pb-8 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent"
+            >
+              <h2 className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6 flex items-center gap-2">
+                <FaLayerGroup /> Service Domains
               </h2>
-              <ul className="space-y-1">
+              <ul className="space-y-2">
                 <li>
                   <Link
                     to="/services"
                     onClick={() => {
                       setCategory(null);
-                      setCourses([]);
+                      setSelectedSubCategory(null);
                     }}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-sm font-semibold ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-sm font-semibold group ${
                       !categoryName
                         ? "bg-[#F47C26] text-white shadow-lg shadow-orange-500/30"
-                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#F47C26] dark:hover:text-white"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10"
                     }`}
                   >
-                    <span className="text-lg opacity-80">
+                    <span
+                      className={`text-lg transition-transform group-hover:scale-110 ${
+                        !categoryName ? "opacity-100" : "opacity-70"
+                      }`}
+                    >
                       <FaLayerGroup />
                     </span>
                     All Services
                   </Link>
                 </li>
                 {allCategories.map((cat) => (
-                  <li key={cat._id}>
+                  <li
+                    key={cat._id}
+                    ref={category?._id === cat._id ? activeCategoryRef : null}
+                    className="scroll-mt-4"
+                  >
                     <Link
-                      to={`/services/category/${cat.name
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")}`}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-sm font-semibold ${
+                      to={`/services/category/${
+                        cat.slug || cat.name.toLowerCase().replace(/\s+/g, "-")
+                      }`}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-sm font-semibold group ${
                         category?._id === cat._id
                           ? "bg-[#F47C26] text-white shadow-lg shadow-orange-500/30"
-                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#F47C26] dark:hover:text-white"
+                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10"
                       }`}
                     >
-                      <span className="text-lg opacity-80">
+                      <span
+                        className={`text-lg transition-transform group-hover:scale-110 ${
+                          category?._id === cat._id
+                            ? "opacity-100"
+                            : "opacity-70"
+                        }`}
+                      >
                         {getCategoryIcon(cat.name)}
                       </span>
                       {cat.name}
@@ -192,35 +319,91 @@ const ServicesByCategory = () => {
             </div>
           </div>
 
-          {/* --- Main Content: Service Grid --- */}
+          {/* --- Main Content --- */}
           <div className="w-full lg:w-3/4">
-            {/* Page Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 pb-6 border-b border-gray-200 dark:border-white/10">
-              <div>
-                <span className="text-[#F47C26] font-bold text-xs uppercase tracking-widest mb-2 block">
-                  {category ? "Specialized Domain" : "Complete Portfolio"}
-                </span>
-                <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight">
-                  {category ? category.name : "All Solutions"}
-                </h1>
-              </div>
-              <div className="mt-4 md:mt-0 text-right">
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {courses.length}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Available Services
-                </p>
-              </div>
+            {/* Header Area */}
+            <div className="mb-8">
+              <span className="text-[#F47C26] font-bold text-xs uppercase tracking-widest mb-2 block">
+                {selectedSubCategory
+                  ? subCategories.find((sc) => sc._id === selectedSubCategory)
+                      ?.name
+                  : category
+                  ? category.name
+                  : "Complete Portfolio"}
+              </span>
+              <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight mb-2">
+                {selectedSubCategory
+                  ? `${
+                      subCategories.find((sc) => sc._id === selectedSubCategory)
+                        ?.name
+                    } Solutions`
+                  : category
+                  ? `${category.name} `
+                  : "All Solutions"}
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                {courses.length} {courses.length === 1 ? "Service" : "Services"}{" "}
+                Available
+              </p>
             </div>
 
-            {/* Grid */}
-            <AnimatePresence>
-              {courses.length === 0 ? (
+            {/* --- MODERN SUBCATEGORY SLIDER --- */}
+            {category && subCategories.length > 0 && (
+              <div className="sticky top-[70px] z-30 -mx-6 px-6 lg:mx-0 lg:px-0 mb-10">
+                {/* Glassmorphism Background Container */}
+                <div className="relative">
+                  {/* Fade gradients to indicate scrolling */}
+                  <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-50 dark:from-[#0a0f2d] to-transparent z-10 pointer-events-none lg:hidden"></div>
+                  <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-50 dark:from-[#0a0f2d] to-transparent z-10 pointer-events-none lg:hidden"></div>
+
+                  <div className="overflow-x-auto scrollbar-hide py-2 flex items-center gap-3">
+                    {/* "All" Filter Pill */}
+                    <button
+                      onClick={() => handleSubCategorySelect(null)}
+                      className={`flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 border ${
+                        !selectedSubCategory
+                          ? "bg-[#0B2545] dark:bg-white text-white dark:text-[#0B2545] border-[#0B2545] dark:border-white shadow-lg transform scale-105"
+                          : "bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-[#F47C26] hover:text-[#F47C26]"
+                      }`}
+                    >
+                      <FaFilter className="text-xs" />
+                      All {category.name}
+                    </button>
+
+                    {/* Subcategory Pills */}
+                    {subCategories.map((subCat) => {
+                      const isActive = selectedSubCategory === subCat._id;
+                      return (
+                        <button
+                          key={subCat._id}
+                          onClick={() => handleSubCategorySelect(subCat)}
+                          className={`flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 border ${
+                            isActive
+                              ? "bg-[#F47C26] text-white border-[#F47C26] shadow-lg shadow-orange-500/20 transform scale-105"
+                              : "bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-[#F47C26] hover:text-[#F47C26] dark:hover:bg-white/10"
+                          }`}
+                        >
+                          {isActive && <FaCheck className="text-xs" />}
+                          {subCat.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* --- Service Grid --- */}
+            <AnimatePresence mode="wait">
+              {loading ? (
+                <div className="flex justify-center py-20">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#F47C26]"></div>
+                </div>
+              ) : courses.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex flex-col items-center justify-center py-20 bg-white dark:bg-white/5 rounded-3xl border border-dashed border-gray-300 dark:border-white/10"
+                  className="flex flex-col items-center justify-center py-20 bg-white/50 dark:bg-white/5 rounded-3xl border border-dashed border-gray-300 dark:border-white/10 backdrop-blur-sm"
                 >
                   <div className="w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                     <FaCode className="text-3xl text-gray-400" />
@@ -228,9 +411,9 @@ const ServicesByCategory = () => {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                     No Services Found
                   </h3>
-                  <p className="text-gray-500 mt-2 max-w-md text-center">
-                    We are currently updating our portfolio for this category.
-                    Check back soon or contact us for custom requests.
+                  <p className="text-gray-500 mt-2 max-w-md text-center text-sm">
+                    We are currently updating our portfolio for this specific
+                    category. Check back soon or contact us for custom requests.
                   </p>
                 </motion.div>
               ) : (
@@ -238,7 +421,8 @@ const ServicesByCategory = () => {
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
-                  className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+                  key={selectedSubCategory || "all"} // Trigger animation on filter change
+                  className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                 >
                   {courses.map((course) => (
                     <ServiceCard key={course._id} course={course} />
@@ -253,7 +437,7 @@ const ServicesByCategory = () => {
   );
 };
 
-// --- Modern Service Card Component ---
+// --- Modern Service Card Component (Unchanged) ---
 const ServiceCard = ({ course }) => {
   const [imageState, setImageState] = useState({
     url: "",
@@ -322,10 +506,7 @@ const ServiceCard = ({ course }) => {
               className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
             />
           )}
-          {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
-
-          {/* Floating Badge */}
           {course.isFeatured && (
             <div className="absolute top-3 right-3 bg-[#F47C26] text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg uppercase tracking-wide">
               Featured

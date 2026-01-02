@@ -130,6 +130,51 @@ export const createCategory = async (formData) => {
   }
 };
 
+// Get subcategories by category ID
+export const getSubCategories = async (params = {}) => {
+  try {
+    // Default parameters
+    const defaultParams = {
+      limit: 100,
+      page: 1,
+      sort: 'name',
+      fields: '_id,name,slug,description,isActive',
+      isActive: true
+    };
+
+    // Merge default params with provided params
+    const requestParams = {
+      ...defaultParams,
+      ...params,
+      // Only include categoryId if it's provided
+      ...(params.categoryId && { category: params.categoryId })
+    };
+
+    // Remove undefined values
+    Object.keys(requestParams).forEach(key => {
+      if (requestParams[key] === undefined || requestParams[key] === '') {
+        delete requestParams[key];
+      }
+    });
+
+    const response = await api.get('/subcategories', { params: requestParams });
+
+    // Handle different response formats
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    } else if (response.data && response.data.results) {
+      return response.data.results;
+    }
+
+    return [];
+  } catch (error) {
+    console.error('Error fetching subcategories:', error);
+    throw error;
+  }
+};
+
 // Update an existing category
 export const updateCategory = async (id, formData) => {
   try {
