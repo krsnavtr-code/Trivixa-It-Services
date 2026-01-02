@@ -49,6 +49,8 @@ import CategoriesList from "./pages/admin/Categories.jsx";
 import CategoryForm from "./components/admin/CategoryForm.jsx";
 import SubcategoriesList from "./pages/admin/SubCategories.jsx";
 import SubCategoryForm from "./components/admin/SubCategoryForm.jsx";
+import ProjectList from "./pages/admin/ProjectList";
+import ProjectForm from "./components/admin/ProjectForm.jsx";
 import Users from "./pages/admin/Users.jsx";
 import ContactsList from "./pages/admin/Contacts.jsx";
 import MediaGallery from "./components/admin/MediaUploder.jsx";
@@ -455,6 +457,18 @@ function App() {
                 <Route
                   path="/admin/subcategories/:id/edit"
                   element={<SubCategoryForm />}
+                />
+                <Route
+                  path="/admin/projects"
+                  element={<ProjectList />}
+                />
+                <Route
+                  path="/admin/projects/new"
+                  element={<ProjectForm />}
+                />
+                <Route
+                  path="/admin/projects/:id/edit"
+                  element={<ProjectForm />}
                 />
 
                 <Route path="/admin/blog" element={<BlogPostList />} />

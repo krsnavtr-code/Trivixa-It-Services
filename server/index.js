@@ -15,6 +15,7 @@ import profileRoute from "./route/profile.route.js";
 // Core Business Logic
 import categoryRoute from "./route/category.route.js";
 import subcategoryRoute from "./route/subcategory.route.js";
+import projectRoutes from "./route/project.routes.js";
 import servicesRoute from "./route/services.route.js";
 import contactRoute from "./route/contact.routes.js";
 import faqRoute from "./route/faq.route.js";
@@ -183,6 +184,7 @@ app.get("/api/health", (req, res) => res.status(200).json({ status: "OK", timest
 // Public Routes
 app.use("/api/categories", categoryRoute);
 app.use("/api/subcategories", subcategoryRoute);
+app.use('/api/projects', projectRoutes);
 app.use("/api/services", servicesRoute);
 app.use("/api/contacts", contactRoute);
 app.use("/api/contact", contactRoute); 

@@ -56,6 +56,12 @@ const NAV_ITEMS = [
         activePaths: ["/admin/subcategories"],
       },
       {
+        path: "/admin/projects",
+        label: "Projects",
+        icon: <FaList />,
+        activePaths: ["/admin/projects"],
+      },
+      {
         path: "/admin/blog",
         label: "Blog",
         icon: <FaBlog />,
