@@ -16,18 +16,6 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-// Helper to get icon for a service category
-const getCategoryIcon = (name) => {
-  const n = name?.toLowerCase() || "";
-  if (n.includes("web")) return <FaCode />;
-  if (n.includes("cloud") || n.includes("devops")) return <FaServer />;
-  if (n.includes("ai") || n.includes("data")) return <FaBrain />;
-  if (n.includes("security") || n.includes("cyber")) return <FaShieldAlt />;
-  if (n.includes("mobile") || n.includes("app")) return <FaMobile />;
-  if (n.includes("design") || n.includes("ui")) return <FaPaintBrush />;
-  return <FaLayerGroup />; // Default
-};
-
 const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -193,15 +181,6 @@ const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span
-                        className={`text-lg transition-colors ${
-                          activeCategory === category.id
-                            ? "text-[#F47C26]"
-                            : "text-gray-400 dark:text-gray-500"
-                        }`}
-                      >
-                        {getCategoryIcon(category.name)}
-                      </span>
                       <span className="text-sm font-medium">
                         {category.name}
                       </span>
