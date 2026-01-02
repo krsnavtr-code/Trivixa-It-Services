@@ -14,6 +14,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaCode,
+  FaEye,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -32,6 +33,7 @@ const ProjectList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [visibilityFilter, setVisibilityFilter] = useState("all");
 
   // Pagination & Loading
   const [loading, setLoading] = useState(true);
@@ -57,7 +59,13 @@ const ProjectList = () => {
   // 2. Fetch Projects
   useEffect(() => {
     fetchProjects();
-  }, [currentPage, itemsPerPage, selectedCategory, statusFilter]);
+  }, [
+    currentPage,
+    itemsPerPage,
+    selectedCategory,
+    statusFilter,
+    visibilityFilter,
+  ]);
 
   const fetchProjects = async () => {
     try {
@@ -68,6 +76,7 @@ const ProjectList = () => {
         category: selectedCategory !== "all" ? selectedCategory : undefined,
         isActive:
           statusFilter === "all" ? undefined : statusFilter === "active",
+        visibility: visibilityFilter !== "all" ? visibilityFilter : undefined,
       };
 
       const response = await getProjects(params);
@@ -143,7 +152,7 @@ const ProjectList = () => {
 
         {/* --- Toolbar --- */}
         <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 p-4 rounded-2xl mb-8 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* Search */}
             <div className="relative group md:col-span-2">
               <FaSearch className="absolute left-3 top-3.5 text-gray-400 group-focus-within:text-[#F47C26] transition-colors" />
@@ -185,6 +194,21 @@ const ProjectList = () => {
                 <option value="inactive">Hidden</option>
               </select>
               <FaFilter className="absolute right-4 top-3.5 text-gray-400 pointer-events-none" />
+            </div>
+
+            {/* Visibility Filter */}
+            <div className="relative">
+              <select
+                value={visibilityFilter}
+                onChange={(e) => setVisibilityFilter(e.target.value)}
+                className={`${inputClass} appearance-none pl-4 cursor-pointer`}
+              >
+                <option value="all">All Visibility</option>
+                <option value="Public">Public</option>
+                <option value="Private">Private</option>
+                <option value="Draft">Draft</option>
+              </select>
+              <FaEye className="absolute right-4 top-3.5 text-gray-400 pointer-events-none" />
             </div>
           </div>
         </div>
