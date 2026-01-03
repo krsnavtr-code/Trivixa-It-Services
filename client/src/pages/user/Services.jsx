@@ -622,7 +622,7 @@ const Services = () => {
                       </p>
 
                       <Link
-                        to={`/services/${service._id}`}
+                        to={`/services/${service.slug || service._id}`}
                         className="mt-auto flex items-center justify-center w-full px-4 py-3 border border-[#F47C26] text-[#F47C26] rounded-xl text-sm font-bold uppercase tracking-wider hover:bg-[#F47C26] hover:text-white transition-all duration-300 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/30"
                       >
                         View Details{" "}

@@ -17,10 +17,10 @@ import {
   FaExternalLinkAlt,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { getProjectById } from "../../api/projectApi";
+import { getProjectBySlug } from "../../api/projectApi";
 
 const ServiceDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
 
   // State
@@ -34,7 +34,7 @@ const ServiceDetail = () => {
     const fetchProject = async () => {
       try {
         setLoading(true);
-        const response = await getProjectById(id);
+        const response = await getProjectBySlug(slug);
 
         if (response.success && response.data) {
           setProject(response.data);
@@ -56,7 +56,7 @@ const ServiceDetail = () => {
     };
 
     fetchProject();
-  }, [id]);
+  }, [slug]);
 
   if (loading) {
     return (

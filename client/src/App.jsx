@@ -311,7 +311,7 @@ function App() {
                 }
               />
               <Route
-                path="/services/:id"
+                path="/services/:slug"
                 element={
                   <MainLayout>
                     <ServiceDetail />
@@ -459,14 +459,8 @@ function App() {
                   path="/admin/subcategories/:id/edit"
                   element={<SubCategoryForm />}
                 />
-                <Route
-                  path="/admin/projects"
-                  element={<ProjectList />}
-                />
-                <Route
-                  path="/admin/projects/new"
-                  element={<ProjectForm />}
-                />
+                <Route path="/admin/projects" element={<ProjectList />} />
+                <Route path="/admin/projects/new" element={<ProjectForm />} />
                 <Route
                   path="/admin/projects/:id/edit"
                   element={<ProjectForm />}

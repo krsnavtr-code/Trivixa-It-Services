@@ -67,18 +67,37 @@ export const getProjects = async (filters = {}) => {
 export const getProjectById = async (id) => {
     try {
         const response = await api.get(`/projects/id/${id}`);
-        if (response.data) {
-            return {
-                success: true,
-                data: response.data.data || null
-            };
-        }
-        throw new Error('Invalid response');
+        return {
+            success: true,
+            data: response.data.data
+        };
     } catch (error) {
-        console.error(`Error fetching project ${id}:`, error);
+        console.error('Error fetching project by ID:', error);
         return {
             success: false,
-            message: error.response?.data?.message || 'Project not found',
+            message: error.response?.data?.message || 'Failed to fetch project',
+            data: null
+        };
+    }
+};
+
+/**
+ * Get a single project by slug
+ * @param {string} slug - The URL-friendly slug of the project
+ * @returns {Promise<Object>} - The project data or error
+ */
+export const getProjectBySlug = async (slug) => {
+    try {
+        const response = await api.get(`/projects/${slug}`);
+        return {
+            success: true,
+            data: response.data.data || response.data
+        };
+    } catch (error) {
+        console.error('Error fetching project by slug:', error);
+        return {
+            success: false,
+            message: error.response?.data?.message || 'Failed to fetch project',
             data: null
         };
     }
