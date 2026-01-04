@@ -8,14 +8,14 @@ import {
   FaSpinner,
   FaVideo,
 } from "react-icons/fa";
-import api from "../../utils/api"; // Ensure this is using the same axios instance as ImageUploader
+import api from "../../utils/api"; 
 import { motion, AnimatePresence } from "framer-motion";
 
 const VideoUploader = ({
   onUploadSuccess,
   label = "Upload Video Feed",
   className = "",
-  maxSizeMB = 100,
+  maxSizeMB = 200,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [files, setFiles] = useState([]);
