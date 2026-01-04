@@ -83,7 +83,7 @@ export const uploadVideo = async (file) => {
 
 export const checkMediaUsage = async (url) => {
   try {
-    const response = await api.get(`/api/media/check-usage?url=${encodeURIComponent(url)}`);
+    const response = await api.get(`/media/check-usage?url=${encodeURIComponent(url)}`);
     return response.data;
   } catch (error) {
     console.error('Error checking media usage:', error);

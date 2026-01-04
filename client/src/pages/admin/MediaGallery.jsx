@@ -3,6 +3,7 @@ import {
   getUploadedImages,
   getImageUrl,
   deleteMediaFile,
+  checkMediaUsage,
 } from "../../api/imageApi";
 import { toast } from "react-hot-toast";
 import {
@@ -104,6 +105,22 @@ const ImageGallery = () => {
     toast.success("Copied URL to clipboard");
   };
 
+  const getUsageDetails = (usageData) => {
+    const details = [];
+
+    if (usageData.projects.count > 0) {
+      details.push(`Projects: ${usageData.projects.count}`);
+    }
+    if (usageData.categories.count > 0) {
+      details.push(`Categories: ${usageData.categories.count}`);
+    }
+    if (usageData.services.count > 0) {
+      details.push(`Services: ${usageData.services.count}`);
+    }
+
+    return details.length > 0 ? details.join(", ") : "No usage found";
+  };
+
   const handleDelete = async (filename, e) => {
     e.stopPropagation();
 
@@ -112,37 +129,42 @@ const ImageGallery = () => {
       const usageCheck = await checkMediaUsage(getImageUrl(filename));
 
       if (usageCheck.data.isUsed) {
-        // Show detailed usage information
-        const usageDetails = [];
-        if (usageCheck.data.usageDetails.projects.count > 0) {
-          usageDetails.push(
-            `Used in ${usageCheck.data.usageDetails.projects.count} project(s)`
-          );
-        }
-        if (usageCheck.data.usageDetails.categories.count > 0) {
-          usageDetails.push(
-            `Used in ${usageCheck.data.usageDetails.categories.count} category(ies)`
-          );
-        }
-        if (usageCheck.data.usageDetails.services.count > 0) {
-          usageDetails.push(
-            `Used in ${usageCheck.data.usageDetails.services.count} service(s)`
-          );
+        // Prepare usage information for both environments
+        const usageInfo = [];
+
+        // Check local environment usage
+        if (usageCheck.data.usageDetails.environments?.local) {
+          const localUsage = usageCheck.data.usageDetails.environments.local;
+          const localDetails = getUsageDetails(localUsage);
+          if (localDetails !== "No usage found") {
+            usageInfo.push(`Local: ${localDetails}`);
+          }
         }
 
-        const proceed = window.confirm(
-          `This file is currently in use:\n\n${usageDetails.join("\n")}\n\n` +
-            "Are you sure you want to delete it? This may break content on your site."
-        );
+        // Check production environment usage
+        if (usageCheck.data.usageDetails.environments?.production) {
+          const prodUsage =
+            usageCheck.data.usageDetails.environments.production;
+          const prodDetails = getUsageDetails(prodUsage);
+          if (prodDetails !== "No usage found") {
+            usageInfo.push(`Production: ${prodDetails}`);
+          }
+        }
 
-        if (!proceed) return;
+        const usageMessage =
+          `This file is currently in use:\n\n${usageInfo.join("\n")}\n\n` +
+          "Are you sure you want to delete it? This may break content on your site.";
+
+        if (!window.confirm(usageMessage)) {
+          return;
+        }
       } else if (!window.confirm("Delete this file permanently?")) {
         return;
       }
 
-      // Proceed with deletion
+      // If we get here, either the file is not in use or user confirmed deletion
       await deleteMediaFile(filename);
-      toast.success("File deleted");
+      toast.success("File deleted successfully");
       fetchMedia();
     } catch (error) {
       console.error("Error deleting file:", error);
@@ -150,7 +172,7 @@ const ImageGallery = () => {
         // Show a more user-friendly error message
         toast.error("Cannot delete file: It's currently in use");
       } else {
-        toast.error("Failed to delete file");
+        toast.error(error.message || "Failed to delete file");
       }
     }
   };

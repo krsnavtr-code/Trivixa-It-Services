@@ -12,6 +12,7 @@ import Service from "../model/services.model.js";
 export const checkImageUsage = async (req, res) => {
     try {
         const { url } = req.query;
+        console.log(url);
 
         if (!url) {
             return res.status(400).json({
@@ -20,28 +21,73 @@ export const checkImageUsage = async (req, res) => {
             });
         }
 
-        // Extract the filename from the URL
+        // Extract the filename from the URL and check for both production and local domains
         const filename = url.split('/').pop();
+        const localUrl = `http://localhost:5173/${filename}`;
+        const prodUrl = `https://trivixa.in/${filename}`;
         
         // Search in Projects
         const projectUsage = await checkProjectsForImage(filename);
+        const localProjectUsage = await checkProjectsForImage(localUrl);
+        const prodProjectUsage = await checkProjectsForImage(prodUrl);
         
         // Search in Categories
         const categoryUsage = await checkCategoriesForImage(filename);
+        const localCategoryUsage = await checkCategoriesForImage(localUrl);
+        const prodCategoryUsage = await checkCategoriesForImage(prodUrl);
         
         // Search in Services
         const serviceUsage = await checkServicesForImage(filename);
+        const localServiceUsage = await checkServicesForImage(localUrl);
+        const prodServiceUsage = await checkServicesForImage(prodUrl);
 
-        const isUsed = projectUsage.found || categoryUsage.found || serviceUsage.found;
+        // Combine results from all domains
+        const combinedProjectUsage = {
+            found: projectUsage.found || localProjectUsage.found || prodProjectUsage.found,
+            count: projectUsage.count + localProjectUsage.count + prodProjectUsage.count,
+            items: [...projectUsage.items, ...localProjectUsage.items, ...prodProjectUsage.items],
+            local: localProjectUsage,
+            production: prodProjectUsage
+        };
+
+        const combinedCategoryUsage = {
+            found: categoryUsage.found || localCategoryUsage.found || prodCategoryUsage.found,
+            count: categoryUsage.count + localCategoryUsage.count + prodCategoryUsage.count,
+            items: [...categoryUsage.items, ...localCategoryUsage.items, ...prodCategoryUsage.items],
+            local: localCategoryUsage,
+            production: prodCategoryUsage
+        };
+
+        const combinedServiceUsage = {
+            found: serviceUsage.found || localServiceUsage.found || prodServiceUsage.found,
+            count: serviceUsage.count + localServiceUsage.count + prodServiceUsage.count,
+            items: [...serviceUsage.items, ...localServiceUsage.items, ...prodServiceUsage.items],
+            local: localServiceUsage,
+            production: prodServiceUsage
+        };
+
+        const isUsed = combinedProjectUsage.found || combinedCategoryUsage.found || combinedServiceUsage.found;
 
         res.status(200).json({
             success: true,
             data: {
                 isUsed,
                 usageDetails: {
-                    projects: projectUsage,
-                    categories: categoryUsage,
-                    services: serviceUsage
+                    projects: combinedProjectUsage,
+                    categories: combinedCategoryUsage,
+                    services: combinedServiceUsage,
+                    environments: {
+                        local: {
+                            projects: localProjectUsage,
+                            categories: localCategoryUsage,
+                            services: localServiceUsage
+                        },
+                        production: {
+                            projects: prodProjectUsage,
+                            categories: prodCategoryUsage,
+                            services: prodServiceUsage
+                        }
+                    }
                 }
             }
         });
