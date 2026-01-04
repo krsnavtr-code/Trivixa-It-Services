@@ -205,15 +205,28 @@ const ImageGallery = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2 ${
                   activeTab === tab
                     ? "bg-white dark:bg-[#0a0f2d] text-[#F47C26] shadow-sm"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
-                {tab === "all"
-                  ? "All Assets"
-                  : tab.charAt(0).toUpperCase() + tab.slice(1) + "s"}
+                <span>
+                  {tab === "all"
+                    ? "All Assets"
+                    : tab.charAt(0).toUpperCase() + tab.slice(1) + "s"}
+                </span>
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    activeTab === tab
+                      ? "bg-[#F47C26]/10 text-[#F47C26]"
+                      : "bg-gray-200/80 dark:bg-white/10 text-gray-600 dark:text-gray-300"
+                  }`}
+                >
+                  {tab === "all"
+                    ? media.length
+                    : media.filter((m) => m.type === tab).length}
+                </span>
               </button>
             ))}
           </div>
@@ -275,9 +288,14 @@ const ImageGallery = () => {
         <div className="space-y-8">
           {Object.entries(groupedMedia).map(([date, items]) => (
             <div key={date} className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 pb-2">
-                {date}
-              </h2>
+              <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                  {date}
+                </h2>
+                <span className="text-sm bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 px-2.5 py-0.5 rounded-full">
+                  {items.length} {items.length === 1 ? "item" : "items"}
+                </span>
+              </div>
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
