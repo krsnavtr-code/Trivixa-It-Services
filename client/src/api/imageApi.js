@@ -79,11 +79,31 @@ export const uploadVideo = async (file) => {
   };
 };
 
+// ================= MEDIA USAGE CHECK =================
+
+export const checkMediaUsage = async (url) => {
+  try {
+    const response = await api.get(`/api/media/check-usage?url=${encodeURIComponent(url)}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error checking media usage:', error);
+    // If there's an error, assume the file is in use to be safe
+    return { data: { isUsed: true, usageDetails: {} } };
+  }
+};
+
+export const checkImageUsageBeforeDeletion = async (filename) => {
+  const usageCheck = await checkMediaUsage(getImageUrl(filename));
+  if (usageCheck.data.isUsed) {
+    throw new Error(`Cannot delete file ${filename} as it is in use: ${JSON.stringify(usageCheck.data.usageDetails)}`);
+  }
+  return true;
+};
+
 // ================= DELETE MEDIA =================
 
 export const deleteMediaFile = async (filename) => {
-  const response = await api.delete(
-    `/upload/file/${encodeURIComponent(filename)}`
-  );
+  await checkImageUsageBeforeDeletion(filename);
+  const response = await api.delete(`/upload/file/${encodeURIComponent(filename)}`);
   return response.data;
 };

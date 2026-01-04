@@ -16,7 +16,13 @@ import {
   FiLayers,
   FiLayout, // Icon for Comfortable View
 } from "react-icons/fi";
-import { FaPlay, FaImage, FaFilm, FaTimes } from "react-icons/fa";
+import {
+  FaPlay,
+  FaImage,
+  FaFilm,
+  FaTimes,
+  FaCheckCircle,
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -26,58 +32,7 @@ const ImageGallery = () => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-
-  const [usedImages, setUsedImages] = useState([]);
-  const [isLoadingUsedImages, setIsLoadingUsedImages] = useState(true);
-
-  // Fetch used images from trivixa.in
-  useEffect(() => {
-    const fetchUsedImages = async () => {
-      try {
-        // First try to fetch from production API
-        const response = await fetch("https://trivixa.in/api/used-images");
-        if (!response.ok) throw new Error("Failed to fetch used images");
-        const data = await response.json();
-        setUsedImages(data.images || []);
-      } catch (error) {
-        console.error("Error fetching used images:", error);
-        // Fallback to a static list if API fails
-        setUsedImages([
-          "trivixa-banner-software-development-21122025-1625.jpg",
-          "trivixa-banner-cloud-data-solutions-21122025-1625.jpg",
-          "trivixa-banner-cybersecurity-21122025-1625.jpg",
-          "trivixa-fix-size-brand-logo-21122025-1625.png",
-        ]);
-      } finally {
-        setIsLoadingUsedImages(false);
-      }
-    };
-
-    fetchUsedImages();
-  }, []);
-
-  // Extract just the filename from a URL
-  const getCleanFilename = (url) => {
-    if (!url) return "";
-    // Handle different URL formats:
-    // 1. Full URL: http://trivixa.in/api/upload/file/example.jpg
-    // 2. Local path: /uploads/example.jpg
-    // 3. Just filename: example.jpg
-    const urlObj = url.startsWith("http") ? new URL(url) : null;
-    const pathname = urlObj ? urlObj.pathname : url;
-    return pathname.split("/").pop();
-  };
-
-  // Check if an image is used on trivixa.in
-  const isImageUsed = (filename) => {
-    if (!filename || isLoadingUsedImages) return false;
-
-    const cleanName = getCleanFilename(filename);
-    return usedImages.some((usedUrl) => {
-      const usedName = getCleanFilename(usedUrl);
-      return cleanName === usedName;
-    });
-  };
+  const [mediaInUse, setMediaInUse] = useState({}); // Track which media items are in use
 
   // View Modes: 'grid' (Square Crop), 'comfortable' (Masonry/Full Ratio), 'compact' (Small), 'list' (Details)
   const [viewMode, setViewMode] = useState("grid");
@@ -93,6 +48,27 @@ const ImageGallery = () => {
     visible: { opacity: 1, scale: 1 },
   };
 
+  // Check if a media item is in use
+  const checkMediaItemUsage = async (filename) => {
+    try {
+      const usageCheck = await checkMediaUsage(getImageUrl(filename));
+      return usageCheck.data.isUsed;
+    } catch (error) {
+      console.error("Error checking media usage:", error);
+      return false;
+    }
+  };
+
+  // Check all media items for usage
+  const checkAllMediaUsage = async (mediaItems) => {
+    const usageMap = {};
+    for (const item of mediaItems) {
+      const filename = item.name || item.filename;
+      usageMap[filename] = await checkMediaItemUsage(filename);
+    }
+    setMediaInUse(usageMap);
+  };
+
   const fetchMedia = async () => {
     try {
       setIsLoading(true);
@@ -105,6 +81,9 @@ const ImageGallery = () => {
             (item.mimetype?.startsWith("video/") ? "video" : "image"),
         }));
         setMedia(mediaWithTypes);
+
+        // Check media usage in the background
+        checkAllMediaUsage(mediaWithTypes).catch(console.error);
       } else {
         toast.error("Failed to load media: Invalid response format");
       }
@@ -127,15 +106,52 @@ const ImageGallery = () => {
 
   const handleDelete = async (filename, e) => {
     e.stopPropagation();
-    if (!window.confirm("Delete this file permanently?")) return;
 
     try {
+      // First check if the file is in use
+      const usageCheck = await checkMediaUsage(getImageUrl(filename));
+
+      if (usageCheck.data.isUsed) {
+        // Show detailed usage information
+        const usageDetails = [];
+        if (usageCheck.data.usageDetails.projects.count > 0) {
+          usageDetails.push(
+            `Used in ${usageCheck.data.usageDetails.projects.count} project(s)`
+          );
+        }
+        if (usageCheck.data.usageDetails.categories.count > 0) {
+          usageDetails.push(
+            `Used in ${usageCheck.data.usageDetails.categories.count} category(ies)`
+          );
+        }
+        if (usageCheck.data.usageDetails.services.count > 0) {
+          usageDetails.push(
+            `Used in ${usageCheck.data.usageDetails.services.count} service(s)`
+          );
+        }
+
+        const proceed = window.confirm(
+          `This file is currently in use:\n\n${usageDetails.join("\n")}\n\n` +
+            "Are you sure you want to delete it? This may break content on your site."
+        );
+
+        if (!proceed) return;
+      } else if (!window.confirm("Delete this file permanently?")) {
+        return;
+      }
+
+      // Proceed with deletion
       await deleteMediaFile(filename);
       toast.success("File deleted");
       fetchMedia();
     } catch (error) {
       console.error("Error deleting file:", error);
-      toast.error("Failed to delete file");
+      if (error.message.includes("Cannot delete file")) {
+        // Show a more user-friendly error message
+        toast.error("Cannot delete file: It's currently in use");
+      } else {
+        toast.error("Failed to delete file");
+      }
     }
   };
 
@@ -488,24 +504,15 @@ const ImageGallery = () => {
                         </div>
                       )}
 
-                      {/* Type Badge and Used Indicator */}
-                      <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
-                        {/* Used on Site Badge */}
-                        {isImageUsed(item.filename || item.name) && (
-                          <div className="px-1.5 py-0.5 rounded-md bg-green-500/90 backdrop-blur-sm text-[10px] text-white font-bold flex items-center gap-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-3 w-3"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            <span>Used</span>
+                      {/* Type Badge and In-Use Indicator */}
+                      <div className="absolute top-2 right-2 flex items-center gap-1">
+                        {/* In-Use Indicator */}
+                        {mediaInUse[item.name || item.filename] && (
+                          <div
+                            className="p-1 bg-green-500/90 rounded-full"
+                            title="This media is in use"
+                          >
+                            <FaCheckCircle className="text-white" size={14} />
                           </div>
                         )}
 

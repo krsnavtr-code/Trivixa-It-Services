@@ -36,6 +36,9 @@ import adminPaymentRoutes from "./route/adminPayment.routes.js";
 import adminEmailRoutes from "./route/adminEmail.routes.js";
 import emailRecordRoutes from "./route/emailRecord.routes.js";
 
+// Media
+import mediaRoutes from "./route/media.routes.js";
+
 // --- Configuration & Setup ---
 dotenv.config();
 const app = express();
@@ -211,6 +214,8 @@ app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/v1/admin/emails", adminEmailRoutes);
 app.use("/api/emails", emailRecordRoutes);
 
+// Media
+app.use("/api/media", mediaRoutes);
 
 // --- Global Error Handling ---
 app.use((err, req, res, next) => {
