@@ -12,7 +12,7 @@ const MediaUploader = ({
   imageLabel = "Upload Image",
   videoLabel = "Upload Video",
   maxImageSizeMB = 10,
-  maxVideoSizeMB = 100,
+  maxVideoSizeMB = 200,
 }) => {
   const [activeTab, setActiveTab] = useState("image");
 
