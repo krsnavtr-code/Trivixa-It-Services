@@ -27,6 +27,58 @@ const ImageGallery = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [usedImages, setUsedImages] = useState([]);
+  const [isLoadingUsedImages, setIsLoadingUsedImages] = useState(true);
+
+  // Fetch used images from trivixa.in
+  useEffect(() => {
+    const fetchUsedImages = async () => {
+      try {
+        // First try to fetch from production API
+        const response = await fetch("https://trivixa.in/api/used-images");
+        if (!response.ok) throw new Error("Failed to fetch used images");
+        const data = await response.json();
+        setUsedImages(data.images || []);
+      } catch (error) {
+        console.error("Error fetching used images:", error);
+        // Fallback to a static list if API fails
+        setUsedImages([
+          "trivixa-banner-software-development-21122025-1625.jpg",
+          "trivixa-banner-cloud-data-solutions-21122025-1625.jpg",
+          "trivixa-banner-cybersecurity-21122025-1625.jpg",
+          "trivixa-fix-size-brand-logo-21122025-1625.png",
+        ]);
+      } finally {
+        setIsLoadingUsedImages(false);
+      }
+    };
+
+    fetchUsedImages();
+  }, []);
+
+  // Extract just the filename from a URL
+  const getCleanFilename = (url) => {
+    if (!url) return "";
+    // Handle different URL formats:
+    // 1. Full URL: http://trivixa.in/api/upload/file/example.jpg
+    // 2. Local path: /uploads/example.jpg
+    // 3. Just filename: example.jpg
+    const urlObj = url.startsWith("http") ? new URL(url) : null;
+    const pathname = urlObj ? urlObj.pathname : url;
+    return pathname.split("/").pop();
+  };
+
+  // Check if an image is used on trivixa.in
+  const isImageUsed = (filename) => {
+    if (!filename || isLoadingUsedImages) return false;
+
+    const cleanName = getCleanFilename(filename);
+    return usedImages.some((usedUrl) => {
+      const usedName = getCleanFilename(usedUrl);
+      return cleanName === usedName;
+    });
+  };
+
   // View Modes: 'grid' (Square Crop), 'comfortable' (Masonry/Full Ratio), 'compact' (Small), 'list' (Details)
   const [viewMode, setViewMode] = useState("grid");
 
@@ -436,12 +488,34 @@ const ImageGallery = () => {
                         </div>
                       )}
 
-                      {/* Type Badge */}
-                      {viewMode !== "list" && (
-                        <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-md bg-black/50 backdrop-blur-sm text-[10px] text-white font-bold uppercase tracking-wider border border-white/10">
-                          {item.type === "video" ? "VID" : "IMG"}
-                        </div>
-                      )}
+                      {/* Type Badge and Used Indicator */}
+                      <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
+                        {/* Used on Site Badge */}
+                        {isImageUsed(item.filename || item.name) && (
+                          <div className="px-1.5 py-0.5 rounded-md bg-green-500/90 backdrop-blur-sm text-[10px] text-white font-bold flex items-center gap-1">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-3 w-3"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            <span>Used</span>
+                          </div>
+                        )}
+
+                        {/* Type Badge */}
+                        {viewMode !== "list" && (
+                          <div className="px-1.5 py-0.5 rounded-md bg-black/50 backdrop-blur-sm text-[10px] text-white font-bold uppercase tracking-wider border border-white/10">
+                            {item.type === "video" ? "VID" : "IMG"}
+                          </div>
+                        )}
+                      </div>
                     </motion.div>
                   ))}
                 </AnimatePresence>
