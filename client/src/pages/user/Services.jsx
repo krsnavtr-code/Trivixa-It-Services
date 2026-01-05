@@ -575,9 +575,9 @@ const Services = () => {
                   >
                     {/* Image */}
                     <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-[#0a0f2d]">
-                      {service.images && service.images.length > 0 ? (
+                      {service.thumbnail ? (
                         <img
-                          src={service.images[0].url || service.images[0]}
+                          src={service.thumbnail}
                           alt={service.title}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
