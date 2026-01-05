@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   getUploadedImages,
   getImageUrl,
@@ -28,6 +28,7 @@ import {
   FiExternalLink,
   FiFolder,
   FiTag,
+  FiTag as FiTagIcon,
 } from "react-icons/fi";
 import {
   FaPlay,
@@ -128,6 +129,61 @@ const ImageGallery = () => {
       toast.error("Failed to load tags");
     }
   }, []);
+
+  // Function to match media items with their tags
+  const getTagsForMedia = useCallback(
+    (mediaUrl) => {
+      if (!mediaUrl || !tags || tags.length === 0) return [];
+      return tags
+        .filter((tag) => tag.mediaFiles && tag.mediaFiles.includes(mediaUrl))
+        .map((tag) => ({
+          _id: tag._id,
+          name: tag.name,
+          slug: tag.slug,
+        }));
+    },
+    [tags]
+  );
+
+  // Add tags to media items
+  const mediaWithTags = useMemo(() => {
+    if (!media || media.length === 0) return [];
+    return media.map((item) => ({
+      ...item,
+      tags: getTagsForMedia(item.url || ""),
+    }));
+  }, [media, getTagsForMedia]);
+
+  // Function to get common tags from selected media items
+  const getCommonTagsFromSelectedMedia = useCallback(() => {
+    if (selectedItems.size === 0 || !media || media.length === 0)
+      return new Set();
+
+    // Get all selected media items
+    const selectedMedia = media.filter((item) => selectedItems.has(item.url));
+
+    if (selectedMedia.length === 0) return new Set();
+
+    // Get tags from the first selected item
+    const firstItemTags = new Set(
+      getTagsForMedia(selectedMedia[0].url || "").map((tag) => tag._id)
+    );
+
+    // Find intersection with other selected items' tags
+    for (let i = 1; i < selectedMedia.length; i++) {
+      const currentItemTags = new Set(
+        getTagsForMedia(selectedMedia[i].url || "").map((tag) => tag._id)
+      );
+      // Keep only tags that exist in both sets
+      for (const tagId of firstItemTags) {
+        if (!currentItemTags.has(tagId)) {
+          firstItemTags.delete(tagId);
+        }
+      }
+    }
+
+    return firstItemTags;
+  }, [selectedItems, media, getTagsForMedia]);
 
   useEffect(() => {
     fetchMedia();
@@ -273,7 +329,7 @@ const ImageGallery = () => {
   };
 
   const selectAllMedia = () => {
-    const allUrls = media.map((item) => item.url);
+    const allUrls = mediaWithTags.map((item) => item.url);
     setSelectedItems(new Set(allUrls));
     if (allUrls.length > 0) setIsSelectionMode(true);
   };
@@ -336,7 +392,7 @@ const ImageGallery = () => {
     return groups;
   };
 
-  const filteredMedia = media.filter((item) => {
+  const filteredMedia = mediaWithTags.filter((item) => {
     const matchesTab = activeTab === "all" || item.type === activeTab;
     const matchesSearch = (item.name || item.filename || "")
       .toLowerCase()
@@ -344,7 +400,10 @@ const ImageGallery = () => {
     return matchesTab && matchesSearch;
   });
 
-  const groupedMedia = groupMediaByDate(filteredMedia);
+  const groupedMedia = useMemo(
+    () => groupMediaByDate(filteredMedia),
+    [filteredMedia]
+  );
 
   const getContainerClasses = () => {
     switch (viewMode) {
@@ -412,7 +471,11 @@ const ImageGallery = () => {
                 </button>
 
                 <button
-                  onClick={() => setShowTagModal(true)}
+                  onClick={() => {
+                    const commonTags = getCommonTagsFromSelectedMedia();
+                    setSelectedTagIds(commonTags);
+                    setShowTagModal(true);
+                  }}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg text-purple-500 dark:text-purple-400 transition-colors"
                   title="Add Tags"
                 >
@@ -739,9 +802,46 @@ const ImageGallery = () => {
                             <p className="text-xs text-white font-bold truncate">
                               {item.name || item.filename}
                             </p>
-                            <p className="text-[10px] text-gray-300">
+                            <p className="text-[10px] text-gray-300 mb-1">
                               {(item.size / 1024).toFixed(1)} KB
                             </p>
+                            {item.tags && item.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {item.tags.slice(0, 3).map((tag) => (
+                                  <span
+                                    key={tag._id}
+                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-white/10 text-white/80"
+                                    title={tag.name}
+                                  >
+                                    <FiTagIcon size={8} className="mr-1" />
+                                    {tag.name}
+                                  </span>
+                                ))}
+                                {item.tags.length > 3 && (
+                                  <span className="text-[10px] text-white/60">
+                                    +{item.tags.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {item.tags && item.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {item.tags.slice(0, 3).map((tag, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-white/10 text-white/80"
+                                  >
+                                    <FiTagIcon size={8} className="mr-1" />
+                                    {tag.name}
+                                  </span>
+                                ))}
+                                {item.tags.length > 3 && (
+                                  <span className="text-[10px] text-white/60">
+                                    +{item.tags.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -756,6 +856,43 @@ const ImageGallery = () => {
                             <p className="text-xs text-gray-500">
                               {item.type} • {(item.size / 1024).toFixed(1)} KB
                             </p>
+                            {item.tags && item.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {item.tags.slice(0, 2).map((tag) => (
+                                  <span
+                                    key={tag._id}
+                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300"
+                                    title={tag.name}
+                                  >
+                                    <FiTagIcon size={8} className="mr-1" />
+                                    {tag.name}
+                                  </span>
+                                ))}
+                                {item.tags.length > 2 && (
+                                  <span className="text-[10px] text-gray-400">
+                                    +{item.tags.length - 2} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {item.tags && item.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {item.tags.slice(0, 2).map((tag, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300"
+                                  >
+                                    <FiTagIcon size={8} className="mr-1" />
+                                    {tag.name}
+                                  </span>
+                                ))}
+                                {item.tags.length > 2 && (
+                                  <span className="text-[10px] text-gray-400">
+                                    +{item.tags.length - 2} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
                           <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button
