@@ -1,5 +1,6 @@
 import express from 'express';
 import { checkImageUsage } from '../controller/media.controller.js';
+import mediaTagRouter from './mediaTag.routes.js';
 import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -12,5 +13,8 @@ const router = express.Router();
  */
 router.route('/check-usage')
     .get(protect, authorize('admin'), checkImageUsage);
+
+// Mount media tag routes at /api/media/tags
+router.use('/tags', mediaTagRouter);
 
 export default router;

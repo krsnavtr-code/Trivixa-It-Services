@@ -55,6 +55,7 @@ import ProjectForm from "./components/admin/ProjectForm.jsx";
 import Users from "./pages/admin/Users.jsx";
 import ContactsList from "./pages/admin/Contacts.jsx";
 import MediaGallery from "./components/admin/MediaUploder.jsx";
+import MediaTags from "./pages/admin/MediaTags.jsx";
 import ImageGallery from "./pages/admin/MediaGallery.jsx";
 import PaymentsList from "./pages/admin/PaymentsList";
 import PaymentDetails from "./pages/admin/PaymentDetails";
@@ -474,6 +475,7 @@ function App() {
                   path="/admin/media-gallery/upload"
                   element={<MediaGallery />}
                 />
+                <Route path="/admin/media/tags" element={<MediaTags />} />
                 <Route path="/admin/mail-sender" element={<Mailer />} />
                 <Route
                   path="/admin/mail-sender/brochure"

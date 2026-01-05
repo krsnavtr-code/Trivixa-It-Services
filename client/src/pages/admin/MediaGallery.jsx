@@ -277,6 +277,12 @@ const ImageGallery = () => {
             >
               <FiUpload /> Upload
             </Link>
+            <Link
+              to="/admin/media/tags"
+              className="inline-flex items-center gap-2 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/20 px-5 py-2.5 rounded-xl font-medium transition-all hover:-translate-y-1"
+            >
+              <FiLayers /> Manage Tags
+            </Link>
             <button
               onClick={fetchMedia}
               className="p-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 transition-colors"
