@@ -15,7 +15,9 @@ import {
   FiGrid,
   FiList,
   FiLayers,
-  FiLayout, // Icon for Comfortable View
+  FiLayout,
+  FiCheckSquare,
+  FiSquare,
 } from "react-icons/fi";
 import {
   FaPlay,
@@ -31,6 +33,8 @@ const ImageGallery = () => {
   const [media, setMedia] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedMedia, setSelectedMedia] = useState(null);
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [mediaInUse, setMediaInUse] = useState({}); // Track which media items are in use
@@ -177,6 +181,115 @@ const ImageGallery = () => {
     }
   };
 
+  // Toggle media selection
+  const toggleMediaSelection = (url, event) => {
+    if (event) event.stopPropagation();
+
+    setSelectedItems((prev) => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(url)) {
+        newSelection.delete(url);
+      } else {
+        newSelection.add(url);
+      }
+
+      // If no items are selected, exit selection mode
+      if (newSelection.size === 0) {
+        setIsSelectionMode(false);
+      } else if (!isSelectionMode) {
+        setIsSelectionMode(true);
+      }
+
+      return newSelection;
+    });
+  };
+
+  // Select all media items
+  const selectAllMedia = () => {
+    const allUrls = media.map((item) => item.url);
+    setSelectedItems(new Set(allUrls));
+    if (allUrls.length > 0) {
+      setIsSelectionMode(true);
+    }
+  };
+
+  // Clear all selections
+  const clearSelection = () => {
+    setSelectedItems(new Set());
+    setIsSelectionMode(false);
+  };
+
+  // Handle click on media item
+  const handleMediaClick = (item, event) => {
+    if (isSelectionMode || event.ctrlKey || event.metaKey) {
+      // Toggle selection when in selection mode or when Ctrl/Cmd is pressed
+      toggleMediaSelection(item.url, event);
+    } else {
+      // Show media in lightbox when not in selection mode
+      setSelectedMedia(item);
+    }
+  };
+
+  // Handle shift+click for range selection
+  const handleMediaMouseDown = (item, event) => {
+    if (event.shiftKey && isSelectionMode) {
+      const currentItems = media.map((m) => m.url);
+      const lastSelected = Array.from(selectedItems).pop();
+      const currentIndex = currentItems.indexOf(item.url);
+      const lastIndex = currentItems.indexOf(lastSelected);
+
+      if (lastIndex !== -1) {
+        const start = Math.min(currentIndex, lastIndex);
+        const end = Math.max(currentIndex, lastIndex);
+        const range = currentItems.slice(start, end + 1);
+
+        setSelectedItems((prev) => {
+          const newSelection = new Set(prev);
+          range.forEach((url) => newSelection.add(url));
+          return newSelection;
+        });
+      }
+      event.preventDefault();
+    }
+  };
+
+  // Delete selected items
+  const deleteSelectedItems = async () => {
+    if (selectedItems.size === 0) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${selectedItems.size} selected item(s)?`
+    );
+    if (!confirmed) return;
+
+    try {
+      const deletePromises = Array.from(selectedItems).map((url) => {
+        const fileName = url.split("/").pop();
+        return deleteMediaFile(fileName);
+      });
+
+      await Promise.all(deletePromises);
+
+      // Remove deleted items from media state
+      setMedia((prev) => prev.filter((item) => !selectedItems.has(item.url)));
+
+      // Clear selection
+      clearSelection();
+
+      toast.success(`Successfully deleted ${selectedItems.size} item(s)`);
+    } catch (error) {
+      console.error("Error deleting items:", error);
+      toast.error("Error deleting items");
+    }
+  };
+
+  // Copy selected items URLs to clipboard
+  const copySelectedUrls = () => {
+    const urls = Array.from(selectedItems).join("\n");
+    navigator.clipboard.writeText(urls);
+    toast.success("URLs copied to clipboard");
+  };
+
   // Group media by date
   const groupMediaByDate = (mediaList) => {
     const groups = {};
@@ -271,6 +384,49 @@ const ImageGallery = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {isSelectionMode ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  {selectedItems.size} selected
+                </span>
+                <button
+                  onClick={selectAllMedia}
+                  className="px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                >
+                  Select All
+                </button>
+                <button
+                  onClick={copySelectedUrls}
+                  className="px-3 py-1.5 text-sm text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-1"
+                  disabled={selectedItems.size === 0}
+                >
+                  <FiCopy size={14} />
+                  <span>Copy URLs</span>
+                </button>
+                <button
+                  onClick={deleteSelectedItems}
+                  className="px-3 py-1.5 text-sm text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors flex items-center gap-1"
+                  disabled={selectedItems.size === 0}
+                >
+                  <FiTrash2 size={14} />
+                  <span>Delete</span>
+                </button>
+                <button
+                  onClick={clearSelection}
+                  className="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsSelectionMode(true)}
+                className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+              >
+                <FiLayers size={16} />
+                <span>Select</span>
+              </button>
+            )}
             <Link
               to="/admin/media-gallery/upload"
               className="inline-flex items-center gap-2 bg-[#F47C26] hover:bg-[#d5671f] text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-orange-500/30 hover:-translate-y-1"
@@ -385,9 +541,54 @@ const ImageGallery = () => {
           {Object.entries(groupedMedia).map(([date, items]) => (
             <div key={date} className="space-y-4">
               <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
-                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                  {date}
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                    {date}
+                  </h2>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const allSelected = items.every((item) =>
+                        selectedItems.has(item.url)
+                      );
+                      const newSelection = new Set(selectedItems);
+
+                      if (allSelected) {
+                        // Deselect all in this date
+                        items.forEach((item) => newSelection.delete(item.url));
+                      } else {
+                        // Select all in this date
+                        items.forEach((item) => newSelection.add(item.url));
+                      }
+
+                      setSelectedItems(newSelection);
+                      if (newSelection.size > 0) {
+                        setIsSelectionMode(true);
+                      } else {
+                        setIsSelectionMode(false);
+                      }
+                    }}
+                    className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-2 py-0.5 rounded transition-colors flex items-center gap-1"
+                    title={
+                      items.every((item) => selectedItems.has(item.url))
+                        ? "Deselect all"
+                        : "Select all"
+                    }
+                  >
+                    {items.every((item) => selectedItems.has(item.url)) ? (
+                      <>
+                        <FiCheckSquare size={14} />
+                        <span>Deselect all</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiSquare size={14} />
+                        <span>Select all</span>
+                      </>
+                    )}
+                    
+                  </button>
+                </div>
                 <span className="text-sm bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 px-2.5 py-0.5 rounded-full">
                   {items.length} {items.length === 1 ? "item" : "items"}
                 </span>
@@ -404,16 +605,56 @@ const ImageGallery = () => {
                       key={item._id || item.name}
                       variants={itemVariants}
                       layout
-                      // Note: 'break-inside-avoid' is crucial for Masonry (Comfortable) view
-                      className={`group relative bg-gray-100 dark:bg-[#05081a] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 hover:border-[#F47C26]/50 transition-all cursor-pointer shadow-sm hover:shadow-xl break-inside-avoid ${
+                      className={`group relative bg-gray-100 dark:bg-[#05081a] rounded-xl overflow-hidden border-2 transition-all cursor-pointer shadow-sm hover:shadow-xl break-inside-avoid ${
+                        selectedItems.has(item.url)
+                          ? "border-blue-500 dark:border-blue-400 ring-2 ring-blue-200 dark:ring-blue-900"
+                          : "border-gray-200 dark:border-white/5 hover:border-[#F47C26]/50"
+                      } ${
                         viewMode === "list"
                           ? "flex items-center gap-4 p-2 h-20 mb-2"
                           : viewMode === "comfortable"
                           ? "mb-4" // Margin bottom for masonry spacing
                           : "aspect-square" // Fixed aspect ratio for grid/compact
                       }`}
-                      onClick={() => setSelectedMedia(item)}
+                      onClick={(e) => handleMediaClick(item, e)}
+                      onMouseDown={(e) => handleMediaMouseDown(item, e)}
                     >
+                      {/* Selection Checkbox */}
+                      <div
+                        className={`absolute top-2 left-2 z-10 transition-opacity ${
+                          isSelectionMode || selectedItems.has(item.url)
+                            ? "opacity-100"
+                            : "opacity-0 group-hover:opacity-100"
+                        }`}
+                      >
+                        <div
+                          className={`w-5 h-5 rounded flex items-center justify-center ${
+                            selectedItems.has(item.url)
+                              ? "bg-blue-500 dark:bg-blue-600"
+                              : "bg-white/90 dark:bg-gray-700/90 border border-gray-300 dark:border-gray-500"
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleMediaSelection(item.url, e);
+                          }}
+                        >
+                          {selectedItems.has(item.url) && (
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={3}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
                       {/* Thumbnail */}
                       <div
                         className={`${
