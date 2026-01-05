@@ -73,6 +73,12 @@ const NAV_ITEMS = [
         icon: <FaImages />,
         activePaths: ["/admin/media-gallery"],
       },
+      {
+        path: "/admin/media/tags",
+        label: "Gallery Tags",
+        icon: <FaImages />,
+        activePaths: ["/admin/media/tags"],
+      },
     ],
   },
   {

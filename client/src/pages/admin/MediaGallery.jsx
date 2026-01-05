@@ -1,10 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   getUploadedImages,
   getImageUrl,
   deleteMediaFile,
   checkMediaUsage,
 } from "../../api/imageApi";
+import {
+  getMediaTags,
+  updateMediaTag,
+  updateMediaTags,
+} from "../../api/mediaTagApi";
 import { toast } from "react-hot-toast";
 import {
   FiCopy,
@@ -21,7 +26,8 @@ import {
   FiX,
   FiDownload,
   FiExternalLink,
-  FiFolder, // Added missing import
+  FiFolder,
+  FiTag,
 } from "react-icons/fi";
 import {
   FaPlay,
@@ -29,6 +35,7 @@ import {
   FaFilm,
   FaTimes,
   FaCheckCircle,
+  FaTags,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -42,6 +49,12 @@ const ImageGallery = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [mediaInUse, setMediaInUse] = useState({});
+
+  // Tag Management
+  const [tags, setTags] = useState([]);
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [selectedTagIds, setSelectedTagIds] = useState(new Set());
+  const [isUpdatingTags, setIsUpdatingTags] = useState(false);
 
   // View Modes
   const [viewMode, setViewMode] = useState("grid");
@@ -105,9 +118,62 @@ const ImageGallery = () => {
     }
   };
 
+  // Fetch tags when component mounts
+  const fetchTags = useCallback(async () => {
+    try {
+      const response = await getMediaTags();
+      setTags(response.data?.tags || response.data || []);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+      toast.error("Failed to load tags");
+    }
+  }, []);
+
   useEffect(() => {
     fetchMedia();
-  }, []);
+    fetchTags();
+  }, [fetchTags]);
+
+  // Handle tag selection toggle
+  const toggleTagSelection = (tagId) => {
+    setSelectedTagIds((prev) => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(tagId)) {
+        newSelection.delete(tagId);
+      } else {
+        newSelection.add(tagId);
+      }
+      return newSelection;
+    });
+  };
+
+  // Handle saving tags for selected media
+  const handleSaveTags = async () => {
+    if (selectedItems.size === 0 || selectedTagIds.size === 0) {
+      toast.error("Please select media and at least one tag");
+      return;
+    }
+    try {
+      setIsUpdatingTags(true);
+      const tagIdsArray = Array.from(selectedTagIds);
+
+      // Update each selected media item
+      const updatePromises = Array.from(selectedItems).map((mediaUrl) =>
+        updateMediaTags(mediaUrl, tagIdsArray)
+      );
+      await Promise.all(updatePromises);
+      toast.success(`Updated tags for ${selectedItems.size} item(s)`);
+      setShowTagModal(false);
+      setSelectedTagIds(new Set());
+      // Refresh media to show updated tags
+      fetchMedia();
+    } catch (error) {
+      console.error("Error updating tags:", error);
+      toast.error(error.message || "Failed to update tags");
+    } finally {
+      setIsUpdatingTags(false);
+    }
+  };
 
   // --- Logic: Actions ---
   const copyToClipboard = (text) => {
@@ -346,6 +412,111 @@ const ImageGallery = () => {
                 </button>
 
                 <button
+                  onClick={() => setShowTagModal(true)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg text-purple-500 dark:text-purple-400 transition-colors"
+                  title="Add Tags"
+                >
+                  <FiTag size={16} />
+                </button>
+                {/* Tag Selection Modal */}
+                <AnimatePresence>
+                  {showTagModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="bg-white dark:bg-[#0a0f2d] rounded-2xl w-full max-w-md overflow-hidden shadow-xl border border-gray-200 dark:border-white/10"
+                      >
+                        <div className="p-6">
+                          <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                              Add Tags to {selectedItems.size} Item(s)
+                            </h3>
+                            <button
+                              onClick={() => {
+                                setShowTagModal(false);
+                                setSelectedTagIds(new Set());
+                              }}
+                              className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                            >
+                              <FaTimes />
+                            </button>
+                          </div>
+
+                          <div className="mb-6">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                              Select tags to add to the selected media:
+                            </p>
+
+                            {tags.length > 0 ? (
+                              <div className="flex flex-wrap gap-2">
+                                {tags.map((tag) => (
+                                  <button
+                                    key={tag._id}
+                                    onClick={() => toggleTagSelection(tag._id)}
+                                    className={`px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${
+                                      selectedTagIds.has(tag._id)
+                                        ? "bg-purple-500 text-white"
+                                        : "bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10"
+                                    }`}
+                                  >
+                                    {tag.name}
+                                    {selectedTagIds.has(tag._id) && (
+                                      <FaCheckCircle size={12} />
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                                <FaTags className="mx-auto text-2xl mb-2 opacity-50" />
+                                <p>
+                                  No tags found. Create tags in the Media Tags
+                                  section.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex justify-end gap-3 pt-2 border-t border-gray-200 dark:border-white/10">
+                            <button
+                              onClick={() => {
+                                setShowTagModal(false);
+                                setSelectedTagIds(new Set());
+                              }}
+                              disabled={isUpdatingTags}
+                              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleSaveTags}
+                              disabled={
+                                selectedTagIds.size === 0 || isUpdatingTags
+                              }
+                              className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors flex items-center gap-2 ${
+                                selectedTagIds.size === 0 || isUpdatingTags
+                                  ? "bg-purple-400 dark:bg-purple-500/50 cursor-not-allowed"
+                                  : "bg-purple-500 hover:bg-purple-600"
+                              }`}
+                            >
+                              {isUpdatingTags ? (
+                                <>
+                                  <FiRefreshCw className="animate-spin" />
+                                  Saving...
+                                </>
+                              ) : (
+                                `Add ${selectedTagIds.size} Tag(s)`
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+                  )}
+                </AnimatePresence>
+                <button
                   onClick={deleteSelectedItems}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg text-red-500 dark:text-red-400 transition-colors"
                   title="Delete Selected"
@@ -491,7 +662,11 @@ const ImageGallery = () => {
                 <AnimatePresence>
                   {items.map((item) => (
                     <motion.div
-                      key={item._id || item.filename}
+                      key={
+                        item._id ||
+                        item.filename ||
+                        `media-${Math.random().toString(36).substr(2, 9)}`
+                      }
                       variants={itemVariants}
                       layout
                       className={`group relative bg-white dark:bg-[#05081a] border rounded-xl overflow-hidden cursor-pointer transition-all shadow-sm hover:shadow-xl break-inside-avoid ${

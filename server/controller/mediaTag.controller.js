@@ -159,3 +159,33 @@ export const getMediaByTag = catchAsync(async (req, res, next) => {
     message: 'This route is not yet implemented. Media model integration required.'
   });
 });
+
+export const updateMediaTags = catchAsync(async (req, res, next) => {
+  const { mediaUrl, tagIds } = req.body;
+  if (!mediaUrl || !tagIds || !Array.isArray(tagIds)) {
+    return next(new AppError('Media URL and tag IDs array are required', 400));
+  }
+  // Remove mediaUrl from all tags not in tagIds
+  await MediaTag.updateMany(
+    { mediaFiles: mediaUrl, _id: { $nin: tagIds } },
+    { $pull: { mediaFiles: mediaUrl } }
+  );
+  // Add mediaUrl to all tags in tagIds
+  await MediaTag.updateMany(
+    { _id: { $in: tagIds } },
+    { $addToSet: { mediaFiles: mediaUrl } }
+  );
+  // Get updated tags
+  const updatedTags = await MediaTag.find({
+    $or: [
+      { _id: { $in: tagIds } },
+      { mediaFiles: mediaUrl }
+    ]
+  });
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tags: updatedTags
+    }
+  });
+});

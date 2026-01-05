@@ -58,3 +58,16 @@ export const getMediaByTag = async (id, params = {}) => {
     throw error.response?.data?.message || 'Error fetching media by tag';
   }
 };
+
+
+export const updateMediaTags = async (mediaUrl, tagIds) => {
+  try {
+    const response = await api.patch('/media/tags/update-media', {
+      mediaUrl,
+      tagIds
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.message || 'Error updating media tags';
+  }
+};

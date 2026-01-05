@@ -21,6 +21,10 @@ const mediaTagSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  mediaFiles: [{
+    type: String, 
+    index: true
+  }],
   isActive: {
     type: Boolean,
     default: true
