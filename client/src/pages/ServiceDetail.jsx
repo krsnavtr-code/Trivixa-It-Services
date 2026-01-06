@@ -23,8 +23,8 @@ import {
   FaImage,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { getProjectBySlug } from "../../api/projectApi"; // Ensure this matches your API file
-import { getImageUrl } from "../../utils/imageUtils";
+import { getProjectBySlug } from "../api/projectApi"; // Ensure this matches your API file
+import { getImageUrl } from "../utils/imageUtils";
 
 const ServiceDetail = () => {
   const { slug } = useParams();

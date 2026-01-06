@@ -19,8 +19,8 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion"; // Import Framer Motion for smooth drop animation
 
 // API Imports
-import { getProjects } from "../../api/projectApi";
-import { getCategoriesForForm } from "../../api/servicesApi";
+import { getProjects } from "../api/projectApi";
+import { getCategoriesForForm } from "../api/servicesApi";
 
 const Services = () => {
   const { t } = useTranslation();

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getCategories as getCategoriesFromApi } from "../../api/categoryApi";
-import { getServicesByCategory } from "../../api/servicesApi";
+import { getCategories as getCategoriesFromApi } from "../api/categoryApi";
+import { getServicesByCategory } from "../api/servicesApi";
 import {
   FaArrowRight,
   FaLayerGroup,

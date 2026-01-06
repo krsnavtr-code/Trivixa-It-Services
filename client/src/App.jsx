@@ -35,10 +35,10 @@ import SuspendedAccount from "./pages/SuspendedAccount";
 import Faqs from "./pages/Faqs";
 
 // --- Pages (Services/User) ---
-import AllCategories from "./pages/user/AllCategories";
+import AllCategories from "./pages/AllCategories.jsx";
 import Profile from "./pages/user/Profile";
-import Services from "./pages/user/Services.jsx";
-import ServiceDetail from "./pages/user/ServiceDetail.jsx";
+import Services from "./pages/Services.jsx";
+import ServiceDetail from "./pages/ServiceDetail.jsx";
 import WebServices from "./pages/WebServices.jsx";
 import AndroidServices from "./pages/AndroidServices.jsx";
 import Technologies from "./pages/Technologies.jsx";
