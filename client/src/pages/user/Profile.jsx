@@ -96,7 +96,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#05081a] py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#05081a] py-20 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-[300px] bg-gradient-to-b from-[#F47C26]/10 to-transparent pointer-events-none"></div>

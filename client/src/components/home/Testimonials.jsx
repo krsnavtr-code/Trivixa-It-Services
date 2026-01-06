@@ -98,9 +98,7 @@ const Testimonials = () => {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
-          <motion.span
-            className="px-4 py-1.5 rounded-full bg-orange-100 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-[#F47C26] text-xs font-bold uppercase tracking-wider"
-          >
+          <motion.span className="px-4 py-1.5 rounded-full bg-orange-100 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-[#F47C26] text-xs font-bold uppercase tracking-wider">
             Client Success Stories
           </motion.span>
           <motion.h2
@@ -149,12 +147,12 @@ const Testimonials = () => {
               {/* User Profile */}
               <div className="flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-white/10">
                 <div className="relative">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-white/20 group-hover:border-[#F47C26] transition-colors">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#F47C26] to-orange-600 flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-transform">
+                    {item.name.split(" ").length > 1
+                      ? `${item.name.split(" ")[0][0]}${
+                          item.name.split(" ")[1][0]
+                        }`
+                      : item.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#F47C26] rounded-full flex items-center justify-center text-[8px] text-white">
                     <FaQuoteRight />
@@ -174,10 +172,7 @@ const Testimonials = () => {
         </motion.div>
 
         {/* Bottom CTA */}
-        <motion.div
-          transition={{ delay: 0.5 }}
-          className="mt-16 text-center"
-        >
+        <motion.div transition={{ delay: 0.5 }} className="mt-16 text-center">
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Want to be our next success story?
           </p>

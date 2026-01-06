@@ -64,20 +64,25 @@ export default function ContactSection() {
           {/* Info Cards */}
           <div className="lg:col-span-2 space-y-6">
             {[
-              {
-                icon: <FaMapMarkerAlt />,
-                title: "Office",
-                text: "H-161 BSI Sector-63, Noida",
-              },
+              // {
+              //   icon: <FaMapMarkerAlt />,
+              //   title: "Office",
+              //   text: "H-161 BSI Sector-63, Noida",
+              // },
               {
                 icon: <FaPhone />,
                 title: "Phone",
-                text: "+91 9990056799",
+                text: "+91 9084407615",
               },
               {
                 icon: <FaEnvelope />,
                 title: "Email",
                 text: "info@trivixa.com",
+              },
+              {
+                icon: <FaEnvelope />,
+                title: "Email",
+                text: "krishna.trivixa@gmail.com",
               },
             ].map((i, idx) => (
               <motion.div

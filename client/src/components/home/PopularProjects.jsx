@@ -9,10 +9,7 @@ import {
   FaLayerGroup,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "../../api/axios";
-
-// Base URL for API requests
-const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+import { getProjects } from "../../api/projectApi";
 
 // --- Modern Project Card Component ---
 const ProjectCard = ({ course, index }) => {
@@ -188,55 +185,43 @@ const ProjectCard = ({ course, index }) => {
 
 // --- Main Featured Projects Component ---
 const FeaturedProjects = () => {
-  const [courses, setCourses] = useState([]);
+  const [activeTab, setActiveTab] = useState("All");
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Keep existing API logic strictly intact
+  // Fetch projects from API
   useEffect(() => {
-    const fetchPopularCourses = async () => {
+    const fetchProjects = async () => {
       try {
         setLoading(true);
-        setError(null);
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-        const response = await axios.get("/services", {
-          params: {
-            showOnHome: "true",
-            limit: 4,
-            sort: "-createdAt",
-            isPublished: "true",
-          },
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        let fetchedCourses = [];
-        if (Array.isArray(response.data)) fetchedCourses = response.data;
-        else if (response.data && Array.isArray(response.data.data))
-          fetchedCourses = response.data.data;
-        else if (response.data && response.data.courses)
-          fetchedCourses = response.data.courses;
-
-        const featuredCourses = fetchedCourses.filter(
-          (course) => course.showOnHome !== false
-        );
-        setCourses(featuredCourses);
+        const response = await getProjects({ isFeatured: true, limit: 6 });
+        if (response.success) {
+          setProjects(response.data);
+        } else {
+          setError("Failed to fetch projects");
+          console.error("Error fetching projects:", response.error);
+        }
       } catch (err) {
-        console.error("Error fetching projects:", err);
-        setError("Failed to load projects");
+        setError("An error occurred while fetching projects");
+        console.error("Error:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPopularCourses();
+    fetchProjects();
   }, []);
 
+  // Filter projects based on active tab
+  const filteredProjects =
+    activeTab === "All"
+      ? projects
+      : projects.filter((project) => project.category === activeTab);
+
   return (
-    <section className="relative py-32 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden min-h-screen transition-colors duration-300">
+    <section className="relative pt-24 bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden transition-colors duration-300">
+      
       {/* --- Background --- */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
@@ -244,9 +229,7 @@ const FeaturedProjects = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
           <div className="max-w-2xl">
-            <motion.span
-              className="px-3 py-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-[#F47C26] text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2"
-            >
+            <motion.span className="px-3 py-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-[#F47C26] text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#F47C26] animate-pulse"></span>
               Selected Works
             </motion.span>
@@ -262,10 +245,7 @@ const FeaturedProjects = () => {
             </motion.h2>
           </div>
 
-          <motion.div
-            transition={{ delay: 0.2 }}
-            className="hidden md:block"
-          >
+          <motion.div transition={{ delay: 0.2 }} className="hidden md:block">
             <p className="text-gray-500 dark:text-gray-400 text-right max-w-xs text-sm mb-4">
               A curated selection of our most impactful digital solutions,
               engineered for scale and performance.
@@ -315,9 +295,28 @@ const FeaturedProjects = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <AnimatePresence>
-                {courses.map((course, index) => (
-                  <ProjectCard key={course._id} course={course} index={index} />
-                ))}
+                {filteredProjects.map((project, index) => {
+                  // Map project data to match the expected course structure
+                  const courseData = {
+                    ...project,
+                    title: project.title,
+                    description: project.shortDescription,
+                    thumbnail: project.thumbnail,
+                    duration: project.metrics?.durationInWeeks
+                      ? `${project.metrics.durationInWeeks} weeks`
+                      : "N/A",
+                    level: "All Levels",
+                    rating: 5, // Default rating
+                    students: project.metrics?.totalUsers || 0,
+                  };
+                  return (
+                    <ProjectCard
+                      key={project._id}
+                      course={courseData}
+                      index={index}
+                    />
+                  );
+                })}
               </AnimatePresence>
             </div>
           )}

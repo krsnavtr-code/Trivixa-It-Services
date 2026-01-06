@@ -2,8 +2,8 @@ import React from 'react';
 import SEO from '../components/SEO';
 import Banner from '../components/Banner';
 import Categories from '../components/home/Categories';
-import PopularCourses from '../components/home/PopularProjects';
-import FeaturedBooks from '../components/home/FeaturedBooks';
+import PopularProducts from "../components/home/PopularProjects";
+import FeaturedWeGive from "../components/home/FeaturedWeGive";
 import Stats from '../components/home/Stats';
 import Testimonials from '../components/home/Testimonials';
 import Newsletter from '../components/home/Newsletter';
@@ -36,10 +36,10 @@ function Home() {
         <Categories />
 
         {/* Popular Courses */}
-        <PopularCourses />
+        <PopularProducts />
 
         {/* Featured Books */}
-        <FeaturedBooks />
+        <FeaturedWeGive />
 
         {/* Why learn with FirstVITE? */}
         <WhyLearnWithFirstVITE />

@@ -27,6 +27,9 @@ function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [hoveredNav, setHoveredNav] = useState(null);
   const [mobileCategoryOpen, setMobileCategoryOpen] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [showNavbar, setShowNavbar] = useState(true);
+  const navbarRef = useRef(null);
 
   // Chat Bot AI
   const { openChat } = useChat();
@@ -79,11 +82,29 @@ function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      const currentScrollY = window.scrollY;
+
+      // Navbar background / shadow state
+      setIsScrolled(currentScrollY > 10);
+
+      // Show / hide navbar logic
+      if (currentScrollY < 100) {
+        setShowNavbar(true);
+      } else if (currentScrollY > lastScrollY) {
+        // scrolling down
+        setShowNavbar(false);
+      } else {
+        // scrolling up
+        setShowNavbar(true);
+      }
+
+      setLastScrollY(currentScrollY);
     };
-    window.addEventListener("scroll", handleScroll);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   // --- Search Logic ---
   const handleSearch = useCallback(
@@ -157,7 +178,7 @@ function Navbar() {
     { to: "/web-services", label: "Web" },
     { to: "/android-services", label: "Android" },
     { to: "/technologies", label: "Technologies" },
-    { to: "/free-courses", label: "Free Resources" },
+    // { to: "/free-courses", label: "Free Resources" },
     { to: "/packages", label: "Pricing" },
     ...(isAdmin
       ? [{ to: "/admin", label: "Admin Panel", isPrimary: true }]
@@ -170,8 +191,13 @@ function Navbar() {
         {/* =================================================================================
             PART 1: TOP COMMAND BAR 
            ================================================================================= */}
-        <div className="bg-white dark:bg-[#0B2545] border-b border-gray-200 dark:border-white/10 transition-colors duration-300 relative z-50">
-          <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-4">
+
+        <div
+          className={`bg-white dark:bg-[#0B2545] border-b border-gray-200 dark:border-white/10 relative z-50 transform transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            showNavbar ? "translate-y-0" : "-translate-y-full"
+          }`}
+        >
+          <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-12 sm:h-14 flex items-center justify-between gap-4">
             {/* 1. Logo */}
             <Link
               to="/"
@@ -304,13 +330,33 @@ function Navbar() {
                 <div className="relative profile-menu-container z-50">
                   <button
                     onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                    className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border border-gray-200 dark:border-white/10 hover:bg-[#0B2545]/5 dark:hover:bg-white/10 transition-all"
+                    className="flex items-center gap-2 rounded-full border border-gray-200 dark:border-white/10 hover:bg-[#0B2545]/5 dark:hover:bg-white/10 transition-all"
                   >
                     <span className="text-xs font-semibold text-[#0B2545] dark:text-white hidden sm:block max-w-[80px] truncate">
                       {authUser?.name?.split(" ")[0]}
                     </span>
                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#F47C26] to-[#0B2545] flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white dark:ring-[#0B2545]">
-                      {authUser?.name?.charAt(0)}
+                      {(() => {
+                        // If we have a full name, use that
+                        if (authUser?.fullName) {
+                          const nameParts = authUser.fullName
+                            .trim()
+                            .split(/\s+/);
+                          if (nameParts.length > 1) {
+                            return `${nameParts[0][0]}${
+                              nameParts[nameParts.length - 1][0]
+                            }`.toUpperCase();
+                          }
+                          return (
+                            nameParts[0]?.slice(0, 2).toUpperCase() || "US"
+                          );
+                        }
+
+                        // Fallback to email if no full name
+                        return (
+                          authUser?.email?.slice(0, 2) || "P"
+                        ).toUpperCase();
+                      })()}
                     </div>
                   </button>
 
@@ -383,64 +429,72 @@ function Navbar() {
         {/* =================================================================================
             PART 2: BOTTOM NAV RAIL (Desktop Only >= 1024px)
            ================================================================================= */}
-        <div className="hidden lg:block relative">
-          <div
-            className={`w-full border-b border-gray-200 dark:border-white/5 transition-all duration-500 z-40 ${
-              isScrolled
-                ? "bg-white/90 dark:bg-[#0B2545]/90 backdrop-blur-xl h-12 shadow-sm"
-                : "bg-white dark:bg-[#0B2545] h-12"
-            }`}
-          >
-            <div className="max-w-[1920px] mx-auto px-4 h-full flex items-center justify-center">
-              <nav
-                className="flex items-center gap-2"
-                onMouseLeave={() => setHoveredNav(null)}
-              >
-                {/* Explore Dropdown */}
-                <div className="relative group px-4 py-1.5 cursor-pointer flex items-center gap-2 text-sm font-semibold text-[#0B2545] dark:text-white hover:text-[#F47C26] transition-colors border-r border-gray-200 dark:border-white/10 pr-6 mr-2">
-                  <span className="w-2 h-2 rounded-full bg-[#F47C26] animate-pulse"></span>
-                  Explore
-                  <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2 z-[60]">
-                    <CourseMenu />
+        <div
+          className={`bg-white dark:bg-[#0B2545] transform will-change-transform transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            !showNavbar
+              ? "fixed top-0 left-0 right-0 shadow-lg translate-y-0"
+              : "relative translate-y-0"
+          }`}
+        >
+          <div className="hidden lg:block relative">
+            <div
+              className={`w-full border-b border-gray-200 dark:border-white/5 transition-all duration-500 z-40 ${
+                isScrolled
+                  ? "bg-white/90 dark:bg-[#0B2545]/90 backdrop-blur-xl h-12 shadow-sm"
+                  : "bg-white dark:bg-[#0B2545] h-12"
+              }`}
+            >
+              <div className="max-w-[1920px] mx-auto px-4 h-full flex items-center justify-center">
+                <nav
+                  className="flex items-center gap-2"
+                  onMouseLeave={() => setHoveredNav(null)}
+                >
+                  {/* Explore Dropdown */}
+                  <div className="relative group px-4 py-1.5 cursor-pointer flex items-center gap-2 text-sm font-semibold text-[#0B2545] dark:text-white hover:text-[#F47C26] transition-colors border-r border-gray-200 dark:border-white/10 pr-6 mr-2">
+                    <span className="w-2 h-2 rounded-full bg-[#F47C26] animate-pulse"></span>
+                    Explore
+                    <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2 z-[60]">
+                      <CourseMenu />
+                    </div>
                   </div>
-                </div>
 
-                {/* Main Links */}
-                {navItems.map((item) => {
-                  const isActive = location.pathname === item.to;
-                  return (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onMouseEnter={() => setHoveredNav(item.to)}
-                      className={`relative px-4 py-1.5 text-sm font-medium transition-colors duration-200 rounded-lg ${
-                        isActive
-                          ? "text-[#F47C26]"
-                          : "text-[#0B2545] dark:text-gray-300 hover:text-[#0B2545] dark:hover:text-white"
-                      }`}
-                    >
-                      {item.label}
-                      {isActive && (
-                        <motion.div
-                          layoutId="active-dot"
-                          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#F47C26] rounded-full"
-                        />
-                      )}
-                      {hoveredNav === item.to && (
-                        <motion.div
-                          layoutId="nav-spotlight"
-                          className="absolute inset-0 bg-[#0B2545]/5 dark:bg-white/10 rounded-lg -z-10"
-                          transition={{
-                            type: "spring",
-                            stiffness: 350,
-                            damping: 30,
-                          }}
-                        />
-                      )}
-                    </Link>
-                  );
-                })}
-              </nav>
+                  {/* Main Links */}
+                  {navItems.map((item) => {
+                    const isActive = location.pathname === item.to;
+                    return (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        onMouseEnter={() => setHoveredNav(item.to)}
+                        className={`relative px-1 py-1.5 text-sm font-medium transition-colors duration-200 rounded-lg ${
+                          isActive
+                            ? "text-[#F47C26]"
+                            : "text-[#0B2545] dark:text-gray-300 hover:text-[#F47C26] dark:hover:text-[#F47C26]"
+                        }`}
+                      >
+                        {item.label}
+                        {isActive && (
+                          <motion.div
+                            layoutId="active-dot"
+                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#F47C26] rounded-full"
+                          />
+                        )}
+                        {hoveredNav === item.to && (
+                          <motion.div
+                            layoutId="nav-spotlight"
+                            className="absolute inset-0 bg-[#0B2545]/5 dark:bg-white/10 rounded-lg -z-10"
+                            transition={{
+                              type: "spring",
+                              stiffness: 350,
+                              damping: 30,
+                            }}
+                          />
+                        )}
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
             </div>
           </div>
         </div>

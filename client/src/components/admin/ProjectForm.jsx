@@ -366,6 +366,7 @@ const ProjectForm = () => {
       // 1. Append required fields first
       data.append("title", formData.title);
       data.append("category", formData.category);
+      data.append("isFeatured", formData.isFeatured || false);
       
       // 2. Append other text fields if they exist
       const optionalTextFields = [
