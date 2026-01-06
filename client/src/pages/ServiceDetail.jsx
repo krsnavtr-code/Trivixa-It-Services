@@ -4,23 +4,20 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaCalendarAlt,
-  FaClock,
-  FaUsers,
-  FaDesktop,
   FaUserFriends,
   FaGithub,
-  FaGlobe,
   FaPlay,
   FaCheckCircle,
   FaLayerGroup,
   FaIndustry,
   FaCode,
-  FaExternalLinkAlt,
   FaExpand,
+  FaDesktop,
   FaTimes,
   FaChevronLeft,
   FaChevronRight,
   FaImage,
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { getProjectBySlug } from "../api/projectApi"; // Ensure this matches your API file
@@ -160,80 +157,139 @@ const ServiceDetail = () => {
       </div>
 
       {/* --- HERO SECTION --- */}
-      <div className="relative w-full z-10 group">
-        <div className="relative h-[60vh] lg:h-[75vh] w-full overflow-hidden">
-          {/* Main Hero Image */}
-          <motion.img
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-            src={project.heroImage || project.thumbnail}
-            alt={project.title}
-            className="w-full h-full object-cover object-center opacity-80"
-            onError={(e) => {
-              e.target.src =
-                "https://via.placeholder.com/1920x1080?text=No+Image";
-            }}
-          />
-
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f2d] via-[#0a0f2d]/60 to-transparent"></div>
-
-          {/* Expand Button (Visible on Hover) */}
-          <button
-            onClick={() => {
-              setCurrentImageIndex(0);
-              setIsLightboxOpen(true);
-            }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100 hover:bg-[#F47C26] hover:border-[#F47C26]"
-          >
-            <FaExpand className="inline mr-2" /> View Full Image
-          </button>
+      {/* --- NEW HERO SECTION (Split Layout) --- */}
+      <div className="relative pb-16 lg:pt-24 lg:pb-16 overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          {/* Grid Pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+          <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-gradient-to-b from-[#F47C26]/10 via-transparent to-transparent blur-[100px] rounded-full translate-x-1/3 -translate-y-1/4"></div>
         </div>
 
-        {/* Hero Content */}
-        <div className="absolute inset-0 flex flex-col justify-end pb-16 px-6 lg:px-12 max-w-7xl mx-auto pointer-events-none">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="pointer-events-auto"
-          >
-            <button
-              onClick={() => navigate("/services")}
-              className="flex items-center gap-2 text-white/70 hover:text-[#F47C26] mb-6 transition-colors group text-sm font-bold uppercase tracking-wider w-fit"
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* LEFT COL: Text Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />{" "}
-              Back to Services
-            </button>
-
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <span
-                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest ${getStatusColor(
-                  project.projectStatus
-                )}`}
+              {/* Back Button */}
+              <button
+                onClick={() => navigate("/services")}
+                className="flex items-center gap-2 text-white/60 hover:text-[#F47C26] mb-8 transition-colors group text-sm font-bold uppercase tracking-wider"
               >
-                {project.projectStatus}
-              </span>
-              <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white text-xs font-bold uppercase tracking-widest backdrop-blur-md">
-                {typeof project.category === "object"
-                  ? project.category?.name
-                  : "Project"}
-              </span>
-            </div>
+                <div className="p-2 rounded-full border border-white/10 group-hover:border-[#F47C26] transition-colors">
+                  <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
+                </div>
+                Back to Portfolio
+              </button>
 
-            <h1 className="text-5xl md:text-6xl lg:text-8xl font-black text-white leading-tight mb-6 drop-shadow-2xl">
-              {project.title}
-            </h1>
+              {/* Tags */}
+              <div className="flex flex-wrap items-center gap-3 mb-6">
+                <span
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border ${getStatusColor(
+                    project.projectStatus
+                  )
+                    .replace("bg-", "border-")
+                    .replace("text-white", "text-white bg-white/5")}`}
+                >
+                  <span
+                    className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                      getStatusColor(project.projectStatus).split(" ")[0]
+                    }`}
+                  ></span>
+                  {project.projectStatus}
+                </span>
+                <span className="px-4 py-1.5 rounded-full bg-[#0F1430] border border-white/10 text-blue-400 text-xs font-bold uppercase tracking-widest">
+                  {typeof project.category === "object"
+                    ? project.category?.name
+                    : "Project"}
+                </span>
+              </div>
 
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl leading-relaxed font-light drop-shadow-md border-l-4 border-[#F47C26] pl-6">
-              {project.shortDescription}
-            </p>
-          </motion.div>
+              {/* Title */}
+              <h1 className="text-2xl lg:text-5xl font-black text-white leading-[1.1] mb-8 tracking-tight">
+                {project.title}
+                <span className="text-[#F47C26]">.</span>
+              </h1>
+
+              {/* Description */}
+              <p className="text-lg text-gray-400 leading-relaxed mb-10 border-l-2 border-white/10 pl-6">
+                {project.shortDescription}
+              </p>
+
+              {/* Quick Actions */}
+              <div className="flex flex-wrap gap-4">
+                <button
+                  onClick={() => {
+                    const gallerySection =
+                      document.getElementById("project-gallery"); // You might need to add this ID to the gallery section
+                    if (galleryImages.length > 0) {
+                      setCurrentImageIndex(0);
+                      setIsLightboxOpen(true);
+                    }
+                  }}
+                  className="flex items-center gap-3 px-8 py-4 bg-white text-[#0a0f2d] rounded-full font-bold hover:bg-gray-200 transition-all"
+                >
+                  <FaImage /> View Gallery
+                </button>
+                {project.liveUrl && (
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-3 px-8 py-4 bg-transparent border border-white/20 text-white rounded-full font-bold hover:bg-white/5 hover:border-[#F47C26] hover:text-[#F47C26] transition-all"
+                  >
+                    Live Demo <FaExternalLinkAlt size={12} />
+                  </a>
+                )}
+              </div>
+            </motion.div>
+
+            {/* RIGHT COL: Image Display */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative group perspective-1000"
+            >
+              {/* Floating Badge */}
+              <div className="absolute -top-6 -right-6 z-20 bg-[#F47C26] text-white p-4 rounded-2xl shadow-xl shadow-orange-500/20 rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                <FaDesktop size={24} />
+              </div>
+
+              {/* Main Image Container */}
+              <div
+                className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0F1430] aspect-[4/3] cursor-pointer"
+                onClick={() => {
+                  setCurrentImageIndex(0);
+                  setIsLightboxOpen(true);
+                }}
+              >
+                {/* Image */}
+                <img
+                  src={project.heroImage || project.thumbnail}
+                  alt={project.title}
+                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/800x600?text=Project+Showcase";
+                  }}
+                />
+
+                {/* Overlay on hover */}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white font-bold flex items-center gap-2">
+                    <FaExpand /> Expand View
+                  </span>
+                </div>
+              </div>
+
+              {/* Decorative "Blob" behind image */}
+              <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-2xl opacity-20 group-hover:opacity-40 transition-opacity -z-10"></div>
+            </motion.div>
+          </div>
         </div>
       </div>
 
@@ -379,7 +435,8 @@ const ServiceDetail = () => {
                         alt={`Gallery ${idx}`}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100"
                         onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
+                          e.target.src =
+                            "https://via.placeholder.com/600x400?text=Image+Not+Available";
                         }}
                       />
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -526,6 +583,7 @@ const ServiceDetail = () => {
       </div>
 
       {/* --- IMMERSIVE LIGHTBOX OVERLAY --- */}
+      {/* --- NEW IMMERSIVE LIGHTBOX --- */}
       <AnimatePresence>
         {isLightboxOpen && (
           <motion.div
@@ -533,84 +591,94 @@ const ServiceDetail = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col"
+            className="fixed inset-0 z-[100] bg-[#0a0f2d]/90 backdrop-blur-2xl flex flex-col items-center justify-center"
+            onClick={() => setIsLightboxOpen(false)} // Close when clicking background
           >
-            {/* Toolbar */}
-            <div className="absolute top-0 w-full flex justify-between items-center p-6 z-20">
-              <div className="text-white/80 font-mono text-sm">
-                {currentImageIndex + 1} / {galleryImages.length}
+            {/* 1. Header: Counter & Close Button */}
+            <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-start z-50 pointer-events-none">
+              {/* Counter Pill */}
+              <div className="pointer-events-auto bg-black/40 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full text-white/90 font-mono text-sm tracking-widest shadow-lg">
+                {String(currentImageIndex + 1).padStart(2, "0")}{" "}
+                <span className="text-white/30">/</span>{" "}
+                {String(galleryImages.length).padStart(2, "0")}
               </div>
+
+              {/* Close Button */}
               <button
                 onClick={() => setIsLightboxOpen(false)}
-                className="p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors"
+                className="pointer-events-auto group p-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-[#F47C26] hover:border-[#F47C26] transition-all duration-300 shadow-lg"
               >
-                <FaTimes size={20} />
+                <FaTimes
+                  className="group-hover:rotate-90 transition-transform duration-300"
+                  size={20}
+                />
               </button>
             </div>
 
-            {/* Main Image */}
-            <div className="flex-1 flex items-center justify-center p-4 md:p-10 relative">
-              {/* Prev Arrow */}
+            {/* 2. Main Image Stage */}
+            <div className="relative w-full h-full flex items-center justify-center p-4 md:p-12 lg:pb-32">
+              {/* Left Arrow */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   prevImage();
                 }}
-                className="absolute left-4 md:left-8 p-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-[#F47C26] hover:border-[#F47C26] transition-all z-20 group"
+                className="absolute left-4 md:left-8 z-30 p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-black hover:scale-110 transition-all shadow-xl hidden md:flex"
               >
-                <FaChevronLeft
-                  size={24}
-                  className="group-hover:-translate-x-1 transition-transform"
-                />
+                <FaChevronLeft size={20} />
               </button>
 
+              {/* Image */}
               <motion.img
                 key={currentImageIndex}
                 src={galleryImages[currentImageIndex]}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="max-h-[85vh] max-w-full object-contain shadow-2xl rounded-lg"
+                onClick={(e) => e.stopPropagation()} // Prevent close on image click
+                className="max-h-[80vh] max-w-[95vw] md:max-w-[85vw] object-contain shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-lg ring-1 ring-white/10"
               />
 
-              {/* Next Arrow */}
+              {/* Right Arrow */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   nextImage();
                 }}
-                className="absolute right-4 md:right-8 p-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-[#F47C26] hover:border-[#F47C26] transition-all z-20 group"
+                className="absolute right-4 md:right-8 z-30 p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-black hover:scale-110 transition-all shadow-xl hidden md:flex"
               >
-                <FaChevronRight
-                  size={24}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
+                <FaChevronRight size={20} />
               </button>
             </div>
 
-            {/* Thumbnails Navigation */}
-            <div className="h-20 bg-black/40 flex items-center justify-center gap-2 overflow-x-auto p-2">
-              {galleryImages.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentImageIndex(idx)}
-                  className={`relative w-16 h-12 flex-shrink-0 rounded-md overflow-hidden border-2 transition-all ${
-                    currentImageIndex === idx
-                      ? "border-[#F47C26] opacity-100 scale-110"
-                      : "border-transparent opacity-40 hover:opacity-100"
-                  }`}
-                >
-                  <img
-                    src={img}
-                    className="w-full h-full object-cover"
-                    alt={`Thumbnail ${idx + 1}`}
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/80x48?text=Image';
-                    }}
-                  />
-                </button>
-              ))}
+            {/* 3. Floating Thumbnail Dock */}
+            <div
+              className="absolute bottom-6 md:bottom-10 z-50 max-w-[90vw]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-3 rounded-2xl flex items-center gap-3 overflow-x-auto shadow-2xl">
+                {galleryImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-xl overflow-hidden transition-all duration-300 ${
+                      currentImageIndex === idx
+                        ? "ring-2 ring-[#F47C26] scale-110 opacity-100 grayscale-0"
+                        : "opacity-50 grayscale hover:opacity-100 hover:grayscale-0 hover:scale-105"
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      className="w-full h-full object-cover"
+                      alt={`Thumb ${idx}`}
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/100?text=?";
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}

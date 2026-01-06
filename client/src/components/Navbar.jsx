@@ -153,6 +153,7 @@ function Navbar() {
   const navItems = [
     { to: "/", label: "Home" },
     { to: "/services", label: "Services" },
+    { to: "/categories", label: "Categories" },
     { to: "/web-services", label: "Web" },
     { to: "/android-services", label: "Android" },
     { to: "/technologies", label: "Technologies" },
