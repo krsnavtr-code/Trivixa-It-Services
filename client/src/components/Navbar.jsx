@@ -144,10 +144,10 @@ function Navbar() {
   // --- Data ---
   const topNavItems = [
     { to: "/get-quote", label: "Get Quote" },
-    { to: "/products", label: "Products" },
+    // { to: "/products", label: "Products" },
     { to: "/we-serve", label: "We Served" },
     { to: "https://portfolio.trivixa.in", label: "Portfolio" },
-    { to: "https://parlour.trivixa.in", label: "Parlour" },
+    // { to: "https://parlour.trivixa.in", label: "Parlour" },
   ];
 
   const navItems = [

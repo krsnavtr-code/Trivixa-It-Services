@@ -39,6 +39,12 @@ import AllCategories from "./pages/user/AllCategories";
 import Profile from "./pages/user/Profile";
 import Services from "./pages/user/Services.jsx";
 import ServiceDetail from "./pages/user/ServiceDetail.jsx";
+import WebServices from "./pages/WebServices.jsx";
+import AndroidServices from "./pages/AndroidServices.jsx";
+import Technologies from "./pages/Technologies.jsx";
+import Pricing from "./pages/Pricing.jsx";
+import WeServed from "./pages/WeServed.jsx";
+
 
 // --- Pages (Auth) ---
 import LoginPage from "./pages/auth/LoginPage";
@@ -316,6 +322,46 @@ function App() {
                 element={
                   <MainLayout>
                     <ServiceDetail />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/web-services"
+                element={
+                  <MainLayout>
+                    <WebServices />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/android-services"
+                element={
+                  <MainLayout>
+                    <AndroidServices />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/technologies"
+                element={
+                  <MainLayout>
+                    <Technologies />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/packages"
+                element={
+                  <MainLayout>
+                    <Pricing />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/we-serve"
+                element={
+                  <MainLayout>
+                    <WeServed />
                   </MainLayout>
                 }
               />
