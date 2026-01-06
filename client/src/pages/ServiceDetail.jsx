@@ -20,7 +20,7 @@ import {
   FaExternalLinkAlt,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { getProjectBySlug } from "../api/projectApi"; // Ensure this matches your API file
+import { getProjectBySlug } from "../api/projectApi";
 import { getImageUrl } from "../utils/imageUtils";
 
 const ServiceDetail = () => {
@@ -49,14 +49,12 @@ const ServiceDetail = () => {
           setProject(data);
 
           // Combine Hero + Gallery into one array for the slideshow
-          // Filter out duplicates if hero is also in gallery
-          // Ensure we have valid URLs for all images
           const rawImages = [
             data.heroImage || data.thumbnail,
             ...(data.gallery || []),
-          ].filter(Boolean).map(img => 
-            img.startsWith('http') ? img : getImageUrl(img)
-          );
+          ]
+            .filter(Boolean)
+            .map((img) => (img.startsWith("http") ? img : getImageUrl(img)));
 
           // Unique images only
           const uniqueImages = [...new Set(rawImages)];
@@ -113,19 +111,19 @@ const ServiceDetail = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "Live":
-        return "bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.4)]";
+        return "bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-500 dark:border-green-500/20";
       case "In Development":
-        return "bg-yellow-500 text-black shadow-[0_0_15px_rgba(234,179,8,0.4)]";
+        return "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-500/10 dark:text-yellow-500 dark:border-yellow-500/20";
       case "Archived":
-        return "bg-gray-500 text-white";
+        return "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-500/10 dark:text-gray-400 dark:border-gray-500/20";
       default:
-        return "bg-blue-500 text-white";
+        return "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-500 dark:border-blue-500/20";
     }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-[#0a0f2d]">
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-[#0a0f2d]">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#F47C26]"></div>
       </div>
     );
@@ -133,7 +131,7 @@ const ServiceDetail = () => {
 
   if (error || !project) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0f2d] text-white">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-[#0a0f2d] text-gray-900 dark:text-white">
         <h2 className="text-3xl font-bold mb-4 text-[#F47C26]">
           Project Not Found
         </h2>
@@ -148,22 +146,19 @@ const ServiceDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0f2d] text-white font-sans relative overflow-x-hidden selection:bg-[#F47C26] selection:text-white">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f2d] text-gray-900 dark:text-white font-sans relative overflow-x-hidden selection:bg-[#F47C26] selection:text-white transition-colors duration-300">
       {/* Background Ambience */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#F47C26]/5 rounded-full blur-[150px]"></div>
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[150px]"></div>
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-200/20 dark:bg-[#F47C26]/5 rounded-full blur-[150px]"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-orange-200/20 dark:bg-blue-600/5 rounded-full blur-[150px]"></div>
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
       </div>
 
-      {/* --- HERO SECTION --- */}
-      {/* --- NEW HERO SECTION (Split Layout) --- */}
+      {/* --- HERO SECTION (Split Layout) --- */}
       <div className="relative pb-16 lg:pt-24 lg:pb-16 overflow-hidden">
         {/* Decorative Background Elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-          {/* Grid Pattern */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-          <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-gradient-to-b from-[#F47C26]/10 via-transparent to-transparent blur-[100px] rounded-full translate-x-1/3 -translate-y-1/4"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
@@ -177,9 +172,9 @@ const ServiceDetail = () => {
               {/* Back Button */}
               <button
                 onClick={() => navigate("/services")}
-                className="flex items-center gap-2 text-white/60 hover:text-[#F47C26] mb-8 transition-colors group text-sm font-bold uppercase tracking-wider"
+                className="flex items-center gap-2 text-gray-500 dark:text-white/60 hover:text-[#F47C26] dark:hover:text-[#F47C26] mb-8 transition-colors group text-sm font-bold uppercase tracking-wider"
               >
-                <div className="p-2 rounded-full border border-white/10 group-hover:border-[#F47C26] transition-colors">
+                <div className="p-2 rounded-full border border-gray-200 dark:border-white/10 group-hover:border-[#F47C26] transition-colors">
                   <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
                 </div>
                 Back to Portfolio
@@ -190,18 +185,18 @@ const ServiceDetail = () => {
                 <span
                   className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border ${getStatusColor(
                     project.projectStatus
-                  )
-                    .replace("bg-", "border-")
-                    .replace("text-white", "text-white bg-white/5")}`}
+                  )}`}
                 >
                   <span
                     className={`inline-block w-2 h-2 rounded-full mr-2 ${
-                      getStatusColor(project.projectStatus).split(" ")[0]
+                      getStatusColor(project.projectStatus)
+                        .match(/bg-(\w+-\d+)/)?.[0]
+                        ?.replace("bg-", "bg-") || "bg-gray-500"
                     }`}
                   ></span>
                   {project.projectStatus}
                 </span>
-                <span className="px-4 py-1.5 rounded-full bg-[#0F1430] border border-white/10 text-blue-400 text-xs font-bold uppercase tracking-widest">
+                <span className="px-4 py-1.5 rounded-full bg-white dark:bg-[#0F1430] border border-gray-200 dark:border-white/10 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-widest">
                   {typeof project.category === "object"
                     ? project.category?.name
                     : "Project"}
@@ -209,13 +204,13 @@ const ServiceDetail = () => {
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl lg:text-5xl font-black text-white leading-[1.1] mb-8 tracking-tight">
+              <h1 className="text-4xl lg:text-6xl font-black text-gray-900 dark:text-white leading-[1.1] mb-8 tracking-tight">
                 {project.title}
                 <span className="text-[#F47C26]">.</span>
               </h1>
 
               {/* Description */}
-              <p className="text-lg text-gray-400 leading-relaxed mb-10 border-l-2 border-white/10 pl-6">
+              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-10 border-l-4 border-[#F47C26] pl-6">
                 {project.shortDescription}
               </p>
 
@@ -223,14 +218,12 @@ const ServiceDetail = () => {
               <div className="flex flex-wrap gap-4">
                 <button
                   onClick={() => {
-                    const gallerySection =
-                      document.getElementById("project-gallery"); // You might need to add this ID to the gallery section
                     if (galleryImages.length > 0) {
                       setCurrentImageIndex(0);
                       setIsLightboxOpen(true);
                     }
                   }}
-                  className="flex items-center gap-3 px-8 py-4 bg-white text-[#0a0f2d] rounded-full font-bold hover:bg-gray-200 transition-all"
+                  className="flex items-center gap-3 px-8 py-4 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-full font-bold hover:bg-gray-100 dark:hover:bg-white/10 transition-all shadow-sm"
                 >
                   <FaImage /> View Gallery
                 </button>
@@ -239,7 +232,7 @@ const ServiceDetail = () => {
                     href={project.liveUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-3 px-8 py-4 bg-transparent border border-white/20 text-white rounded-full font-bold hover:bg-white/5 hover:border-[#F47C26] hover:text-[#F47C26] transition-all"
+                    className="flex items-center gap-3 px-8 py-4 bg-[#F47C26] text-white rounded-full font-bold shadow-lg shadow-orange-500/20 hover:bg-[#d5671f] hover:-translate-y-1 transition-all"
                   >
                     Live Demo <FaExternalLinkAlt size={12} />
                   </a>
@@ -261,7 +254,7 @@ const ServiceDetail = () => {
 
               {/* Main Image Container */}
               <div
-                className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0F1430] aspect-[4/3] cursor-pointer"
+                className="relative rounded-[2rem] overflow-hidden border border-gray-200 dark:border-white/10 shadow-2xl bg-white dark:bg-[#0F1430] aspect-[4/3] cursor-pointer"
                 onClick={() => {
                   setCurrentImageIndex(0);
                   setIsLightboxOpen(true);
@@ -271,7 +264,7 @@ const ServiceDetail = () => {
                 <img
                   src={project.heroImage || project.thumbnail}
                   alt={project.title}
-                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   onError={(e) => {
                     e.target.src =
                       "https://via.placeholder.com/800x600?text=Project+Showcase";
@@ -279,15 +272,15 @@ const ServiceDetail = () => {
                 />
 
                 {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white font-bold flex items-center gap-2">
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <span className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full border border-white/40 text-white font-bold flex items-center gap-2">
                     <FaExpand /> Expand View
                   </span>
                 </div>
               </div>
 
               {/* Decorative "Blob" behind image */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-2xl opacity-20 group-hover:opacity-40 transition-opacity -z-10"></div>
+              <div className="absolute -inset-4 bg-gradient-to-r from-blue-200 to-orange-200 dark:from-blue-600 dark:to-purple-600 rounded-[2.5rem] blur-2xl opacity-40 dark:opacity-20 group-hover:opacity-60 dark:group-hover:opacity-40 transition-opacity -z-10"></div>
             </motion.div>
           </div>
         </div>
@@ -310,28 +303,28 @@ const ServiceDetail = () => {
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Challenge */}
                     {project.overview.challenge && (
-                      <div className="flex-1 bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:border-[#F47C26]/40 transition-colors">
+                      <div className="flex-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-3xl hover:border-[#F47C26]/40 transition-colors shadow-sm">
                         <h3 className="text-xl font-bold text-[#F47C26] mb-4 flex items-center gap-3">
                           <div className="p-2 bg-[#F47C26]/10 rounded-lg">
                             <FaLayerGroup />
                           </div>{" "}
                           The Challenge
                         </h3>
-                        <p className="text-gray-300 leading-relaxed text-lg">
+                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
                           {project.overview.challenge}
                         </p>
                       </div>
                     )}
                     {/* Solution */}
                     {project.overview.solution && (
-                      <div className="flex-1 bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-3xl hover:border-blue-500/40 transition-colors">
-                        <h3 className="text-xl font-bold text-blue-400 mb-4 flex items-center gap-3">
-                          <div className="p-2 bg-blue-500/10 rounded-lg">
+                      <div className="flex-1 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-3xl hover:border-blue-500/40 transition-colors shadow-sm">
+                        <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 dark:bg-blue-500/10 rounded-lg">
                             <FaCode />
                           </div>{" "}
                           The Solution
                         </h3>
-                        <p className="text-gray-300 leading-relaxed text-lg">
+                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
                           {project.overview.solution}
                         </p>
                       </div>
@@ -340,14 +333,14 @@ const ServiceDetail = () => {
 
                   {/* Result (Full Width) */}
                   {project.overview.result && (
-                    <div className="bg-gradient-to-r from-[#F47C26]/10 to-transparent border border-[#F47C26]/20 p-10 rounded-3xl relative overflow-hidden">
+                    <div className="bg-gradient-to-r from-orange-50 to-transparent dark:from-[#F47C26]/10 dark:to-transparent border border-orange-100 dark:border-[#F47C26]/20 p-10 rounded-3xl relative overflow-hidden shadow-sm">
                       <div className="absolute top-0 right-0 p-10 opacity-10 text-[#F47C26]">
                         <FaCheckCircle size={100} />
                       </div>
-                      <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3 relative z-10">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3 relative z-10">
                         <FaCheckCircle className="text-[#F47C26]" /> The Outcome
                       </h3>
-                      <p className="text-gray-200 leading-relaxed text-xl relative z-10 font-light">
+                      <p className="text-gray-700 dark:text-gray-200 leading-relaxed text-xl relative z-10 font-light">
                         {project.overview.result}
                       </p>
                     </div>
@@ -359,7 +352,7 @@ const ServiceDetail = () => {
             {/* 2. Tech Stack */}
             {project.techStack && project.techStack.length > 0 && (
               <div>
-                <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
                   <span className="w-2 h-8 bg-[#F47C26] rounded-full"></span>{" "}
                   Technologies Used
                 </h3>
@@ -368,7 +361,7 @@ const ServiceDetail = () => {
                     <motion.div
                       key={idx}
                       whileHover={{ scale: 1.05 }}
-                      className="flex items-center gap-3 px-6 py-4 bg-[#0F1430] border border-white/5 rounded-2xl shadow-lg hover:border-[#F47C26]/50 transition-all cursor-default"
+                      className="flex items-center gap-3 px-6 py-4 bg-white dark:bg-[#0F1430] border border-gray-200 dark:border-white/5 rounded-2xl shadow-md hover:border-[#F47C26]/50 transition-all cursor-default"
                     >
                       {tech.iconUrl ? (
                         <img
@@ -379,7 +372,7 @@ const ServiceDetail = () => {
                       ) : (
                         <FaCode className="text-[#F47C26]" size={20} />
                       )}
-                      <span className="font-bold text-gray-200 text-lg">
+                      <span className="font-bold text-gray-800 dark:text-gray-200 text-lg">
                         {tech.name}
                       </span>
                     </motion.div>
@@ -390,12 +383,12 @@ const ServiceDetail = () => {
 
             {/* 3. Full Description */}
             {project.fullDescription && (
-              <div className="prose prose-invert prose-lg max-w-none">
-                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+              <div className="prose prose-lg prose-gray dark:prose-invert max-w-none">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
                   <span className="w-2 h-8 bg-blue-500 rounded-full"></span>{" "}
                   In-Depth Analysis
                 </h3>
-                <div className="text-gray-300 leading-8 whitespace-pre-line text-lg font-light">
+                <div className="text-gray-600 dark:text-gray-300 leading-8 whitespace-pre-line text-lg font-light">
                   {project.fullDescription}
                 </div>
               </div>
@@ -403,9 +396,9 @@ const ServiceDetail = () => {
 
             {/* 4. MODERN GALLERY STRIP */}
             {galleryImages.length > 0 && (
-              <div className="pt-10 border-t border-white/10">
+              <div className="pt-10 border-t border-gray-200 dark:border-white/10">
                 <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                     <FaImage className="text-[#F47C26]" /> Project Gallery
                   </h3>
                   <button
@@ -413,7 +406,7 @@ const ServiceDetail = () => {
                       setCurrentImageIndex(0);
                       setIsLightboxOpen(true);
                     }}
-                    className="text-sm font-bold text-[#F47C26] hover:text-white transition-colors flex items-center gap-2"
+                    className="text-sm font-bold text-[#F47C26] hover:text-orange-700 dark:hover:text-white transition-colors flex items-center gap-2"
                   >
                     View All <FaArrowRight />
                   </button>
@@ -428,18 +421,18 @@ const ServiceDetail = () => {
                         setCurrentImageIndex(idx);
                         setIsLightboxOpen(true);
                       }}
-                      className="relative aspect-video rounded-xl overflow-hidden cursor-pointer group bg-black/40 border border-white/5"
+                      className="relative aspect-video rounded-xl overflow-hidden cursor-pointer group bg-gray-100 dark:bg-black/40 border border-gray-200 dark:border-white/5"
                     >
                       <img
                         src={img}
                         alt={`Gallery ${idx}`}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                         onError={(e) => {
                           e.target.src =
                             "https://via.placeholder.com/600x400?text=Image+Not+Available";
                         }}
                       />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <FaExpand className="text-white text-2xl" />
                       </div>
                     </motion.div>
@@ -453,49 +446,49 @@ const ServiceDetail = () => {
           <div className="lg:col-span-4">
             <div className="sticky top-28 space-y-8">
               {/* Info Card */}
-              <div className="bg-[#0F1430] border border-white/10 p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+              <div className="bg-white dark:bg-[#0F1430] border border-gray-200 dark:border-white/10 p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#F47C26]/10 rounded-full blur-[50px] -mr-10 -mt-10"></div>
 
-                <h3 className="text-xl font-bold text-white mb-6">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                   Project Details
                 </h3>
 
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 bg-white/5 rounded-xl text-blue-400">
+                    <div className="p-3 bg-blue-50 dark:bg-white/5 rounded-xl text-blue-600 dark:text-blue-400">
                       <FaUserFriends size={20} />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">
                         Client
                       </p>
-                      <p className="text-white font-medium text-lg">
+                      <p className="text-gray-900 dark:text-white font-medium text-lg">
                         {project.clientName || "Confidential"}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="p-3 bg-white/5 rounded-xl text-purple-400">
+                    <div className="p-3 bg-purple-50 dark:bg-white/5 rounded-xl text-purple-600 dark:text-purple-400">
                       <FaIndustry size={20} />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">
                         Industry
                       </p>
-                      <p className="text-white font-medium text-lg">
+                      <p className="text-gray-900 dark:text-white font-medium text-lg">
                         {project.industry}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="p-3 bg-white/5 rounded-xl text-green-400">
+                    <div className="p-3 bg-green-50 dark:bg-white/5 rounded-xl text-green-600 dark:text-green-400">
                       <FaCalendarAlt size={20} />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">
                         Completion
                       </p>
-                      <p className="text-white font-medium text-lg">
+                      <p className="text-gray-900 dark:text-white font-medium text-lg">
                         {formatDate(project.completionDate)}
                       </p>
                     </div>
@@ -503,7 +496,7 @@ const ServiceDetail = () => {
                 </div>
 
                 {/* Links */}
-                <div className="mt-8 pt-8 border-t border-white/10 space-y-3">
+                <div className="mt-8 pt-8 border-t border-gray-200 dark:border-white/10 space-y-3">
                   {project.liveUrl && (
                     <a
                       href={project.liveUrl}
@@ -521,7 +514,7 @@ const ServiceDetail = () => {
                         href={project.gitRepoUrlOne}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-bold text-sm transition-all"
+                        className="flex items-center justify-center gap-2 py-3 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white rounded-xl font-bold text-sm transition-all"
                       >
                         <FaGithub /> Repo
                       </a>
@@ -531,7 +524,7 @@ const ServiceDetail = () => {
                         href={project.videoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-bold text-sm transition-all"
+                        className="flex items-center justify-center gap-2 py-3 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white rounded-xl font-bold text-sm transition-all"
                       >
                         <FaPlay size={12} /> Demo
                       </a>
@@ -543,32 +536,32 @@ const ServiceDetail = () => {
               {/* Metrics */}
               {project.metrics && (
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-[#0F1430] p-5 rounded-2xl border border-white/5 text-center hover:border-[#F47C26]/30 transition-colors">
-                    <p className="text-3xl font-black text-white mb-1">
+                  <div className="bg-white dark:bg-[#0F1430] p-5 rounded-2xl border border-gray-200 dark:border-white/5 text-center hover:border-[#F47C26]/30 transition-colors shadow-sm dark:shadow-none">
+                    <p className="text-3xl font-black text-gray-900 dark:text-white mb-1">
                       {project.metrics.durationInWeeks || 0}
                     </p>
                     <p className="text-xs text-gray-500 uppercase font-bold">
                       Weeks
                     </p>
                   </div>
-                  <div className="bg-[#0F1430] p-5 rounded-2xl border border-white/5 text-center hover:border-blue-500/30 transition-colors">
-                    <p className="text-3xl font-black text-white mb-1">
+                  <div className="bg-white dark:bg-[#0F1430] p-5 rounded-2xl border border-gray-200 dark:border-white/5 text-center hover:border-blue-500/30 transition-colors shadow-sm dark:shadow-none">
+                    <p className="text-3xl font-black text-gray-900 dark:text-white mb-1">
                       {project.metrics.teamSize || 0}
                     </p>
                     <p className="text-xs text-gray-500 uppercase font-bold">
                       Experts
                     </p>
                   </div>
-                  <div className="bg-[#0F1430] p-5 rounded-2xl border border-white/5 text-center hover:border-purple-500/30 transition-colors">
-                    <p className="text-3xl font-black text-white mb-1">
+                  <div className="bg-white dark:bg-[#0F1430] p-5 rounded-2xl border border-gray-200 dark:border-white/5 text-center hover:border-purple-500/30 transition-colors shadow-sm dark:shadow-none">
+                    <p className="text-3xl font-black text-gray-900 dark:text-white mb-1">
                       {project.metrics.totalScreens || 0}
                     </p>
                     <p className="text-xs text-gray-500 uppercase font-bold">
                       Screens
                     </p>
                   </div>
-                  <div className="bg-[#0F1430] p-5 rounded-2xl border border-white/5 text-center hover:border-green-500/30 transition-colors">
-                    <p className="text-3xl font-black text-white mb-1">
+                  <div className="bg-white dark:bg-[#0F1430] p-5 rounded-2xl border border-gray-200 dark:border-white/5 text-center hover:border-green-500/30 transition-colors shadow-sm dark:shadow-none">
+                    <p className="text-3xl font-black text-gray-900 dark:text-white mb-1">
                       {project.metrics.totalUsers || 0}
                     </p>
                     <p className="text-xs text-gray-500 uppercase font-bold">
@@ -583,7 +576,6 @@ const ServiceDetail = () => {
       </div>
 
       {/* --- IMMERSIVE LIGHTBOX OVERLAY --- */}
-      {/* --- NEW IMMERSIVE LIGHTBOX --- */}
       <AnimatePresence>
         {isLightboxOpen && (
           <motion.div
@@ -595,8 +587,10 @@ const ServiceDetail = () => {
             onClick={() => setIsLightboxOpen(false)} // Close when clicking background
           >
             {/* 1. Header: Counter & Close Button */}
+
             <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-start z-50 pointer-events-none">
               {/* Counter Pill */}
+
               <div className="pointer-events-auto bg-black/40 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full text-white/90 font-mono text-sm tracking-widest shadow-lg">
                 {String(currentImageIndex + 1).padStart(2, "0")}{" "}
                 <span className="text-white/30">/</span>{" "}
@@ -604,6 +598,7 @@ const ServiceDetail = () => {
               </div>
 
               {/* Close Button */}
+
               <button
                 onClick={() => setIsLightboxOpen(false)}
                 className="pointer-events-auto group p-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-[#F47C26] hover:border-[#F47C26] transition-all duration-300 shadow-lg"
@@ -616,11 +611,14 @@ const ServiceDetail = () => {
             </div>
 
             {/* 2. Main Image Stage */}
+
             <div className="relative w-full h-full flex items-center justify-center p-4 md:p-12 lg:pb-32">
               {/* Left Arrow */}
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
+
                   prevImage();
                 }}
                 className="absolute left-4 md:left-8 z-30 p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-black hover:scale-110 transition-all shadow-xl hidden md:flex"
@@ -629,6 +627,7 @@ const ServiceDetail = () => {
               </button>
 
               {/* Image */}
+
               <motion.img
                 key={currentImageIndex}
                 src={galleryImages[currentImageIndex]}
@@ -641,9 +640,11 @@ const ServiceDetail = () => {
               />
 
               {/* Right Arrow */}
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
+
                   nextImage();
                 }}
                 className="absolute right-4 md:right-8 z-30 p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-black hover:scale-110 transition-all shadow-xl hidden md:flex"
@@ -653,6 +654,7 @@ const ServiceDetail = () => {
             </div>
 
             {/* 3. Floating Thumbnail Dock */}
+
             <div
               className="absolute bottom-6 md:bottom-10 z-50 max-w-[90vw]"
               onClick={(e) => e.stopPropagation()}
