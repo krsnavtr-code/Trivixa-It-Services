@@ -40,7 +40,7 @@ function Navbar() {
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState({
-    courses: [],
+    projects: [],
     categories: [],
   });
   const [showResults, setShowResults] = useState(false);
@@ -90,17 +90,17 @@ function Navbar() {
     debounce(async (query) => {
       const trimmedQuery = query.trim();
       if (!trimmedQuery) {
-        setSearchResults({ courses: [], categories: [] });
+        setSearchResults({ projects: [], categories: [] });
         return;
       }
       try {
         setIsSearching(true);
-        const response = await api.get("/courses", {
+        const response = await api.get("/projects", {
           params: { search: trimmedQuery, limit: 5 },
         });
-        const courses = response?.data?.data || response?.data || [];
+        const projects = response?.data?.data || response?.data || [];
         setSearchResults({
-          courses: Array.isArray(courses) ? courses : [],
+          projects: Array.isArray(projects) ? projects : [],
           categories: [],
         });
       } catch (error) {
@@ -120,9 +120,9 @@ function Navbar() {
   };
 
   const handleResultClick = (item) => {
-    const courseId = item.slug || item._id;
-    if (courseId) {
-      navigate(`/course/${courseId}`);
+    const projectSlug = item.slug;
+    if (projectSlug) {
+      navigate(`/services/${projectSlug}`);
       setSearchQuery("");
       setShowResults(false);
       setIsMobileMenuOpen(false);
@@ -200,7 +200,7 @@ function Navbar() {
                   onChange={handleSearchChange}
                   onFocus={() => setShowResults(true)}
                   className="w-full h-10 pl-10 pr-4 bg-[#0B2545]/5 dark:bg-white/10 border border-transparent dark:border-white/10 rounded-xl text-sm text-[#0B2545] dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:bg-white dark:focus:bg-[#0B2545] focus:ring-2 focus:ring-[#F47C26]/50 focus:border-[#F47C26] transition-all duration-300 shadow-inner"
-                  placeholder="Search courses, services..."
+                  placeholder="Search projects..."
                 />
 
                 {/* Desktop Search Results Dropdown */}
@@ -217,27 +217,32 @@ function Navbar() {
                           <div className="p-4 text-center text-xs text-gray-500">
                             Searching...
                           </div>
-                        ) : searchResults.courses.length === 0 ? (
+                        ) : searchResults.projects.length === 0 ? (
                           <div className="p-4 text-center text-xs text-gray-500">
-                            No results found
+                            No projects found
                           </div>
                         ) : (
-                          searchResults.courses.map((course) => (
-                            <button
-                              key={course._id}
-                              onClick={() => handleResultClick(course)}
-                              className="w-full text-left px-4 py-3 hover:bg-[#0B2545]/5 dark:hover:bg-white/10 flex items-center justify-between group transition-colors border-b border-gray-100 dark:border-white/5 last:border-0"
+                          searchResults.projects.map((project) => (
+                            <Link
+                              key={project._id}
+                              to={`/services/${project.slug}`}
+                              className="block w-full text-left px-4 py-3 hover:bg-[#0B2545]/5 dark:hover:bg-white/10 flex items-center justify-between group transition-colors border-b border-gray-100 dark:border-white/5 last:border-0"
+                              onClick={() => {
+                                setSearchQuery("");
+                                setShowResults(false);
+                                setIsMobileMenuOpen(false);
+                              }}
                             >
                               <div>
                                 <h4 className="text-sm font-semibold text-[#0B2545] dark:text-white group-hover:text-[#F47C26] transition-colors line-clamp-1">
-                                  {course.title}
+                                  {project.title}
                                 </h4>
                                 <span className="text-[10px] uppercase tracking-wide text-gray-500 group-hover:text-gray-400">
-                                  {course.category?.name || "General"}
+                                  {project.category?.name || "Project"}
                                 </span>
                               </div>
                               <FaChevronRight className="text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0" />
-                            </button>
+                            </Link>
                           ))
                         )}
                       </div>
@@ -486,19 +491,36 @@ function Navbar() {
                       <div className="p-4 text-center text-xs text-gray-500">
                         Searching...
                       </div>
-                    ) : searchResults.courses.length > 0 ? (
-                      searchResults.courses.map((course) => (
-                        <button
-                          key={course._id}
-                          onClick={() => handleResultClick(course)}
-                          className="w-full text-left px-4 py-3 text-sm text-[#0B2545] dark:text-white border-b border-gray-100 dark:border-white/5 last:border-0"
+                    ) : searchResults.projects.length > 0 ? (
+                      searchResults.projects.map((project) => (
+                        <Link
+                          key={project._id}
+                          to={`/services/${project.slug}`}
+                          className="block w-full text-left px-4 py-3 text-sm text-[#0B2545] dark:text-white border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-[#0B2545]/5 dark:hover:bg-white/10"
+                          onClick={() => {
+                            setSearchQuery("");
+                            setShowResults(false);
+                            setIsMobileMenuOpen(false);
+                          }}
                         >
-                          {course.title}
-                        </button>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium text-[#0B2545] dark:text-white line-clamp-1">
+                                {project.title}
+                              </h4>
+                              {project.category?.name && (
+                                <span className="text-[10px] uppercase tracking-wide text-gray-500">
+                                  {project.category.name}
+                                </span>
+                              )}
+                            </div>
+                            <FaChevronRight className="text-[10px] text-gray-400" />
+                          </div>
+                        </Link>
                       ))
                     ) : (
                       <div className="p-4 text-center text-xs text-gray-500">
-                        No results
+                        No projects found
                       </div>
                     )}
                   </div>
