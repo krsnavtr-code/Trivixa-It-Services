@@ -206,7 +206,7 @@ function Navbar() {
               <div className="relative overflow-hidden rounded-lg">
                 <img
                   src="/images/trivixa-fix-size-brand-logo.png"
-                  alt="Trivixa"
+                  alt="Trivixa IT Solutions – Web & Digital Services"
                   className="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 />
               </div>

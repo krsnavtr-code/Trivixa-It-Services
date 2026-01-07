@@ -8,6 +8,7 @@ import {
   FaWhatsapp,
   FaShareAlt,
   FaTimes,
+  FaPhoneAlt ,
 } from "react-icons/fa";
 
 const SocialMediaFloating = () => {
@@ -32,32 +33,32 @@ const SocialMediaFloating = () => {
     {
       name: "Facebook",
       icon: <FaFacebookF />,
-      url: "https://facebook.com",
+      url: "https://www.facebook.com/profile.php?id=61585637262250",
       color: "hover:bg-[#1877F2]",
     },
     {
       name: "Twitter",
       icon: <FaTwitter />,
-      url: "https://twitter.com",
+      url: "https://x.com/TrivixaIt",
       color: "hover:bg-[#1DA1F2]",
     },
     {
       name: "Instagram",
       icon: <FaInstagram />,
-      url: "https://instagram.com",
+      url: "https://www.instagram.com/trivixa_it_solution",
       color:
         "hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-red-500 hover:to-purple-500",
     },
     {
       name: "LinkedIn",
       icon: <FaLinkedinIn />,
-      url: "https://linkedin.com",
+      url: "https://www.linkedin.com/in/trivixa-it-services-75956a3a3/",
       color: "hover:bg-[#0A66C2]",
     },
     {
       name: "WhatsApp",
       icon: <FaWhatsapp />,
-      url: "https://whatsapp.com",
+      url: "https://wa.me/919084407615",
       color: "hover:bg-[#25D366]",
     },
   ];
@@ -86,7 +87,7 @@ const SocialMediaFloating = () => {
 
   return (
     <div
-      className={`fixed right-0 top-1/2 -translate-y-1/2 z-[100] flex flex-col items-end pr-2 transition-opacity duration-300 ${
+      className={`fixed left-0 top-1/2 -translate-y-1/2 z-[100] flex flex-col items-end pr-2 transition-opacity duration-300 ${
         isScrolled && !isOpen ? "opacity-30 hover:opacity-100" : "opacity-100"
       }`}
       onMouseEnter={() => setIsOpen(true)}
@@ -100,26 +101,26 @@ const SocialMediaFloating = () => {
       >
         {/* --- Toggle Button (Always Visible) --- */}
         <motion.div
-          className={`w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer text-white shadow-lg transition-all duration-300 ${
-            isOpen ? "bg-red-500 rotate-180" : "bg-[#F47C26]"
+          className={`w-6 h-6 flex items-center justify-center rounded-xl cursor-pointer text-white shadow-lg transition-all duration-300 ${
+            isOpen ? "" : "bg-[#F47C26]"
           }`}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-          {isOpen ? <FaTimes /> : <FaShareAlt />}
+          {isOpen ? "" : <FaPhoneAlt />}
         </motion.div>
 
         {/* --- Social Icons (Reveal on Hover) --- */}
         <AnimatePresence>
           {isOpen &&
-            socialLinks.map((social, index) => (
+            socialLinks.map((social) => (
               <motion.a
                 key={social.name}
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 variants={itemVariants}
-                className={`w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 shadow-sm border border-gray-100 dark:border-white/5 transition-all duration-300 ${social.color} hover:text-white relative group`}
+                className={`w-8 h-8 flex items-center justify-center rounded-xl bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 shadow-sm border border-gray-100 dark:border-white/5 transition-all duration-300 ${social.color} hover:text-white relative group`}
               >
                 {/* Icon */}
                 <span className="text-lg">{social.icon}</span>

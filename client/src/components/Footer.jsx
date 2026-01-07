@@ -74,18 +74,23 @@ const Footer = () => {
                 color="hover:bg-green-500 hover:border-green-500"
               />
               <SocialIcon
-                href="#"
+                href="https://www.linkedin.com/in/trivixa-it-services-75956a3a3/"
                 icon={<FaLinkedinIn />}
                 color="hover:bg-blue-600 hover:border-blue-600"
               />
               <SocialIcon
-                href="#"
+                href="https://x.com/TrivixaIt"
                 icon={<FaTwitter />}
                 color="hover:bg-sky-500 hover:border-sky-500"
               />
               <SocialIcon
-                href="#"
+                href="https://www.instagram.com/trivixa_it_solution"
                 icon={<FaInstagram />}
+                color="hover:bg-pink-600 hover:border-pink-600"
+              />
+              <SocialIcon
+                href="https://www.facebook.com/profile.php?id=61585637262250"
+                icon={<FaFacebookF />}
                 color="hover:bg-pink-600 hover:border-pink-600"
               />
             </div>
@@ -119,7 +124,10 @@ const Footer = () => {
               <FooterLink to="/blog" text="Blog & News" />
               <FooterLink to="/privacy-policy" text="Privacy Policy" />
               <FooterLink to="/terms-of-service" text="Terms & Conditions" />
-              <FooterLink to="/payment-t-and-c" text="Payment Terms & Conditions" />
+              <FooterLink
+                to="/payment-t-and-c"
+                text="Payment Terms & Conditions"
+              />
               <FooterLink to="/sitemap" text="Sitemap" />
             </ul>
           </motion.div>

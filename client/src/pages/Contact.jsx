@@ -144,15 +144,12 @@ export default function Contact() {
               Have a project in mind or just want to say hi? We'd love to hear
               from you. Here is how our engagement process works:
             </p>
-            
+
             {/* Visual Context for User Understanding */}
-            <div className="mt-8 flex justify-center opacity-90">
-               
-            </div>
+            <div className="mt-8 flex justify-center opacity-90"></div>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-            
             {/* --- Left Column: Contact Info --- */}
             <motion.div
               variants={containerVariants}
@@ -200,30 +197,32 @@ export default function Contact() {
                 variants={itemVariants}
                 className="bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 p-8 rounded-3xl shadow-lg dark:shadow-none"
               >
-                <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">Connect With Us</h3>
+                <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">
+                  Connect With Us
+                </h3>
                 <div className="flex flex-wrap gap-4">
                   <SocialLink
-                    href="#"
+                    href="https://www.facebook.com/profile.php?id=61585637262250"
                     icon={<FaFacebookF />}
                     color="hover:bg-blue-600 hover:border-blue-600"
                   />
                   <SocialLink
-                    href="#"
+                    href="https://x.com/TrivixaIt"
                     icon={<FaTwitter />}
                     color="hover:bg-sky-500 hover:border-sky-500"
                   />
                   <SocialLink
-                    href="#"
+                    href="https://www.instagram.com/trivixa_it_solution"
                     icon={<FaInstagram />}
                     color="hover:bg-pink-600 hover:border-pink-600"
                   />
                   <SocialLink
-                    href="#"
+                    href="https://www.linkedin.com/in/trivixa-it-services-75956a3a3/"
                     icon={<FaLinkedinIn />}
                     color="hover:bg-blue-700 hover:border-blue-700"
                   />
                   <SocialLink
-                    href="#"
+                    href="https://wa.me/919084407615"
                     icon={<FaWhatsapp />}
                     color="hover:bg-green-500 hover:border-green-500"
                   />
@@ -241,7 +240,9 @@ export default function Contact() {
               {/* Decorative Gradient Line */}
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-[#F47C26] to-purple-600"></div>
 
-              <h2 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">Send a Message</h2>
+              <h2 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">
+                Send a Message
+              </h2>
 
               <AnimatePresence mode="wait">
                 {isSuccess ? (
@@ -259,7 +260,8 @@ export default function Contact() {
                       Message Received!
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-sm mx-auto">
-                      Thank you for reaching out. Our team will review your inquiry and get back to you within 24 hours.
+                      Thank you for reaching out. Our team will review your
+                      inquiry and get back to you within 24 hours.
                     </p>
                     <button
                       onClick={() => setIsSuccess(false)}
@@ -435,7 +437,6 @@ export default function Contact() {
                   </motion.form>
                 )}
               </AnimatePresence>
-            
             </motion.div>
           </div>
         </div>

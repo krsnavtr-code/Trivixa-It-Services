@@ -19,27 +19,27 @@ const ContactFormModal = (props) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [courses, setCourses] = useState([]);
-  const [isLoadingCourses, setIsLoadingCourses] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
-  // Load courses
+  // Load projects
   useEffect(() => {
     if (isOpen) {
-      const loadCourses = async () => {
+      const loadProjects = async () => {
         try {
-          const response = await fetch("/api/services");
+          const response = await fetch("/api/projects");
           if (response.ok) {
             const data = await response.json();
-            setCourses(Array.isArray(data) ? data : data.data || []);
+            setProjects(Array.isArray(data) ? data : data.data || []);
           }
         } catch (error) {
-          console.error("Error loading courses:", error);
+          console.error("Error loading projects:", error);
         } finally {
-          setIsLoadingCourses(false);
+          setIsLoadingProjects(false);
         }
       };
-      loadCourses();
+      loadProjects();
     }
   }, [isOpen]);
 
@@ -72,13 +72,14 @@ const ContactFormModal = (props) => {
     try {
       const submissionData = {
         ...formData,
-        courseId: formData.courseInterest,
-        courseTitle: formData.courseInterest
-          ? courses.find((c) => c._id === formData.courseInterest)?.title || ""
+        projectId: formData.projectInterest,
+        projectTitle: formData.projectInterest
+          ? projects.find((p) => p._id === formData.projectInterest)?.title ||
+            ""
           : "",
       };
 
-      delete submissionData.courseInterest;
+      delete submissionData.projectInterest;
 
       const result = await submitContactForm(submissionData);
 
@@ -89,7 +90,7 @@ const ContactFormModal = (props) => {
           email: "",
           phone: "",
           message: "",
-          courseInterest: "",
+          projectInterest: "",
           agreedToTerms: false,
         });
 
@@ -265,38 +266,38 @@ const ContactFormModal = (props) => {
                     />
                   </div>
 
-                  {/* Course Select */}
+                  {/* Project Select */}
                   <div className="space-y-1">
                     <label
-                      htmlFor="courseInterest"
+                      htmlFor="projectInterest"
                       className="block text-xs font-medium text-gray-300 uppercase tracking-wide"
                     >
-                      I'm interested in (Optional)
+                      I need like this (Optional)
                     </label>
                     <div className="relative">
                       <select
-                        id="courseInterest"
-                        name="courseInterest"
-                        value={formData.courseInterest}
+                        id="projectInterest"
+                        name="projectInterest"
+                        value={formData.projectInterest}
                         onChange={handleChange}
-                        disabled={isLoadingCourses}
+                        disabled={isLoadingProjects}
                         className="block w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#F47C26] focus:ring-1 focus:ring-[#F47C26] transition-all text-sm appearance-none"
                       >
                         <option value="" className="bg-[#0a0f2d] text-gray-400">
-                          Select a course
+                          Select a project
                         </option>
-                        {isLoadingCourses ? (
+                        {isLoadingProjects ? (
                           <option disabled className="bg-[#0a0f2d]">
-                            Loading courses...
+                            Loading projects...
                           </option>
                         ) : (
-                          courses.map((course) => (
+                          projects.map((project) => (
                             <option
-                              key={course._id || course.id}
-                              value={course._id || course.id}
+                              key={project._id || project.id}
+                              value={project._id || project.id}
                               className="bg-[#0a0f2d] text-white"
                             >
-                              {course.title || course.name}
+                              {project.title || project.name}
                             </option>
                           ))
                         )}

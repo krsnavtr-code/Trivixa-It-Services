@@ -83,7 +83,7 @@ const ChatButton = () => {
           onMouseLeave={() => setIsHovered(false)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className={`pointer-events-auto relative w-14 h-14 rounded-full shadow-[0_8px_30px_rgba(244,124,38,0.3)] flex items-center justify-center transition-all duration-500 border border-white/10 ${
+          className={`pointer-events-auto relative w-10 h-10 rounded-full shadow-[0_8px_30px_rgba(244,124,38,0.3)] flex items-center justify-center transition-all duration-500 border border-white/10 ${
             isOpen
               ? "bg-gray-900 dark:bg-black text-white" // Close state
               : isScrollMode

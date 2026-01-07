@@ -188,7 +188,7 @@ const Banner = () => {
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start"
             >
-              <Link to="/courses" className="group relative w-full sm:w-auto">
+              <Link to="/" className="group relative w-full sm:w-auto">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-[#F47C26] to-purple-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
                 <button className="relative w-full px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all">
                   Start Building
