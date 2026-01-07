@@ -151,7 +151,7 @@ const AllCategories = () => {
             {categories.map((category) => (
               <motion.div key={category._id} variants={itemVariants}>
                 <Link
-                  to={`/services/category/${category.name
+                  to={`/services/${category.name
                     .toLowerCase()
                     .replace(/\s+/g, "-")}`}
                   className="group relative block bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl p-6 hover:shadow-xl hover:border-orange-200 dark:hover:bg-white/[0.08] dark:hover:border-[#F47C26]/30 transition-all duration-300 hover:-translate-y-2 overflow-hidden"
