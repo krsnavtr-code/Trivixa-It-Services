@@ -12,12 +12,14 @@ import {
   FaShieldAlt,
   FaLaptopCode,
 } from "react-icons/fa";
+import ScheduleMeetingModal from "../components/common/ScheduleMeetingModal";
 
 // --- Pricing Data Configuration ---
 const pricingData = {
   web: {
     title: "Web Development",
-    subtitle: "Scalable websites built with React, Node.js, PHP, and Laravel.",
+    subtitle:
+      "Scalable websites built with your choice of MERN Stack or PHP Laravel.",
     plans: [
       {
         id: "starter",
@@ -25,18 +27,20 @@ const pricingData = {
         tagline: "Basic Website Development",
         price: "₹15,000 - ₹20,000",
         isPopular: false,
-        technologies: ["HTML5", "CSS3", "Bootstrap", "Basic PHP"],
+        // Starter is usually simple, so we keep it lightweight
+        technologies: ["HTML5/CSS3", "Bootstrap", "Basic PHP", "React"],
         includes: [
+          "Dynamic",
           "Up to 5 Pages (Home, About, Services)",
           "Responsive Design (Mobile & Desktop)",
           "Basic UI Layout",
           "Contact Form & WhatsApp Chat",
           "Basic SEO Setup",
           "SSL-Ready Structure",
-        ],
-        excludes: [
           "Admin Panel / CMS",
           "Blog System",
+        ],
+        excludes: [
           "Advanced Animations",
           "Payment Gateway",
           "Hosting & Domain",
@@ -49,8 +53,10 @@ const pricingData = {
         price: "₹25,000 - ₹35,000",
         isPopular: true,
         badgeText: "Most Popular",
-        technologies: ["WordPress", "Laravel", "MySQL", "jQuery"],
+        // Giving the choice here
+        technologies: ["MERN Stack OR PHP Laravel (Your Choice)"],
         includes: [
+          "Dynamic",
           "8 to 12 Pages",
           "Custom UI/UX Design",
           "Service Detail Pages",
@@ -74,8 +80,10 @@ const pricingData = {
         price: "₹45,000 - ₹70,000",
         isPopular: false,
         badgeText: "Recommended",
-        technologies: ["React.js", "Node.js", "MongoDB", "Tailwind"],
+        // Giving the choice here
+        technologies: ["MERN Stack OR PHP Laravel (Your Choice)"],
         includes: [
+          "Dynamic",
           "15 to 20 Pages",
           "Advanced UI/UX with Animations",
           "Fully Responsive & Speed Optimized",
@@ -97,8 +105,10 @@ const pricingData = {
         tagline: "Custom/SaaS Web Application",
         price: "₹80,000 - ₹1.5L+",
         isPopular: false,
-        technologies: ["MERN Stack", "Next.js", "AWS", "Docker"],
+        // Enterprise usually implies highly scalable architectures
+        technologies: ["Advanced MERN / Laravel + AWS/Docker"],
         includes: [
+          "Dynamic",
           "Unlimited Pages",
           "Fully Custom UI/UX Design",
           "Advanced Dashboard & Role Access",
@@ -177,6 +187,7 @@ const pricingData = {
 
 const Pricing = () => {
   const [activeCategory, setActiveCategory] = useState("web");
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f2d] text-gray-900 dark:text-white font-sans transition-colors duration-500 pb-20 relative overflow-hidden">
@@ -337,8 +348,8 @@ const Pricing = () => {
 
                   {/* CTA */}
                   <div className="mt-auto">
-                    <Link
-                      to="/contact"
+                    <button
+                      onClick={() => setIsScheduleModalOpen(true)}
                       className={`block w-full py-3 rounded-xl text-center font-bold text-sm transition-all ${
                         plan.isPopular
                           ? "bg-[#F47C26] text-white hover:bg-[#d5671f] shadow-lg shadow-orange-500/25"
@@ -348,7 +359,7 @@ const Pricing = () => {
                       {plan.price.includes("1.5L")
                         ? "Contact Us"
                         : "Get Started"}
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -385,6 +396,14 @@ const Pricing = () => {
             ))}
           </div>
         </div>
+        <AnimatePresence>
+          {isScheduleModalOpen && (
+            <ScheduleMeetingModal
+              isOpen={isScheduleModalOpen}
+              onClose={() => setIsScheduleModalOpen(false)}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

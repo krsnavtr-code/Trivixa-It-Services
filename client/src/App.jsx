@@ -33,6 +33,7 @@ import ThankYouPage from "./pages/ThankYouPage";
 import Unauthorized from "./pages/Unauthorized";
 import SuspendedAccount from "./pages/SuspendedAccount";
 import Faqs from "./pages/Faqs";
+import DigitalMarketing from "./pages/DigitalMarketing";
 
 // --- Pages (Services/User) ---
 import AllCategories from "./pages/AllCategories.jsx";
@@ -338,6 +339,14 @@ function App() {
                 element={
                   <MainLayout>
                     <AndroidServices />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/digital-marketing"
+                element={
+                  <MainLayout>
+                    <DigitalMarketing />
                   </MainLayout>
                 }
               />

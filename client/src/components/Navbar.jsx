@@ -177,6 +177,7 @@ function Navbar() {
     { to: "/categories", label: "Categories" },
     { to: "/web-services", label: "Web" },
     { to: "/android-services", label: "Android" },
+    { to: "/digital-marketing", label: "Digital Marketing" },
     { to: "/technologies", label: "Technologies" },
     // { to: "/free-courses", label: "Free Resources" },
     { to: "/packages", label: "Pricing" },
