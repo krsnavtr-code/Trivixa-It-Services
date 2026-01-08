@@ -45,12 +45,17 @@ export const submitContactForm = async (req, res) => {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       phone: phone?.trim(),
-      subject: (subject || `Enquiry about ${courseTitle || 'course'}`).trim(),
+      subject: (subject || `Meeting Request: ${req.body.meetingType || 'Initial Consultation'}`).trim(),
       message: message.trim(),
-      status: 'new',
+      status: req.body.meetingDate ? 'scheduled' : 'new',
       submittedAt: new Date(),
       ipAddress: req.ip,
-      userAgent: req.get('user-agent')
+      userAgent: req.get('user-agent'),
+      // Add meeting related fields if they exist
+      ...(req.body.meetingDate && { meetingDate: new Date(req.body.meetingDate) }),
+      ...(req.body.meetingTime && { meetingTime: req.body.meetingTime }),
+      ...(req.body.meetingType && { meetingType: req.body.meetingType }),
+      ...(req.body.adminEmail && { adminEmail: req.body.adminEmail })
     };
 
     // Add course-related fields if they exist

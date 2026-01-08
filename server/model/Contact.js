@@ -44,10 +44,30 @@ const contactSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: {
-      values: ['new', 'contacted', 'in_progress', 'resolved', 'spam'],
+      values: ['new', 'contacted', 'in_progress', 'resolved', 'spam', 'scheduled'],
       message: 'Invalid status value'
     },
     default: 'new',
+  },
+  // Meeting related fields
+  meetingDate: {
+    type: Date,
+    index: true
+  },
+  meetingTime: {
+    type: String,
+    trim: true
+  },
+  meetingType: {
+    type: String,
+    trim: true,
+    enum: ['Initial Consultation', 'Follow-up', 'Project Discussion', 'Other'],
+    default: 'Initial Consultation'
+  },
+  adminEmail: {
+    type: String,
+    trim: true,
+    lowercase: true,
     index: true
   },
   submittedAt: {

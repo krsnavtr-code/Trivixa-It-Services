@@ -197,28 +197,102 @@ export const sendCoursePdfEmail = async (email, course, pdfBuffer, fileName = ''
  * @param {Object} contact - Contact form submission data
  * @returns {Promise} - Promise that resolves when emails are sent
  */
+
+// --- Style Configuration ---
+const COLORS = {
+  primary: '#0a0f2d', // Deep Navy
+  accent: '#F47C26',  // Neon Orange
+  bg: '#f4f7f6',
+  white: '#ffffff',
+  text: '#333333',
+  textLight: '#666666',
+  border: '#e0e0e0'
+};
+
+const STYLES = {
+  container: `max-width: 600px; margin: 0 auto; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: ${COLORS.bg};`,
+  mainCard: `background-color: ${COLORS.white}; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);`,
+  header: `background-color: ${COLORS.primary}; padding: 30px; text-align: center;`,
+  logo: `font-size: 24px; font-weight: bold; color: ${COLORS.white}; text-decoration: none; letter-spacing: 1px;`,
+  logoAccent: `color: ${COLORS.accent};`,
+  body: `padding: 40px 30px;`,
+  h1: `color: ${COLORS.primary}; margin: 0 0 20px; font-size: 22px; font-weight: 700;`,
+  p: `color: ${COLORS.textLight}; font-size: 16px; line-height: 1.6; margin: 0 0 20px;`,
+  meetingBox: `background-color: #f8f9fa; border: 1px solid ${COLORS.border}; border-left: 5px solid ${COLORS.accent}; border-radius: 4px; padding: 20px; margin: 25px 0;`,
+  meetingLabel: `display: block; font-size: 12px; text-transform: uppercase; color: ${COLORS.textLight}; font-weight: 600; margin-bottom: 4px;`,
+  meetingValue: `display: block; font-size: 16px; color: ${COLORS.primary}; font-weight: 700; margin-bottom: 12px;`,
+  button: `display: inline-block; background-color: ${COLORS.accent}; color: ${COLORS.white}; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px;`,
+  footer: `text-align: center; padding: 30px; color: #999999; font-size: 12px;`
+};
+
 export const sendContactNotifications = async (contact) => {
   try {
-    console.log('Sending contact notifications...');
-    console.log('Admin Email:', process.env.ADMIN_EMAIL);
-    console.log('SMTP User:', process.env.SMTP_USER);
     // 1. Send confirmation email to the user
-    const userSubject = `Thank you for contacting ${process.env.APP_NAME || 'us'}`;
+    const appName = 'Trivixa IT Solutions';
+    const isMeeting = !!contact.meetingDate;
+    const userSubject = isMeeting
+      ? `Meeting Confirmed: ${contact.meetingType} on ${new Date(contact.meetingDate).toLocaleDateString()}`
+      : `We received your message | ${appName}`;
+
     const userHtml = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h2>Hello ${contact.name},</h2>
-        <p>Thank you for reaching out to us. We have received your message and our team will get back to you shortly.</p>
-        
-        <h3>Your Message Details:</h3>
-        <p><strong>Subject:</strong> ${contact.subject || 'No subject'}</p>
-        <p><strong>Message:</strong> ${contact.message}</p>
-        
-        ${contact.courseTitle ? `<p><strong>Course:</strong> ${contact.courseTitle}</p>` : ''}
-        
-        <p>We'll respond to you at: ${contact.email}</p>
-        
-        <p>Best regards,<br>The ${process.env.APP_NAME} Team</p>
-      </div>
+      <!DOCTYPE html>
+      <html>
+      <body style="margin: 0; padding: 0; background-color: ${COLORS.bg};">
+        <div style="${STYLES.container}">
+          <br>
+          <div style="${STYLES.mainCard}">
+            <div style="${STYLES.header}">
+              <div style="${STYLES.logo}">TRIVIXA<span style="${STYLES.logoAccent}">.</span></div>
+            </div>
+            
+            <div style="${STYLES.body}">
+              <h2 style="${STYLES.h1}">Hello ${contact.name},</h2>
+              
+              ${isMeeting ? `
+                <p style="${STYLES.p}">Your meeting request has been successfully scheduled. We are looking forward to discussing your project.</p>
+                
+                <div style="${STYLES.meetingBox}">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td width="50%" style="padding-bottom: 10px;">
+                        <span style="${STYLES.meetingLabel}">DATE</span>
+                        <span style="${STYLES.meetingValue}">${new Date(contact.meetingDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                      </td>
+                      <td width="50%" style="padding-bottom: 10px;">
+                        <span style="${STYLES.meetingLabel}">TIME</span>
+                        <span style="${STYLES.meetingValue}">${contact.meetingTime}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+                        <span style="${STYLES.meetingLabel}">TOPIC</span>
+                        <span style="${STYLES.meetingValue}">${contact.meetingType || 'Initial Consultation'}</span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                
+                <p style="${STYLES.p}">A calendar invitation will follow shortly. If you need to reschedule, please reply to this email.</p>
+              ` : `
+                <p style="${STYLES.p}">Thank you for reaching out to <strong>${appName}</strong>. We have received your inquiry and our team is currently reviewing it.</p>
+                <p style="${STYLES.p}">You can expect a response within 24 hours.</p>
+                
+                <div style="border-top: 1px solid ${COLORS.border}; margin: 20px 0;"></div>
+                
+                <p style="${STYLES.p} font-size: 14px; font-style: italic;">
+                  "<strong>${contact.message || 'No message content'}</strong>"
+                </p>
+              `}
+            </div>
+          </div>
+          
+          <div style="${STYLES.footer}">
+            <p>&copy; ${new Date().getFullYear()} ${appName}. All rights reserved.</p>
+            <p>New Delhi, India | <a href="mailto:${process.env.ADMIN_EMAIL}" style="color: ${COLORS.accent}; text-decoration: none;">Contact Support</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
 
     await sendEmail({
@@ -228,33 +302,76 @@ export const sendContactNotifications = async (contact) => {
     });
 
     // 2. Send notification to admin
-    const adminSubject = `New Contact Form Submission: ${contact.subject || 'No Subject'}`;
+    const adminSubject = isMeeting
+      ? `📅 New Meeting: ${contact.name} (${new Date(contact.meetingDate).toLocaleDateString()})`
+      : `🔔 New Lead: ${contact.name} - ${contact.subject || 'Web Inquiry'}`;
+    
     const adminHtml = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h2>New Contact Form Submission</h2>
-        
-        <h3>Contact Details:</h3>
-        <p><strong>Name:</strong> ${contact.name}</p>
-        <p><strong>Email:</strong> ${contact.email}</p>
-        ${contact.phone ? `<p><strong>Phone:</strong> ${contact.phone}</p>` : ''}
-        <p><strong>Subject:</strong> ${contact.subject || 'No subject'}</p>
-        
-        <h3>Message:</h3>
-        <p>${contact.message}</p>
-        
-        ${contact.courseTitle ? `
-          <h3>Course Information:</h3>
-          <p><strong>Course Title:</strong> ${contact.courseTitle}</p>
-          ${contact.courseId ? `<p><strong>Course ID:</strong> ${contact.courseId}</p>` : ''}
-        ` : ''}
-        
-        <h3>Submission Details:</h3>
-        <p><strong>Submitted At:</strong> ${new Date(contact.submittedAt).toLocaleString()}</p>
-        <p><strong>IP Address:</strong> ${contact.ipAddress}</p>
-        <p><strong>User Agent:</strong> ${contact.userAgent}</p>
-        
-        <p>Please respond to this inquiry as soon as possible.</p>
-      </div>
+      <!DOCTYPE html>
+      <html>
+      <body style="margin: 0; padding: 0; background-color: ${COLORS.bg};">
+        <div style="${STYLES.container}">
+          <br>
+          <div style="${STYLES.mainCard}">
+            <div style="${STYLES.header}; background-color: ${COLORS.white}; border-bottom: 3px solid ${COLORS.accent};">
+               <h2 style="${STYLES.h1}; text-align: center;">New Submission Received</h2>
+            </div>
+            
+            <div style="${STYLES.body}">
+              
+              <table width="100%" border="0" cellspacing="0" cellpadding="10" style="background-color: #f9f9f9; border-radius: 8px; margin-bottom: 20px;">
+                <tr>
+                  <td width="30%" style="font-weight: bold; color: ${COLORS.textLight}; border-bottom: 1px solid #eee;">Name</td>
+                  <td style="color: ${COLORS.primary}; font-weight: 600; border-bottom: 1px solid #eee;">${contact.name}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold; color: ${COLORS.textLight}; border-bottom: 1px solid #eee;">Email</td>
+                  <td style="color: ${COLORS.primary}; border-bottom: 1px solid #eee;"><a href="mailto:${contact.email}" style="color: ${COLORS.accent}; text-decoration: none;">${contact.email}</a></td>
+                </tr>
+                ${contact.phone ? `
+                <tr>
+                  <td style="font-weight: bold; color: ${COLORS.textLight}; border-bottom: 1px solid #eee;">Phone</td>
+                  <td style="color: ${COLORS.primary}; border-bottom: 1px solid #eee;"><a href="tel:${contact.phone}" style="color: ${COLORS.primary}; text-decoration: none;">${contact.phone}</a></td>
+                </tr>` : ''}
+                ${contact.company ? `
+                <tr>
+                  <td style="font-weight: bold; color: ${COLORS.textLight}; border-bottom: 1px solid #eee;">Company</td>
+                  <td style="color: ${COLORS.primary}; border-bottom: 1px solid #eee;">${contact.company}</td>
+                </tr>` : ''}
+              </table>
+
+              ${isMeeting ? `
+                <div style="${STYLES.meetingBox}">
+                  <h3 style="margin-top: 0; color: ${COLORS.primary}; font-size: 18px;">🗓️ Meeting Request</h3>
+                  <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date(contact.meetingDate).toLocaleDateString()}</p>
+                  <p style="margin: 5px 0;"><strong>Time:</strong> ${contact.meetingTime}</p>
+                  <p style="margin: 5px 0;"><strong>Type:</strong> ${contact.meetingType}</p>
+                </div>
+              ` : ''}
+
+              <h3 style="${STYLES.h1}; font-size: 18px; margin-top: 20px;">Message:</h3>
+              <p style="background-color: #f0f4f8; padding: 15px; border-radius: 4px; color: ${COLORS.text}; font-style: italic;">
+                "${contact.message || 'No additional message provided.'}"
+              </p>
+
+              ${contact.courseTitle ? `
+                <div style="margin-top: 20px; padding: 10px; border: 1px dashed ${COLORS.accent}; border-radius: 4px;">
+                  <strong>Interested Course:</strong> ${contact.courseTitle}
+                </div>
+              ` : ''}
+
+              <div style="margin-top: 30px; text-align: center;">
+                <a href="mailto:${contact.email}?subject=Re: ${isMeeting ? 'Your Meeting Request' : 'Your Inquiry'} - ${appName}" style="${STYLES.button}">Reply to Client</a>
+              </div>
+              
+              <div style="margin-top: 20px; font-size: 11px; color: #aaa; text-align: center;">
+                IP: ${contact.ipAddress || 'Unknown'} | Agent: ${contact.userAgent || 'Unknown'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
 
     await sendEmail({

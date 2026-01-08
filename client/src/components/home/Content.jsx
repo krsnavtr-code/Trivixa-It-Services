@@ -1,5 +1,4 @@
-import React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaRocket,
   FaHandshake,
@@ -8,9 +7,11 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import ScheduleMeetingModal from "../common/ScheduleMeetingModal";
 
 const Content = () => {
-  // Animation Variants
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
@@ -29,10 +30,7 @@ const Content = () => {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* --- Header Section --- */}
-        <motion.div
-          viewport={{ once: true }}
-          className="text-center mb-20"
-        >
+        <motion.div viewport={{ once: true }} className="text-center mb-20">
           <span className="px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
             Who We Are
           </span>
@@ -176,11 +174,13 @@ const Content = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/contact">
-                <button className="px-8 py-4 bg-white text-[#d5671f] font-bold rounded-xl shadow-lg hover:bg-gray-100 transition-colors flex items-center gap-2 mx-auto">
+              <button onClick={() => setIsScheduleModalOpen(true)}>
+                <button
+                  className="px-8 py-4 bg-white text-[#d5671f] font-bold rounded-xl shadow-lg hover:bg-gray-100 transition-colors flex items-center gap-2 mx-auto"
+                >
                   Start a Project <FaArrowRight />
                 </button>
-              </Link>
+              </button>
               <Link to="/services">
                 <button className="px-8 py-4 bg-black/20 text-white font-bold rounded-xl border border-white/30 hover:bg-black/30 transition-colors">
                   View Our Services
@@ -190,6 +190,14 @@ const Content = () => {
           </div>
         </motion.div>
       </div>
+      <AnimatePresence>
+        {isScheduleModalOpen && (
+          <ScheduleMeetingModal
+            isOpen={isScheduleModalOpen}
+            onClose={() => setIsScheduleModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };

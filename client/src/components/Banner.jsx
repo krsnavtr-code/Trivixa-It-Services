@@ -3,6 +3,7 @@ import {
   FaArrowRight,
   FaCheckCircle,
   FaPlay,
+  FaCalendarAlt,
   FaReact,
   FaNodeJs,
   FaAws,
@@ -17,6 +18,7 @@ import {
   useMotionTemplate,
   AnimatePresence,
 } from "framer-motion";
+import ScheduleMeetingModal from "./common/ScheduleMeetingModal";
 
 // --- Carousel Configuration ---
 const CAROUSEL_IMAGES = [
@@ -38,6 +40,7 @@ const CAROUSEL_IMAGES = [
 ];
 
 const Banner = () => {
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   // --- Carousel State & Logic ---
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -117,7 +120,7 @@ const Banner = () => {
             className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1]"
             style={{
               backgroundImage: `linear-gradient(to right, #808080 1px, transparent 1px),
-                              linear-gradient(to bottom, #808080 1px, transparent 1px)`,
+                            linear-gradient(to bottom, #808080 1px, transparent 1px)`,
               backgroundSize: "60px 60px",
               maskImage:
                 "radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)",
@@ -188,13 +191,17 @@ const Banner = () => {
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start"
             >
-              <Link to="/" className="group relative w-full sm:w-auto">
+              <div className="group relative w-full sm:w-auto">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-[#F47C26] to-purple-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
-                <button className="relative w-full px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all">
-                  Start Building
+                <button
+                  onClick={() => setIsScheduleModalOpen(true)}
+                  className="relative w-full px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+                >
+                  <FaCalendarAlt className="mr-2" />
+                  Schedule a Call
                   <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </button>
-              </Link>
+              </div>
 
               <Link to="/services" className="w-full sm:w-auto">
                 <button className="w-full px-8 py-4 bg-transparent border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 dark:hover:bg-white/5 transition-all">
@@ -346,6 +353,15 @@ const Banner = () => {
             </motion.div>
           </motion.div>
         </div>
+
+        <AnimatePresence>
+          {isScheduleModalOpen && (
+            <ScheduleMeetingModal
+              isOpen={isScheduleModalOpen}
+              onClose={() => setIsScheduleModalOpen(false)}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

@@ -117,15 +117,7 @@ const submitContactForm = async (formData) => {
     if (formData.phone && !/^[\d\s\-+()]*$/.test(formData.phone)) {
       errors.phone = 'Please enter a valid phone number';
     }
-    
-    if (formData.message?.trim()) {
-      if (formData.message.trim().length < 10) {
-        errors.message = 'Message must be at least 10 characters if provided';
-      } else if (formData.message.trim().length > 2000) {
-        errors.message = 'Message cannot exceed 2000 characters';
-      }
-    }
-    
+
     if (Object.keys(errors).length > 0) {
       return {
         success: false,
@@ -134,52 +126,45 @@ const submitContactForm = async (formData) => {
       };
     }
     
-    // Prepare request data according to backend validation rules
+    // Prepare request data
     const requestData = {
       name: formData.name.trim(),
       email: formData.email.trim().toLowerCase(),
-      message: formData.message.trim(),
       ...(formData.phone && formData.phone.trim() !== '' && { phone: formData.phone.trim() }),
-      ...(formData.courseId && { courseId: formData.courseId }),
-      ...(formData.courseTitle && formData.courseTitle.trim() !== '' && { 
-        courseTitle: formData.courseTitle.trim() 
+      ...(formData.message && { message: formData.message.trim() }),
+      ...(formData.company && { company: formData.company.trim() }),
+      ...(formData.meetingDate && {
+        meetingDate: formData.meetingDate instanceof Date ? formData.meetingDate.toISOString() : formData.meetingDate 
       }),
-      ...(formData.inquiryType && formData.inquiryType.trim() !== '' && {
-        subject: formData.inquiryType.trim()
-      }),
+      ...(formData.meetingTime && { meetingTime: formData.meetingTime }),
+      ...(formData.meetingType && { meetingType: formData.meetingType }),
+      ...(formData.adminEmail && { adminEmail: formData.adminEmail }),
     };
 
-    // console.log('Submitting contact form with data:', requestData);
-
-    // Add retry logic for rate limiting
+    // Make the API call with retry logic
     const maxRetries = 2;
     let lastError;
     
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        // Add an increasing delay between retries (exponential backoff with jitter)
+        // Add delay between retries
         if (attempt > 0) {
-          const baseDelay = Math.min(1000 * Math.pow(2, attempt - 1), 8000); // Max 8 seconds
-          const jitter = Math.random() * 1000; // Add up to 1s of jitter
-          const delay = Math.min(baseDelay + jitter, 10000); // Absolute max 10s
+          const delay = Math.min(1000 * Math.pow(2, attempt), 5000); // Exponential backoff, max 5s
           await new Promise(resolve => setTimeout(resolve, delay));
         }
-        
-        // Make the API call with the correct endpoint
+
         const response = await api.post('/api/contacts', requestData);
-        
-        // If we get here, the request was successful
         return {
-          success: response.data?.success || true,
-          data: response.data?.data || response.data,
-          message: response.data?.message || 'Your message has been sent successfully!',
+          success: true,
+          data: response.data,
+          message: response.data?.message || 'Your request has been submitted successfully!'
         };
       } catch (error) {
         lastError = error;
         
-        // If we get a 429 and have retries left, continue to the next attempt
+        // If rate limited and have retries left, continue to next attempt
         if (error.response?.status === 429 && attempt < maxRetries) {
-          console.warn(`Rate limited on attempt ${attempt + 1}. Retrying...`);
+          console.warn(`Rate limited. Retry attempt ${attempt + 1} of ${maxRetries}`);
           continue;
         }
 
