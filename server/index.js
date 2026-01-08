@@ -39,6 +39,9 @@ import emailRecordRoutes from "./route/emailRecord.routes.js";
 // Media
 import mediaRoutes from "./route/media.routes.js";
 
+// Pricing
+import pricingRoutes from "./route/pricing.routes.js";
+
 // --- Configuration & Setup ---
 dotenv.config();
 const app = express();
@@ -216,6 +219,9 @@ app.use("/api/emails", emailRecordRoutes);
 
 // Media
 app.use("/api/media", mediaRoutes);
+
+// Pricing
+app.use("/api/pricing", pricingRoutes);
 
 // --- Global Error Handling ---
 app.use((err, req, res, next) => {

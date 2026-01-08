@@ -79,6 +79,12 @@ const NAV_ITEMS = [
         icon: <FaImages />,
         activePaths: ["/admin/media/tags"],
       },
+      {
+        path: "/admin/pricing",
+        label: "Pricing",
+        icon: <FaImages />,
+        activePaths: ["/admin/pricing"],
+      },
     ],
   },
   {

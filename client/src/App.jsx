@@ -75,6 +75,7 @@ import BlogListPage from "./pages/blog/BlogListPage";
 import BlogDetailPage from "./pages/blog/BlogDetailPage";
 import BlogPostList from "./pages/admin/Blog.jsx";
 import BlogPostForm from "./components/admin/BlogForm.jsx";
+import PricingAdmin from "./pages/admin/Pricing";
 
 // ==========================================
 // 🎨 Import Portfolio Pages ---
@@ -547,6 +548,7 @@ function App() {
                 <Route path="/admin/users" element={<Users />} />
                 <Route path="/admin/inquiries" element={<ContactsList />} />
                 <Route path="/admin/payments" element={<PaymentsList />} />
+                <Route path="/admin/pricing" element={<PricingAdmin />} />
                 <Route
                   path="/admin/payments/:id"
                   element={<PaymentDetails />}
