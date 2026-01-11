@@ -42,7 +42,14 @@ export const getPricing = async () => {
 
 export const updatePricing = async (categoryData) => {
   try {
-    const response = await api.post('/pricing/update', categoryData);
+    // Ensure we're sending a properly formatted request
+    const response = await api.post('/pricing/update', {
+      categoryKey: categoryData.categoryKey,
+      title: categoryData.title,
+      subtitle: categoryData.subtitle || '',
+      icon: categoryData.icon || 'default-icon',
+      plans: categoryData.plans || []
+    });
     return response.data;
   } catch (error) {
     console.error('Error updating pricing data:', {

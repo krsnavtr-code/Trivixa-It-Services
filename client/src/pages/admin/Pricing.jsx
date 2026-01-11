@@ -112,17 +112,28 @@ const PricingAdmin = () => {
       };
 
       const categoryKey = data.categoryKey;
-      const updatedCategory = { ...pricingData[categoryKey] };
+      const category = { ...pricingData[categoryKey] };
 
+      // Create the update payload with the complete category data
+      const updatePayload = {
+        categoryKey: categoryKey,
+        title: category.title,
+        subtitle: category.subtitle || "",
+        icon: category.icon || "default-icon",
+        plans: [...(category.plans || [])], // Create a new array to ensure reactivity
+      };
+
+      // Update the plans array
       if (editingPlan) {
-        updatedCategory.plans = updatedCategory.plans.map((plan) =>
+        updatePayload.plans = updatePayload.plans.map((plan) =>
           plan.id === editingPlan.id ? planData : plan
         );
       } else {
-        updatedCategory.plans = [...(updatedCategory.plans || []), planData];
+        updatePayload.plans.push(planData);
       }
 
-      await updatePricing(categoryKey, updatedCategory);
+      // Send the complete category data to the server
+      await updatePricing(updatePayload);
       toast.success(`Plan ${editingPlan ? "updated" : "added"} successfully`);
 
       reset();
