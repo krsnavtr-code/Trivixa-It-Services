@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast"; // Assuming react-hot-toast based on previous context, change back to react-toastify if needed
-import { getPricing, updatePricing } from "../../api/pricingApi";
+import { getPricing, updatePricing, deletePricing } from "../../api/pricingApi";
 import {
   FaPlus,
   FaEdit,
@@ -42,26 +42,23 @@ const PricingAdmin = () => {
 
   const onSubmitCategory = async (data) => {
     try {
+      const categoryKey =
+        editingCategory || data.title.toLowerCase().replace(/\s+/g, "-");
+
       const categoryData = {
+        categoryKey,
         title: data.title,
-        subtitle: data.subtitle,
+        subtitle: data.subtitle || "",
         icon: data.icon || "default-icon",
-        plans: [],
+        plans: (editingCategory && pricingData[editingCategory]?.plans) || [],
       };
 
-      if (editingCategory) {
-        const updatedData = { ...pricingData };
-        updatedData[editingCategory] = {
-          ...updatedData[editingCategory],
-          ...categoryData,
-        };
-        await updatePricing(editingCategory, updatedData[editingCategory]);
-        toast.success("Category updated successfully");
-      } else {
-        const newKey = data.title.toLowerCase().replace(/\s+/g, "-");
-        await updatePricing(newKey, categoryData);
-        toast.success("Category added successfully");
-      }
+      await updatePricing(categoryData);
+      toast.success(
+        editingCategory
+          ? "Category updated successfully"
+          : "Category added successfully"
+      );
 
       reset();
       setShowCategoryForm(false);
@@ -75,11 +72,26 @@ const PricingAdmin = () => {
 
   const onSubmitPlan = async (data) => {
     try {
+      // Helper function to extract numeric value from price string
+      const getPriceAmount = (priceStr) => {
+        if (!priceStr) return 0;
+        const numericValue = priceStr.replace(/[^0-9.]/g, "");
+        return parseFloat(numericValue) || 0;
+      };
+
       const planData = {
         id: editingPlan?.id || Date.now().toString(),
         name: data.planName,
         tagline: data.tagline,
-        price: data.price,
+        // Price range fields
+        priceFrom: data.priceFrom || "",
+        priceFromAmount: getPriceAmount(data.priceFrom),
+        priceTo: data.priceTo || "",
+        priceToAmount: getPriceAmount(data.priceTo),
+        // For backward compatibility
+        price: data.priceFrom || "",
+        priceAmount: getPriceAmount(data.priceFrom),
+
         isPopular: data.isPopular || false,
         badgeText: data.badgeText || "",
         technologies: data.technologies
@@ -137,7 +149,8 @@ const PricingAdmin = () => {
     setValue("categoryKey", categoryKey);
     setValue("planName", plan.name);
     setValue("tagline", plan.tagline || "");
-    setValue("price", plan.price || "");
+    setValue("priceFrom", plan.priceFrom || plan.price || "");
+    setValue("priceTo", plan.priceTo || "");
     setValue("isPopular", plan.isPopular || false);
     setValue("badgeText", plan.badgeText || "");
     setValue("technologies", plan.technologies?.join(", ") || "");
@@ -157,13 +170,18 @@ const PricingAdmin = () => {
       )
     ) {
       try {
+        // Call the delete API
+        await deletePricing(key);
+
+        // Update local state after successful deletion
         const updatedData = { ...pricingData };
         delete updatedData[key];
-        await updatePricing(key, { delete: true }); // Ensure backend supports this or update whole object
         setPricingData(updatedData);
+
         toast.success("Category deleted successfully");
       } catch (error) {
-        toast.error("Failed to delete category");
+        console.error("Error deleting category:", error);
+        toast.error(error.message || "Failed to delete category");
       }
     }
   };
@@ -304,16 +322,39 @@ const PricingAdmin = () => {
               className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
             />
           </div>
-          <div>
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-              Price *
-            </label>
-            <input
-              type="text"
-              {...register("price", { required: true })}
-              placeholder="₹25,000"
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-            />
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                Price From *
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  {...register("priceFrom", { required: true })}
+                  placeholder="₹25,000"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  ₹
+                </span>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                Price To (optional)
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  {...register("priceTo")}
+                  placeholder="₹50,000"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  ₹
+                </span>
+              </div>
+            </div>
           </div>
           <div className="md:col-span-2">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
@@ -547,8 +588,23 @@ const PricingAdmin = () => {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#F47C26]">
-                          {plan.price}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-col">
+                            {plan.priceTo && plan.priceTo !== plan.priceFrom ? (
+                              <>
+                                <span className="text-sm font-bold text-[#F47C26]">
+                                  {plan.priceFrom} - {plan.priceTo}
+                                </span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  Starting from {plan.priceFrom}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-sm font-bold text-[#F47C26]">
+                                {plan.priceFrom || plan.price}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                           {plan.tagline || "—"}

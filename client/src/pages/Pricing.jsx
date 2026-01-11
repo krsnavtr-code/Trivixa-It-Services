@@ -194,11 +194,24 @@ const Pricing = () => {
                       {plan.tagline}
                     </p>
                     <div className="mt-4">
-                      <span className="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white">
-                        {typeof plan.price === "number"
-                          ? `₹${plan.price.toLocaleString()}`
-                          : plan.price}
-                      </span>
+                      <div className="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white">
+                        {plan.priceTo && plan.priceTo !== plan.priceFrom ? (
+                          <div className="flex flex-col items-center">
+                            <div>
+                              <span className="text-2xl lg:text-3xl">
+                                {plan.priceFrom}
+                              </span>
+                              <span className="mx-2">-</span>
+                              <span>{plan.priceTo}</span>
+                            </div>
+                            <div className="text-sm font-normal text-gray-500 dark:text-gray-400 mt-1">
+                              Starting from {plan.priceFrom}
+                            </div>
+                          </div>
+                        ) : (
+                          <span>{plan.priceFrom || plan.price}</span>
+                        )}
+                      </div>
                       {plan.price !== "Contact Us" && (
                         <p className="text-xs text-gray-400 mt-1">
                           One-time payment
