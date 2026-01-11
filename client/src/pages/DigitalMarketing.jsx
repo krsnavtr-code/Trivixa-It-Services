@@ -5,98 +5,145 @@ import {
   FaSearch,
   FaBullhorn,
   FaMapMarkerAlt,
-  FaEnvelope,
   FaPenNib,
   FaHandshake,
-  FaGoogle,
   FaFacebook,
-  FaInstagram,
-  FaUserSecret,
-  FaShieldAlt,
-  FaLeaf,
   FaChartLine,
   FaArrowRight,
-  FaAd,
+  FaCheckCircle,
+  FaLaptopCode,
+  FaUsers,
+  FaFileAlt,
+  FaSmile,
 } from "react-icons/fa";
 import ScheduleMeetingModal from "../components/common/ScheduleMeetingModal";
 
 // --- Data Configuration ---
 
-const seoStrategies = [
+const services = [
   {
-    title: "White Hat SEO",
-    desc: "100% Ethical strategies following Google guidelines. Builds long-term, sustainable ranking safety.",
-    icon: <FaShieldAlt />,
+    id: "seo",
+    title: "1. SEO (Search Engine Optimization)",
+    icon: <FaSearch />,
+    desc: "Rank higher and drive organic traffic with our comprehensive SEO strategies.",
+    features: [
+      "On Page SEO (Meta tags, URL, Internal linking)",
+      "Technical SEO (Speed, Mobile-friendly, Indexing)",
+      "Keyword Research & Strategy",
+      "Off Page SEO (Backlinks, Guest posting)",
+      "Monthly SEO Reporting & Analytics",
+    ],
+    keywords: [
+      "On-Page SEO",
+      "Technical SEO",
+      "Backlinks",
+      "Keyword Research",
+      "Google Analytics",
+    ],
     color: "text-blue-500",
     border: "group-hover:border-blue-500",
   },
   {
-    title: "Green Hat SEO",
-    desc: "Eco-friendly & sustainable digital practices combined with ethical SEO for conscious brands.",
-    icon: <FaLeaf />,
+    id: "smo",
+    title: "2. SMO (Social Media Optimization)",
+    icon: <FaFacebook />,
+    desc: "Build a loyal community and brand presence where your audience lives.",
+    features: [
+      "Facebook, Instagram, LinkedIn Optimization",
+      "Profile Setup & Professional Branding",
+      "Regular Post Sharing & Scheduling",
+      "Engagement Growth (Likes, Comments)",
+      "Monthly Performance Reports",
+    ],
+    keywords: [
+      "Social Media Marketing",
+      "Facebook Ads",
+      "Instagram Growth",
+      "Brand Awareness",
+      "LinkedIn Marketing",
+    ],
+    color: "text-purple-500",
+    border: "group-hover:border-purple-500",
+  },
+  {
+    id: "ads",
+    title: "3. Google Ads (PPC Advertising)",
+    icon: <FaBullhorn />,
+    desc: "Instant traffic and leads with targeted Pay-Per-Click campaigns.",
+    features: [
+      "Search Ads (Text based)",
+      "Display Ads (Visual banners)",
+      "YouTube Video Ads",
+      "Conversion Tracking Setup",
+      "Budget & Bid Optimization",
+    ],
+    keywords: [
+      "PPC Management",
+      "Google Ads",
+      "YouTube Ads",
+      "Conversion Rate",
+      "Display Advertising",
+    ],
     color: "text-green-500",
     border: "group-hover:border-green-500",
   },
   {
-    title: "Black Hat SEO",
-    desc: "Aggressive, high-risk strategies for rapid results. (Note: We advise on risks & recovery).",
-    icon: <FaUserSecret />,
-    color: "text-gray-800 dark:text-gray-400",
-    border: "group-hover:border-gray-500",
+    id: "content",
+    title: "4. Content Writing",
+    icon: <FaPenNib />,
+    desc: "Persuasive copy that engages readers and converts them into customers.",
+    features: [
+      "Website Copywriting",
+      "SEO Blogs & Articles",
+      "Product Descriptions",
+      "Social Media Captions",
+      "Ad Copy Writing",
+    ],
+    keywords: [
+      "Content Marketing",
+      "Blog Writing",
+      "Copywriting",
+      "SEO Content",
+      "Web Content",
+    ],
+    color: "text-orange-500",
+    border: "group-hover:border-orange-500",
   },
 ];
 
-const coreServices = [
+const whyChooseUs = [
   {
-    id: "ads",
-    title: "Paid Advertising (PPC)",
-    icon: <FaBullhorn />,
-    desc: "Maximize ROI with targeted campaigns across search and social media.",
-    tags: ["Google Ads", "Meta Ads (FB/Insta)", "Google AdSense"],
+    icon: <FaUsers />,
+    title: "Experienced Team",
+    desc: "Expert digital marketers.",
   },
   {
-    id: "smo",
-    title: "Social Media (SMO)",
-    icon: <FaFacebook />,
-    desc: "Build a loyal community and brand presence on platforms where your audience lives.",
-    tags: ["Brand Awareness", "Engagement", "Viral Marketing"],
+    icon: <FaChartLine />,
+    title: "Result-Oriented",
+    desc: "Strategies that deliver ROI.",
   },
   {
-    id: "gmb",
-    title: "Google My Business",
-    icon: <FaMapMarkerAlt />,
-    desc: "Dominate local search. We optimize your GMB profile to get you on the 'Map Pack'.",
-    tags: ["Local SEO", "Review Mgmt", "Profile Optimization"],
-  },
-  {
-    id: "email",
-    title: "Email Marketing",
-    icon: <FaEnvelope />,
-    desc: "Direct-to-consumer campaigns that nurture leads and drive repeat sales.",
-    tags: ["Newsletters", "Drip Campaigns", "Automation"],
-  },
-  {
-    id: "affiliate",
-    title: "Affiliate Marketing",
     icon: <FaHandshake />,
-    desc: "Setup and manage affiliate networks to let others sell your products for you.",
-    tags: ["Partner Network", "Commission Strategy", "Tracking"],
+    title: "Affordable Pricing",
+    desc: "Best value for your budget.",
   },
   {
-    id: "content",
-    title: "Content Writing",
-    icon: <FaPenNib />,
-    desc: "SEO-optimized blogs, copy, and articles that rank and convert.",
-    price: "₹0.50 / word",
-    isHighlight: true,
-    tags: ["Blogs", "Web Copy", "Articles"],
+    icon: <FaFileAlt />,
+    title: "Transparent Reports",
+    desc: "Monthly performance tracking.",
+  },
+  {
+    icon: <FaSmile />,
+    title: "100% Satisfaction",
+    desc: "Dedicated client support.",
   },
 ];
 
 const DigitalMarketing = () => {
-    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f2d] text-gray-900 dark:text-white font-sans relative overflow-hidden selection:bg-[#F47C26] selection:text-white transition-colors duration-500">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f2d] text-gray-900 dark:text-white font-sans relative overflow-hidden transition-colors duration-500">
       {/* --- Ambient Background --- */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-orange-200/20 dark:bg-[#F47C26]/5 rounded-full blur-[150px]"></div>
@@ -113,176 +160,146 @@ const DigitalMarketing = () => {
             transition={{ duration: 0.8 }}
           >
             <span className="text-[#F47C26] font-bold tracking-widest uppercase text-sm mb-4 block">
-              360° Growth Solutions
+              Grow Your Business Online
             </span>
-            <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight text-gray-900 dark:text-white">
-              Digital {" "}
+            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight text-gray-900 dark:text-white">
+              Our Digital <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-orange-600">
-                Marketing
+                Marketing Services
               </span>
             </h1>
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
-              From ranking #1 on Google to viral social campaigns. We use a
-              data-driven mix of SEO, Ads, and Content to scale your business
-              revenue.
+              From SEO to Social Media, we provide end-to-end digital solutions
+              to help you reach your target audience and increase sales.
             </p>
+            <div className="mt-8">
+              <button
+                onClick={() => setIsScheduleModalOpen(true)}
+                className="px-8 py-4 bg-[#F47C26] hover:bg-[#d5671f] text-white rounded-xl font-bold transition-all shadow-lg hover:-translate-y-1 inline-flex items-center gap-2"
+              >
+                Get a Free Strategy Call <FaArrowRight />
+              </button>
+            </div>
           </motion.div>
         </div>
 
-        {/* --- SEO Deep Dive Section --- */}
-        <div className="mb-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 flex items-center justify-center gap-3">
-              <FaSearch className="text-[#F47C26]" /> Search Engine Optimization
-              (SEO)
-            </h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              We cover On-Page, Off-Page, Technical SEO, and Advanced Keyword
-              Research.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {seoStrategies.map((strategy, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className={`group p-8 rounded-3xl bg-white dark:bg-[#0F1430] border border-gray-200 dark:border-white/10 shadow-lg dark:shadow-none hover:border-2 ${strategy.border} transition-all duration-300 relative overflow-hidden`}
-              >
-                <div
-                  className={`text-4xl mb-4 ${strategy.color} transition-transform group-hover:scale-110 duration-300`}
-                >
-                  {strategy.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-3">{strategy.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  {strategy.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* --- Core Services Grid --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-          {coreServices.map((service, index) => (
+        {/* --- Services Grid --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+          {services.map((service, index) => (
             <motion.div
               key={service.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={`relative p-8 rounded-3xl border transition-all duration-300 hover:-translate-y-2 flex flex-col ${
-                service.isHighlight
-                  ? "bg-[#F47C26] text-white border-[#F47C26] shadow-xl shadow-orange-500/20"
-                  : "bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 backdrop-blur-xl hover:border-[#F47C26]/50 dark:hover:border-[#F47C26]/50 shadow-lg dark:shadow-none"
-              }`}
+              className={`group relative p-8 rounded-3xl bg-white dark:bg-[#0F1430] border border-gray-200 dark:border-white/10 shadow-lg dark:shadow-none hover:border-2 ${service.border} transition-all duration-300 flex flex-col h-full`}
             >
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex items-start justify-between mb-6">
                 <div
-                  className={`text-3xl ${
-                    service.isHighlight ? "text-white" : "text-[#F47C26]"
-                  }`}
+                  className={`text-4xl ${service.color} transition-transform group-hover:scale-110 duration-300 bg-gray-50 dark:bg-white/5 p-4 rounded-2xl`}
                 >
                   {service.icon}
                 </div>
-                {service.price && (
-                  <span className="bg-white text-[#F47C26] px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                    {service.price}
-                  </span>
-                )}
               </div>
 
-              <h3
-                className={`text-2xl font-bold mb-3 ${
-                  service.isHighlight
-                    ? "text-white"
-                    : "text-gray-900 dark:text-white"
-                }`}
-              >
-                {service.title}
-              </h3>
-
-              <p
-                className={`text-sm mb-6 flex-grow leading-relaxed ${
-                  service.isHighlight
-                    ? "text-white/90"
-                    : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
+              <h3 className="text-2xl font-bold mb-3">{service.title}</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 leading-relaxed">
                 {service.desc}
               </p>
 
-              <div className="flex flex-wrap gap-2 mt-auto">
-                {service.tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className={`text-[10px] uppercase font-bold px-2 py-1 rounded border ${
-                      service.isHighlight
-                        ? "border-white/30 bg-white/10 text-white"
-                        : "border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20 text-gray-500 dark:text-gray-400"
-                    }`}
-                  >
-                    {tag}
-                  </span>
-                ))}
+              <div className="flex-grow">
+                <h4 className="text-sm font-bold uppercase text-gray-500 mb-3 tracking-wider">
+                  Services Include:
+                </h4>
+                <ul className="space-y-3 mb-6">
+                  {service.features.map((feature, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300"
+                    >
+                      <FaCheckCircle
+                        className={`mt-1 flex-shrink-0 ${service.color}`}
+                        size={14}
+                      />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-auto pt-6 border-t border-gray-100 dark:border-white/5">
+                <p className="text-[10px] uppercase font-bold text-gray-400 mb-2">
+                  Key Focus:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {service.keywords.map((kw, k) => (
+                    <span
+                      key={k}
+                      className="text-[10px] bg-gray-100 dark:bg-white/5 px-2 py-1 rounded text-gray-600 dark:text-gray-400 font-medium border border-gray-200 dark:border-white/10"
+                    >
+                      {kw}
+                    </span>
+                  ))}
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* --- Stats / Why Us --- */}
-        <div className="bg-white dark:bg-[#0F1430] border border-gray-200 dark:border-white/10 rounded-[3rem] p-10 md:p-16 mb-24 relative overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center relative z-10">
-            <div>
-              <h4 className="text-4xl font-black text-[#F47C26] mb-2">10x</h4>
-              <p className="text-gray-600 dark:text-gray-300 font-medium">
-                ROI on Ad Spend
-              </p>
-            </div>
-            <div>
-              <h4 className="text-4xl font-black text-blue-500 mb-2">#1</h4>
-              <p className="text-gray-600 dark:text-gray-300 font-medium">
-                Page Rankings Achieved
-              </p>
-            </div>
-            <div>
-              <h4 className="text-4xl font-black text-green-500 mb-2">0.50₹</h4>
-              <p className="text-gray-600 dark:text-gray-300 font-medium">
-                Per Word Content
-              </p>
-            </div>
+        {/* --- Why Choose Us Section --- */}
+        <div className="bg-[#0F1430] text-white rounded-[3rem] p-10 md:p-16 mb-24 relative overflow-hidden border border-white/10">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#F47C26]/20 rounded-full blur-[100px]"></div>
+
+          <div className="text-center mb-12 relative z-10">
+            <h2 className="text-3xl md:text-4xl font-black mb-4">
+              Why Choose Us?
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              We don't just deliver services; we deliver measurable results that
+              build trust and revenue.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 relative z-10">
+            {whyChooseUs.map((item, idx) => (
+              <div key={idx} className="text-center group">
+                <div className="mx-auto w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-2xl text-[#F47C26] mb-4 group-hover:bg-[#F47C26] group-hover:text-white transition-all duration-300">
+                  {item.icon}
+                </div>
+                <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+                <p className="text-xs text-gray-400">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* --- CTA Section --- */}
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-            Ready to Dominate Your Market?
+            Ready to Scale Your Business?
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
-            Whether you need aggressive growth via Ads or organic stability via
-            SEO, Trivixa has the strategy.
+            Start your journey to digital dominance today. Let's discuss a
+            custom strategy for your brand.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button
               onClick={() => setIsScheduleModalOpen(true)}
               className="px-8 py-4 bg-[#F47C26] hover:bg-[#d5671f] text-white rounded-xl font-bold transition-all shadow-lg hover:-translate-y-1 flex items-center justify-center gap-2"
             >
-              Get a Free Audit <FaArrowRight />
+              Get Started Now <FaArrowRight />
             </button>
             <Link
-              to="/portfolio"
+              to="/pricing"
               className="px-8 py-4 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-xl font-bold hover:bg-gray-50 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-2"
             >
-              View Case Studies
+              View Pricing Plans
             </Link>
           </div>
         </div>
       </div>
+
       <AnimatePresence>
         {isScheduleModalOpen && (
           <ScheduleMeetingModal
