@@ -214,7 +214,7 @@ const Pricing = () => {
                       </div>
                       {plan.price !== "Contact Us" && (
                         <p className="text-xs text-gray-400 mt-1">
-                          One-time payment
+                          Pay as Project Progresses
                         </p>
                       )}
                     </div>
