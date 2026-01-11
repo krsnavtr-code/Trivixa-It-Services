@@ -206,7 +206,7 @@ const CourseMenu = ({ isMobile = false, onItemClick = () => {} }) => {
       initial={{ opacity: 0, y: 10, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.2 }}
-      className="fixed left-0 top-full mt-2 w-[850px] bg-white dark:bg-[#0a0f2d]/95 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-[9999] flex overflow-hidden ring-1 ring-black/5"
+      className="fixed left-0 top-full mt-0 w-[850px] bg-white dark:bg-[#0a0f2d]/95 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-[9999] flex overflow-hidden ring-1 ring-black/5"
       style={{ transformOrigin: "top left" }}
     >
       {/* Left Sidebar: Categories */}

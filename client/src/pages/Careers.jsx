@@ -17,21 +17,22 @@ import {
   FaEnvelope,
   FaWhatsapp,
   FaTimes,
+  FaCheckCircle,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 // --- Application Popup Component ---
 const ApplicationPopup = ({ job, onClose }) => {
   const handleEmailClick = () => {
-    const subject = `Application for ${job.title} Position`;
-    const body = `Dear Hiring Manager,\n\nI am interested in applying for the ${job.title} position at Trivixa IT Services.\n\n[Your message here]\n\nBest regards,\n[Your Name]`;
+    const subject = `Application for ${job.title} - [Your Name]`;
+    const body = `Dear Hiring Team at Trivixa IT Solution,\n\nI am writing to express my interest in the ${job.title} position.\n\n[Please describe your experience here]\n\nLink to Portfolio/Resume:\n\nBest regards,\n[Your Name]`;
     window.location.href = `mailto:krishna.trivixa@gmail.com?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(body)}`;
   };
 
   const handleWhatsAppClick = () => {
-    const message = `Hello, I'm interested in the ${job.title} position at Trivixa IT Services. Could you provide more details about the application process?`;
+    const message = `Hi, I am interested in applying for the *${job.title}* position at Trivixa IT Solution. My name is [Your Name].`;
     const phoneNumber = "+919084407615";
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
@@ -41,7 +42,6 @@ const ApplicationPopup = ({ job, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -50,14 +50,12 @@ const ApplicationPopup = ({ job, onClose }) => {
         className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
       ></motion.div>
 
-      {/* Modal Content */}
       <motion.div
         className="relative w-full max-w-lg bg-white dark:bg-[#0a0f2d] rounded-3xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden"
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
       >
-        {/* Decorative Top Border */}
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-[#F47C26] to-purple-500"></div>
 
         <button
@@ -71,13 +69,13 @@ const ApplicationPopup = ({ job, onClose }) => {
         <div className="p-8 md:p-10">
           <div className="mb-6">
             <span className="text-xs font-bold text-[#F47C26] uppercase tracking-widest mb-2 block">
-              Start Your Journey
+              Join the Team
             </span>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
               Apply for {job.title}
             </h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
-              Please select your preferred method to submit your application.
+              Select a method to send your CV and Portfolio.
             </p>
           </div>
 
@@ -92,10 +90,10 @@ const ApplicationPopup = ({ job, onClose }) => {
                 </div>
                 <div className="text-left">
                   <p className="font-bold text-gray-900 dark:text-white">
-                    Email Application
+                    Send via Email
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Send resume & cover letter
+                    Official Application
                   </p>
                 </div>
               </div>
@@ -112,10 +110,10 @@ const ApplicationPopup = ({ job, onClose }) => {
                 </div>
                 <div className="text-left">
                   <p className="font-bold text-gray-900 dark:text-white">
-                    Quick Chat
+                    WhatsApp Chat
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Connect via WhatsApp
+                    Fast Track Inquiry
                   </p>
                 </div>
               </div>
@@ -159,73 +157,143 @@ const Careers = () => {
     document.body.style.overflow = "auto";
   };
 
+  // Expanded Data for SEO content
   const benefits = [
     {
       icon: <FaClock />,
-      title: "Flexible Autonomy",
+      title: "Flexible & Remote",
       description:
-        "We value output over hours. Work when you feel most productive.",
+        "Trivixa IT Solution promotes a healthy work-life balance with remote-first options.",
     },
     {
-      icon: <FaGlobeAmericas />,
-      title: "Remote-First",
+      icon: <FaLaptopCode />,
+      title: "Latest Tech Stack",
       description:
-        "Work from anywhere. We provide the digital infrastructure to connect.",
+        "Work with cutting-edge tools: React, Next.js, Laravel, Node.js, and AWS.",
     },
     {
       icon: <FaGraduationCap />,
-      title: "Learning Budget",
-      description: "Annual stipends for courses, books, and conferences.",
+      title: "Growth & Learning",
+      description:
+        "Paid access to Udemy courses and mentorship from senior developers.",
     },
     {
       icon: <FaMedal />,
-      title: "Performance Bonuses",
+      title: "Performance Bonus",
       description:
-        "Quarterly rewards for shipping exceptional code and results.",
+        "Quarterly incentives for timely project delivery and code excellence.",
     },
   ];
 
   const jobOpenings = [
     {
       id: 1,
-      title: "Senior Frontend Engineer",
+      title: "Senior MERN Stack Developer",
       type: "Full-time",
       location: "Remote / Hybrid",
       department: "Engineering",
-      salary: "20k - 30k",
+      salary: "Competitive",
+      datePosted: "2026-01-10",
       description:
-        "Architecting next-gen user interfaces using React, Next.js, and WebGL. You will lead the frontend squad and define our component library standards.",
-      tags: ["React", "TypeScript", "Tailwind"],
+        "We are looking for an experienced Full Stack Developer to lead our web application projects. You will architect scalable solutions using MongoDB, Express, React, and Node.js.",
+      responsibilities: [
+        "Develop high-performance RESTful APIs.",
+        "Optimize frontend for maximum speed and scalability.",
+        "Collaborate with the design team to implement UI/UX.",
+      ],
+      tags: ["React.js", "Node.js", "MongoDB", "Redux"],
     },
     {
       id: 2,
-      title: "Product Designer (UI/UX)",
+      title: "SEO & Digital Strategist",
       type: "Full-time",
       location: "Remote",
-      department: "Design",
-      salary: "20k - 30k",
+      department: "Marketing",
+      salary: "Competitive",
+      datePosted: "2026-01-11",
       description:
-        "Translating complex technical requirements into intuitive, beautiful user journeys. Proficiency in Figma and design systems is a must.",
-      tags: ["Figma", "Prototyping", "Design Systems"],
+        "Lead the organic growth strategy for Trivixa and our clients. You should have deep knowledge of on-page SEO, link building, and Google Analytics.",
+      responsibilities: [
+        "Conduct keyword research and competitor analysis.",
+        "Manage content strategy and blog optimization.",
+        "Monitor search rankings and generate reports.",
+      ],
+      tags: ["SEO", "Google Analytics", "Content Marketing", "SEM"],
     },
     {
       id: 3,
-      title: "DevOps Engineer",
-      type: "Contract",
+      title: "UI/UX Designer",
+      type: "Contract / Freelance",
       location: "Remote",
-      department: "Operations",
-      salary: "Competitive",
+      department: "Design",
+      salary: "Project Based",
+      datePosted: "2026-01-08",
       description:
-        "Building robust CI/CD pipelines and managing our AWS infrastructure. Ideally looking for someone with Kubernetes and Terraform experience.",
-      tags: ["AWS", "Docker", "CI/CD"],
+        "Create intuitive user interfaces for e-commerce and corporate websites. Mastery of Figma and Adobe XD is required.",
+      responsibilities: [
+        "Create wireframes, storyboards, and user flows.",
+        "Design high-fidelity mockups for mobile and web.",
+        "Ensure design consistency across all products.",
+      ],
+      tags: ["Figma", "Adobe XD", "Prototyping", "Web Design"],
     },
   ];
+
+  // Generate Structured Data for Google Jobs
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: jobOpenings.map((job, index) => ({
+      "@type": "JobPosting",
+      position: index + 1,
+      title: job.title,
+      description: job.description,
+      identifier: {
+        "@type": "PropertyValue",
+        name: "Trivixa IT Solution",
+        value: `TRIV-${job.id}`,
+      },
+      datePosted: job.datePosted,
+      validThrough: "2026-12-31",
+      employmentType: job.type === "Full-time" ? "FULL_TIME" : "CONTRACTOR",
+      hiringOrganization: {
+        "@type": "Organization",
+        name: "Trivixa IT Solution",
+        sameAs: "https://trivixa.in",
+        logo: "https://trivixa.in/logo.png",
+      },
+      jobLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          addressCountry: "IN",
+          addressRegion: "Remote",
+        },
+      },
+      baseSalary: {
+        "@type": "MonetaryAmount",
+        currency: "INR",
+        value: {
+          "@type": "QuantitativeValue",
+          unitText: "MONTH",
+          value: job.salary === "Competitive" ? 25000 : undefined,
+        },
+      },
+    })),
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f2d] text-gray-900 dark:text-white relative overflow-hidden transition-colors duration-500">
       <SEO
-        title="Careers - Join Our Team | Trivixa IT Services"
-        description="Explore career opportunities at Trivixa IT Services. Join our team of talented professionals and grow your career in the tech industry."
+        title="Careers at Trivixa IT Solution | Web Dev & SEO Jobs"
+        description="Join Trivixa IT Solution. We are hiring MERN Stack Developers, SEO Experts, and UI Designers. Build the future of technology with us at trivixa.in."
+        keywords="Trivixa Careers, IT Jobs India, Remote Web Developer Jobs, MERN Stack Jobs, SEO Jobs, Trivixa IT Solution Hiring"
+      />
+
+      {/* Inject Job Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
       {/* --- Atmospheric Background --- */}
@@ -245,40 +313,36 @@ const Careers = () => {
               transition={{ duration: 0.8 }}
             >
               <span className="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-[#F47C26] dark:bg-white/5 dark:border-white/10 dark:text-[#F47C26] text-xs font-bold uppercase tracking-wider shadow-sm dark:shadow-none">
-                We Are Hiring
+                Careers at Trivixa
               </span>
-              <h1 className="mt-6 text-4xl md:text-7xl font-extrabold text-gray-900 dark:text-white leading-tight">
-                Build the{" "}
+              <h1 className="mt-6 text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                Code Your{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
-                  Future
-                </span>{" "}
-                <br />
-                With Us
+                  Legacy
+                </span>
               </h1>
               <p className="mt-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-                Join a team of architects, dreamers, and doers. We are
-                engineering the next generation of digital experiences.
+                Join <strong>Trivixa IT Solution</strong>. We are a team of
+                innovators building next-gen web applications and digital
+                strategies.
               </p>
 
               <div className="mt-10 flex flex-wrap justify-center gap-6">
+                {/* Visual Trust Indicators */}
                 <div className="flex flex-col items-center p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 shadow-lg dark:shadow-none min-w-[120px]">
                   <span className="text-3xl font-bold text-blue-500">
-                    4.8/5
+                    4.6/5
                   </span>
                   <span className="text-xs text-gray-500 uppercase tracking-wide mt-1">
-                    Glassdoor
-                  </span>
-                </div>
-                <div className="flex flex-col items-center p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 shadow-lg dark:shadow-none min-w-[120px]">
-                  <span className="text-3xl font-bold text-green-500">95%</span>
-                  <span className="text-xs text-gray-500 uppercase tracking-wide mt-1">
-                    Retention
+                    Employee Satisfaction
                   </span>
                 </div>
                 <div className="flex flex-col items-center p-4 bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 shadow-lg dark:shadow-none min-w-[120px]">
-                  <span className="text-3xl font-bold text-[#F47C26]">2+</span>
+                  <span className="text-3xl font-bold text-green-500">
+                    100%
+                  </span>
                   <span className="text-xs text-gray-500 uppercase tracking-wide mt-1">
-                    Years of Experience
+                    Remote Friendly
                   </span>
                 </div>
               </div>
@@ -329,42 +393,43 @@ const Careers = () => {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <span className="text-[#F47C26] font-bold text-xs uppercase tracking-widest mb-2 block">
-                  Our Process
+                  Transparency
                 </span>
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  How We Hire
+                  Our Hiring Process
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 mb-8">
-                  We value transparency. Our interview process is designed to be
-                  respectful of your time while giving both of us a chance to
-                  assess fit. No whiteboard hazing, just real conversations and
-                  practical challenges.
+                  We value your time. Our process is designed to be streamlined
+                  and respectful.
                 </p>
 
-                <ul className="space-y-6">
+                <ul className="space-y-8">
                   {[
                     {
-                      title: "Application Review",
-                      desc: "We review your portfolio and code samples.",
+                      title: "CV Review",
+                      desc: "We check your portfolio and experience alignment.",
                     },
                     {
-                      title: "Culture Chat",
+                      title: "Culture Fit",
                       desc: "A casual chat to see if our values align.",
                     },
                     {
-                      title: "Technical Challenge",
-                      desc: "A practical, take-home task (paid).",
+                      title: "Skill Assessment",
+                      desc: "A practical, real-world task. No whiteboards.",
                     },
-                    { title: "Final Offer", desc: "Welcome to the team!" },
+                    {
+                      title: "Welcome Aboard",
+                      desc: "Offer letter and onboarding.",
+                    },
                   ].map((step, i) => (
-                    <li key={i} className="flex gap-4">
-                      <div className="flex flex-col items-center">
-                        <div className="w-8 h-8 rounded-full bg-[#F47C26] text-white flex items-center justify-center font-bold text-sm">
-                          {i + 1}
-                        </div>
-                        {i < 3 && (
-                          <div className="w-0.5 h-full bg-gray-200 dark:bg-white/10 my-2"></div>
-                        )}
+                    <li key={i} className="flex gap-4 relative">
+                      {/* Connecting Line */}
+                      {i < 3 && (
+                        <div className="absolute left-[15px] top-8 bottom-[-32px] w-0.5 bg-gray-200 dark:bg-white/10"></div>
+                      )}
+
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#F47C26] text-white flex items-center justify-center font-bold text-sm z-10">
+                        {i + 1}
                       </div>
                       <div>
                         <h4 className="font-bold text-lg">{step.title}</h4>
@@ -377,14 +442,11 @@ const Careers = () => {
                 </ul>
               </div>
 
-              {/* Diagram Context */}
-              <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-[#F47C26]/5"></div>
-                <div className="relative z-10 opacity-90 text-center">
-                  <div className="aspect-video bg-gray-100 dark:bg-black/30 rounded-xl border border-dashed border-gray-300 dark:border-white/20 flex items-center justify-center text-xs text-gray-400"></div>
-                  <p className="mt-4 text-sm font-medium text-gray-500 dark:text-gray-300">
-                    "We hire for potential and train for mastery."
-                  </p>
+              {/* Diagram / Visual Context */}
+              <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden flex items-center justify-center min-h-[300px]">
+                <div className="text-center opacity-60">
+                  <FaUsers className="text-6xl mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                  <p className="text-sm">Collaborative Hiring Flow</p>
                 </div>
               </div>
             </div>
@@ -435,9 +497,27 @@ const Careers = () => {
                           </span>
                         </div>
 
-                        <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed text-sm">
+                        <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed text-sm">
                           {job.description}
                         </p>
+
+                        {/* Rich Content: Responsibilities */}
+                        <div className="mb-4">
+                          <h4 className="text-xs font-bold uppercase text-gray-400 mb-2">
+                            Key Responsibilities:
+                          </h4>
+                          <ul className="space-y-1">
+                            {job.responsibilities.map((resp, i) => (
+                              <li
+                                key={i}
+                                className="flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400"
+                              >
+                                <FaCheckCircle className="text-[#F47C26] mt-0.5 text-xs shrink-0" />{" "}
+                                {resp}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
 
                         <div className="flex flex-wrap gap-2">
                           {job.tags?.map((tag, i) => (
@@ -482,15 +562,14 @@ const Careers = () => {
               Don't See Your Dream Job?
             </h2>
             <p className="text-blue-100 text-lg mb-8">
-              We're always looking for talented individuals. Send us your resume
-              and we'll contact you when a position that matches your skills
-              becomes available.
+              We are always looking for talented individuals. Send us your
+              resume and we'll contact you when a position matches your skills.
             </p>
             <Link
               to="/contact"
               className="inline-block bg-[#F47C26] hover:bg-[#d5671f] text-white font-bold py-4 px-10 rounded-xl transition-all shadow-lg hover:shadow-orange-500/30 hover:-translate-y-1"
             >
-              Send General Application
+              Contact HR Team
             </Link>
           </div>
         </section>

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 import {
   FaSearch,
   FaChevronDown,
   FaQuestionCircle,
   FaLightbulb,
+  FaHeadset,
 } from "react-icons/fa";
-import { getPublicFAQs } from "../api/faqApi"; 
+import { getPublicFAQs } from "../api/faqApi";
 
 const Faqs = () => {
   const [faqs, setFaqs] = useState([]);
@@ -30,9 +33,8 @@ const Faqs = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Assuming getPublicFAQs fetches only 'active' status FAQs
         const response = await getPublicFAQs();
-        const data = response.data || response; // Handle different response structures
+        const data = response.data || response;
         setFaqs(data);
         setFilteredFaqs(data);
       } catch (error) {
@@ -62,8 +64,37 @@ const Faqs = () => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  // --- Generate Dynamic FAQ Schema for Google ---
+  // This helps your questions appear directly in Google Search Results
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer.replace(/<[^>]+>/g, ""), // Strip HTML tags for Schema safety
+      },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#05081a] relative overflow-hidden transition-colors duration-300">
+      <SEO
+        title="FAQ - Frequently Asked Questions | Trivixa IT Solution"
+        description="Find answers to common questions about Trivixa's web development services, SEO pricing, support, and project timelines."
+        keywords="Trivixa FAQ, IT Support Questions, Web Development Process, SEO Services Cost"
+      />
+
+      {/* Inject JSON-LD Schema */}
+      {!loading && faqs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
+
       {/* --- Ambient Background --- */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
@@ -75,7 +106,7 @@ const Faqs = () => {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-4"
           >
-            <FaLightbulb /> Help Center
+            <FaLightbulb /> Support Center
           </motion.div>
 
           <motion.h1
@@ -93,8 +124,8 @@ const Faqs = () => {
             transition={{ delay: 0.2 }}
             className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
           >
-            Everything you need to know about our services, platform, and
-            billing. Can't find the answer? Contact our support team.
+            Everything you need to know about <strong>Trivixa.in</strong>{" "}
+            services, billing, and technical support.
           </motion.p>
         </div>
 
@@ -110,7 +141,7 @@ const Faqs = () => {
             <FaSearch className="ml-4 text-gray-400 text-lg" />
             <input
               type="text"
-              placeholder="Search for answers..."
+              placeholder="Search topics (e.g., 'SEO', 'Pricing')..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-transparent border-none px-4 py-3 text-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-0"
@@ -127,8 +158,14 @@ const Faqs = () => {
           <div className="text-center py-12 opacity-60">
             <FaQuestionCircle className="mx-auto text-5xl text-gray-300 dark:text-gray-600 mb-4" />
             <p className="text-xl text-gray-500 dark:text-gray-400">
-              No matching questions found.
+              No matching questions found for "{search}".
             </p>
+            <button
+              onClick={() => setSearch("")}
+              className="mt-4 text-[#F47C26] hover:underline"
+            >
+              Clear Search
+            </button>
           </div>
         ) : (
           <motion.div
@@ -183,9 +220,9 @@ const Faqs = () => {
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                       >
                         <div className="px-6 pb-6 pt-0 text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-white/5 mt-2 pt-4">
-                          {/* Render HTML content safely if answers contain formatting */}
                           <div
                             dangerouslySetInnerHTML={{ __html: faq.answer }}
+                            className="prose dark:prose-invert max-w-none"
                           />
                         </div>
                       </motion.div>
@@ -197,19 +234,30 @@ const Faqs = () => {
           </motion.div>
         )}
 
-        {/* Visual Context: Support */}
-        <div className="mt-20 p-8 bg-white/50 dark:bg-black/20 rounded-3xl border border-dashed border-gray-300 dark:border-white/10 text-center">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            Still have questions?
-          </h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
-            Our support team is ready to help you navigate our services.
-          </p>
+        {/* Visual Context: Support Workflow */}
+        <div className="mt-20 p-8 bg-white/50 dark:bg-black/20 rounded-3xl border border-dashed border-gray-300 dark:border-white/10 text-center relative overflow-hidden">
+          <div className="relative z-10">
+            <div className="w-16 h-16 mx-auto bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 text-2xl mb-4">
+              <FaHeadset />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              Still have questions?
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+              If you couldn't find the answer above, here is how our support
+              process works to get you resolved quickly.
+            </p>
 
-          <div
-            className="opacity-60 hover:opacity-100 transition-opacity cursor-help"
-            title="Support Process"
-          ></div>
+            {/* Diagram Placeholder */}
+            <div className="mb-6 opacity-80 hover:opacity-100 transition-opacity"></div>
+
+            <Link
+              to="/contact"
+              className="inline-block px-8 py-3 bg-[#F47C26] hover:bg-[#d5671f] text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-orange-500/30"
+            >
+              Contact Support
+            </Link>
+          </div>
         </div>
       </div>
     </div>

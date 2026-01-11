@@ -154,18 +154,19 @@ export const updateFAQ = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete FAQ
-// @route   DELETE /api/admin/faqs/:id
+// @route   DELETE /api/faqs/:id
 // @access  Private/Admin
 export const deleteFAQ = asyncHandler(async (req, res) => {
   const faq = await FAQ.findById(req.params.id);
-  
+
   if (!faq) {
     res.status(404);
     throw new Error('FAQ not found');
   }
-  
-  await faq.remove();
-  
+
+  // Use deleteOne() instead of remove()
+  await FAQ.deleteOne({ _id: req.params.id });
+
   res.json({
     success: true,
     message: 'FAQ removed',

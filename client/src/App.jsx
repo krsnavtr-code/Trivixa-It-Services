@@ -45,7 +45,8 @@ import AndroidServices from "./pages/AndroidServices.jsx";
 import Technologies from "./pages/Technologies.jsx";
 import Pricing from "./pages/Pricing.jsx";
 import WeServed from "./pages/WeServed.jsx";
-
+import Career from "./pages/Careers.jsx";
+import Testimonials from "./components/home/Testimonials.jsx";
 
 // --- Pages (Auth) ---
 import LoginPage from "./pages/auth/LoginPage";
@@ -294,6 +295,14 @@ function App() {
                 }
               />
               <Route
+                path="/careers"
+                element={
+                  <MainLayout>
+                    <Career />
+                  </MainLayout>
+                }
+              />
+              <Route
                 path="/contact"
                 element={
                   <MainLayout>
@@ -406,6 +415,14 @@ function App() {
                 element={
                   <MainLayout>
                     <Faqs />
+                  </MainLayout>
+                }
+              />
+              <Route
+                path="/testimonials"
+                element={
+                  <MainLayout>
+                    <Testimonials />
                   </MainLayout>
                 }
               />

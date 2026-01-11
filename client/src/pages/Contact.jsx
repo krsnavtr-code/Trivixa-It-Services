@@ -12,10 +12,11 @@ import {
   FaLinkedinIn,
   FaWhatsapp,
   FaSpinner,
+  FaClock,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { submitContactForm } from "../api/contactApi";
-import { getCourses } from "../api/servicesApi";
+import { getProjects } from "../api/servicesApi";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -25,13 +26,13 @@ export default function Contact() {
     email: "",
     phone: "",
     message: "",
-    courseInterest: "",
-    courseInterests: [],
+    serviceInterest: "",
+    serviceInterests: [],
     agreedToTerms: false,
   });
 
-  const [courses, setCourses] = useState([]);
-  const [isLoadingCourses, setIsLoadingCourses] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -46,35 +47,80 @@ export default function Contact() {
     visible: { opacity: 1, y: 0 },
   };
 
-  // Fetch Courses Logic
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await getCourses("", false);
-        let coursesData = [];
-        if (Array.isArray(response)) coursesData = response;
-        else if (response && Array.isArray(response.data))
-          coursesData = response.data;
-        else if (response?.success && Array.isArray(response.data))
-          coursesData = response.data;
+  // Structured Data for Local SEO (Crucial for Contact Pages)
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ITService",
+    name: "Trivixa IT Solution",
+    image: "https://trivixa.in/logo.png",
+    url: "https://trivixa.in",
+    telephone: "+919084407615",
+    email: "krishna.trivixa@gmail.com",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Noida",
+      addressRegion: "Uttar Pradesh",
+      postalCode: "201016",
+      addressCountry: "IN",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: "28.5355", // Approx Noida coordinates
+      longitude: "77.3910",
+    },
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "09:00",
+      closes: "18:00",
+    },
+    sameAs: [
+      "https://www.facebook.com/profile.php?id=61585637262250",
+      "https://x.com/TrivixaIt",
+      "https://www.instagram.com/trivixa_it_solution",
+      "https://www.linkedin.com/in/trivixa-it-services-75956a3a3/",
+    ],
+  };
 
-        if (coursesData.length > 0) {
-          const formattedCourses = coursesData.map((course) => ({
-            id: course._id || course.id,
-            name: course.title || course.name || "Untitled Course",
+  // Fetch Projects Logic
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const projectsData = await getProjects();
+        
+        if (projectsData.length > 0) {
+          const formattedProjects = projectsData.map((project) => ({
+            id: project._id || project.id,
+            name: project.title || project.name || "Untitled Project",
           }));
-          setCourses(formattedCourses);
+          setProjects(formattedProjects);
         } else {
-          setCourses([]);
+          setProjects([]);
         }
       } catch (error) {
-        toast.error("Failed to load course options.");
+        console.error("Error loading projects:", error);
+        toast.error("Failed to load services");
       } finally {
-        setIsLoadingCourses(false);
+        setIsLoadingProjects(false);
       }
     };
-    fetchCourses();
+    fetchProjects();
   }, []);
+
+  const handleInterestChange = (e) => {
+    const { value, checked } = e.target;
+    setFormData((prev) => {
+      const newInterests = checked
+        ? [...prev.serviceInterests, value]
+        : prev.serviceInterests.filter((item) => item !== value);
+
+      return {
+        ...prev,
+        serviceInterests: newInterests,
+        serviceInterest: newInterests.join(", "),
+      };
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,7 +142,7 @@ export default function Contact() {
         email: "",
         phone: "",
         message: "",
-        courseInterests: [],
+        serviceInterests: [],
         agreedToTerms: false,
       });
       toast.success("Message sent successfully!");
@@ -110,9 +156,15 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f2d] text-gray-900 dark:text-white overflow-hidden relative transition-colors duration-500">
       <SEO
-        title="Contact Us | Trivixa IT Solutions"
-        description="Get in touch with Trivixa for your digital transformation needs. We are here to answer your questions and discuss your next big project."
-        keywords="contact Trivixa, IT support, project inquiry, web development agency contact"
+        title="Contact Trivixa IT Solution | Web Development & SEO Agency Noida"
+        description="Contact Trivixa IT Solution in Noida for expert Web Development, SEO services, and Software Consultation. Call +91 90844 07615 or email us today."
+        keywords="Contact Trivixa, IT Company Noida, Web Development Inquiry, Hire React Developers, SEO Consultation India"
+      />
+
+      {/* Inject Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
       {/* --- Atmospheric Background --- */}
@@ -135,18 +187,16 @@ export default function Contact() {
               Get In Touch
             </span>
             <h1 className="mt-6 text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
-              Let's Build Something{" "}
+              Start Your Digital{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
-                Great
+                Transformation
               </span>
             </h1>
             <p className="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
-              Have a project in mind or just want to say hi? We'd love to hear
-              from you. Here is how our engagement process works:
+              Ready to scale your business? Whether you need a custom MERN stack
+              application, SEO strategy, or IT consultation, Trivixa is here to
+              help.
             </p>
-
-            {/* Visual Context for User Understanding */}
-            <div className="mt-8 flex justify-center opacity-90"></div>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
@@ -163,19 +213,26 @@ export default function Contact() {
                 className="bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 p-8 rounded-3xl shadow-xl dark:shadow-none hover:shadow-2xl transition-all duration-300"
               >
                 <h3 className="text-xl font-bold mb-6 border-b border-gray-100 dark:border-white/10 pb-4 text-gray-900 dark:text-white">
-                  Contact Details
+                  Corporate Office
                 </h3>
+
+                {/* Visual Context: Map placeholder to encourage location visualization */}
+                <div className="mb-6 rounded-xl overflow-hidden h-32 w-full bg-gray-100 dark:bg-black/20 relative">
+                  {/* In a real scenario, this would be an embedded Google Map iframe */}
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs"></div>
+                </div>
+
                 <div className="space-y-8">
                   <ContactItem
                     icon={<FaMapMarkerAlt />}
-                    title="Headquarters"
-                    content="Noida, UP 201016"
+                    title="Noida Headquarters"
+                    content="Noida, Uttar Pradesh 201016, India"
                     color="text-blue-600 dark:text-blue-400"
                     bgColor="bg-blue-50 dark:bg-blue-500/10"
                   />
                   <ContactItem
                     icon={<FaPhoneAlt />}
-                    title="Phone"
+                    title="Call Support"
                     content="+91 90844 07615"
                     subContent="Mon - Fri, 9:00 AM - 6:00 PM"
                     color="text-green-600 dark:text-green-400"
@@ -183,9 +240,9 @@ export default function Contact() {
                   />
                   <ContactItem
                     icon={<FaEnvelope />}
-                    title="Email"
+                    title="Project Inquiries"
                     content="krishna.trivixa@gmail.com"
-                    subContent="We usually reply within 24 hours"
+                    subContent="Response time: < 24 Hours"
                     color="text-[#F47C26]"
                     bgColor="bg-orange-50 dark:bg-[#F47C26]/10"
                   />
@@ -198,32 +255,37 @@ export default function Contact() {
                 className="bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 p-8 rounded-3xl shadow-lg dark:shadow-none"
               >
                 <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">
-                  Connect With Us
+                  Follow Trivixa
                 </h3>
                 <div className="flex flex-wrap gap-4">
                   <SocialLink
                     href="https://www.facebook.com/profile.php?id=61585637262250"
                     icon={<FaFacebookF />}
+                    label="Facebook"
                     color="hover:bg-blue-600 hover:border-blue-600"
                   />
                   <SocialLink
                     href="https://x.com/TrivixaIt"
                     icon={<FaTwitter />}
+                    label="Twitter / X"
                     color="hover:bg-sky-500 hover:border-sky-500"
                   />
                   <SocialLink
                     href="https://www.instagram.com/trivixa_it_solution"
                     icon={<FaInstagram />}
+                    label="Instagram"
                     color="hover:bg-pink-600 hover:border-pink-600"
                   />
                   <SocialLink
                     href="https://www.linkedin.com/in/trivixa-it-services-75956a3a3/"
                     icon={<FaLinkedinIn />}
+                    label="LinkedIn"
                     color="hover:bg-blue-700 hover:border-blue-700"
                   />
                   <SocialLink
                     href="https://wa.me/919084407615"
                     icon={<FaWhatsapp />}
+                    label="WhatsApp"
                     color="hover:bg-green-500 hover:border-green-500"
                   />
                 </div>
@@ -240,9 +302,13 @@ export default function Contact() {
               {/* Decorative Gradient Line */}
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 via-[#F47C26] to-purple-600"></div>
 
-              <h2 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
                 Send a Message
               </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+                Fill out the form below and our team will contact you to discuss
+                your requirements.
+              </p>
 
               <AnimatePresence mode="wait">
                 {isSuccess ? (
@@ -257,11 +323,11 @@ export default function Contact() {
                       <FaCheckCircle className="text-5xl text-green-600 dark:text-green-400" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                      Message Received!
+                      Inquiry Received!
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-sm mx-auto">
-                      Thank you for reaching out. Our team will review your
-                      inquiry and get back to you within 24 hours.
+                      Thank you for contacting Trivixa. We have received your
+                      project details and will reply within 24 hours.
                     </p>
                     <button
                       onClick={() => setIsSuccess(false)}
@@ -291,7 +357,7 @@ export default function Contact() {
                         onChange={handleChange}
                         required
                         className="w-full px-4 py-3.5 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:border-[#F47C26] focus:ring-2 focus:ring-[#F47C26]/20 transition-all placeholder-gray-400 dark:placeholder-gray-600"
-                        placeholder="John Doe"
+                        placeholder="e.g. Krishna Avtar"
                       />
                     </div>
 
@@ -299,7 +365,8 @@ export default function Contact() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                          Email <span className="text-[#F47C26]">*</span>
+                          Business Email{" "}
+                          <span className="text-[#F47C26]">*</span>
                         </label>
                         <input
                           type="email"
@@ -308,12 +375,12 @@ export default function Contact() {
                           onChange={handleChange}
                           required
                           className="w-full px-4 py-3.5 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:border-[#F47C26] focus:ring-2 focus:ring-[#F47C26]/20 transition-all placeholder-gray-400 dark:placeholder-gray-600"
-                          placeholder="john@example.com"
+                          placeholder="name@company.com"
                         />
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                          Phone
+                          Phone Number
                         </label>
                         <input
                           type="tel"
@@ -321,59 +388,36 @@ export default function Contact() {
                           value={formData.phone}
                           onChange={handleChange}
                           className="w-full px-4 py-3.5 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:border-[#F47C26] focus:ring-2 focus:ring-[#F47C26]/20 transition-all placeholder-gray-400 dark:placeholder-gray-600"
-                          placeholder="+91 99999 99999"
+                          placeholder="+91 90844 07615"
                         />
                       </div>
                     </div>
 
-                    {/* Course Selection */}
-                    <div>
-                      <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                        Interest (Optional)
+                    {/* Service Interest Section */}
+                    <div className="mb-6">
+                      <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
+                        Service Interest (Optional)
                       </label>
-                      <div className="relative">
-                        <select
-                          name="courseInterest"
-                          value={formData.courseInterest}
-                          onChange={handleChange}
-                          disabled={isLoadingCourses}
-                          className="w-full px-4 py-3.5 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:border-[#F47C26] focus:ring-2 focus:ring-[#F47C26]/20 appearance-none transition-all cursor-pointer"
-                        >
-                          <option value="" className="text-gray-500">
-                            Select a Service / Course
+                      <select
+                        name="serviceInterest"
+                        value={formData.serviceInterest}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3.5 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:border-[#F47C26] focus:ring-2 focus:ring-[#F47C26]/20 transition-all"
+                      >
+                        <option value="">Select a service...</option>
+                        {!isLoadingProjects && projects.map((project) => (
+                          <option key={project.id} value={project.name}>
+                            {project.name}
                           </option>
-                          {courses.map((course) => (
-                            <option
-                              key={course.id}
-                              value={course.id}
-                              className="text-gray-900 bg-white dark:bg-[#0a0f2d] dark:text-white"
-                            >
-                              {course.name}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M19 9l-7 7-7-7"
-                            />
-                          </svg>
-                        </div>
-                      </div>
+                        ))}
+                      </select>
                     </div>
 
                     {/* Message Input */}
                     <div>
                       <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                        Message <span className="text-[#F47C26]">*</span>
+                        Project Details{" "}
+                        <span className="text-[#F47C26]">*</span>
                       </label>
                       <textarea
                         name="message"
@@ -382,7 +426,7 @@ export default function Contact() {
                         onChange={handleChange}
                         required
                         className="w-full px-4 py-3.5 bg-gray-50 dark:bg-[#0a0f2d]/50 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:border-[#F47C26] focus:ring-2 focus:ring-[#F47C26]/20 transition-all resize-none placeholder-gray-400 dark:placeholder-gray-600"
-                        placeholder="Tell us about your project or inquiry..."
+                        placeholder="Tell us about your project goals, timeline, and requirements..."
                       />
                     </div>
 
@@ -407,7 +451,8 @@ export default function Contact() {
                         htmlFor="agreed"
                         className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed"
                       >
-                        I agree to receive communications from Trivixa. Read our{" "}
+                        I agree to the processing of my personal data by Trivixa
+                        IT Solution. Read our{" "}
                         <Link
                           to="/privacy-policy"
                           className="text-[#F47C26] hover:underline font-semibold"
@@ -426,7 +471,8 @@ export default function Contact() {
                     >
                       {isSubmitting ? (
                         <>
-                          <FaSpinner className="animate-spin" /> Sending...
+                          <FaSpinner className="animate-spin" /> Sending
+                          Request...
                         </>
                       ) : (
                         <>
@@ -448,29 +494,33 @@ export default function Contact() {
 // --- Helper Components ---
 
 const ContactItem = ({ icon, title, content, subContent, color, bgColor }) => (
-  <div className="flex items-start gap-5">
+  <div className="flex items-start gap-5 group">
     <div
-      className={`w-12 h-12 rounded-2xl ${bgColor} flex items-center justify-center text-xl ${color} border border-transparent dark:border-white/5 shrink-0 transition-transform hover:scale-110`}
+      className={`w-12 h-12 rounded-2xl ${bgColor} flex items-center justify-center text-xl ${color} border border-transparent dark:border-white/5 shrink-0 transition-transform duration-300 group-hover:scale-110`}
     >
       {icon}
     </div>
     <div>
-      <h4 className="text-gray-900 dark:text-white font-bold text-lg">{title}</h4>
+      <h4 className="text-gray-900 dark:text-white font-bold text-lg">
+        {title}
+      </h4>
       <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{content}</p>
       {subContent && (
-        <p className="text-gray-400 dark:text-gray-500 text-xs mt-1 font-medium">
-          {subContent}
-        </p>
+        <div className="flex items-center gap-1 text-gray-400 dark:text-gray-500 text-xs mt-1 font-medium">
+          <FaClock className="text-xs opacity-70" />
+          <span dangerouslySetInnerHTML={{ __html: subContent }} />
+        </div>
       )}
     </div>
   </div>
 );
 
-const SocialLink = ({ href, icon, color }) => (
+const SocialLink = ({ href, icon, color, label }) => (
   <a
     href={href}
     target="_blank"
     rel="noopener noreferrer"
+    aria-label={label}
     className={`w-12 h-12 rounded-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 transition-all duration-300 hover:text-white hover:-translate-y-1 hover:border-transparent ${color} shadow-sm dark:shadow-none`}
   >
     {icon}

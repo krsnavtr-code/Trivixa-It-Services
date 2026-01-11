@@ -129,43 +129,36 @@ const Categories = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
-            <motion.span
-              className="text-[#F47C26] font-bold uppercase tracking-widest text-xs"
-            >
-              Our Portfolio
-            </motion.span>
+            <span className="text-[#F47C26] font-bold uppercase tracking-widest text-xs">
+              Our Services
+            </span>
             <motion.h2
               transition={{ delay: 0.1 }}
-              className="mt-2 text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight"
+              className="mt-2 text-2xl md:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight"
             >
-              Project{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
-                Domains
+                Services{" "}
               </span>
+              By Categories
             </motion.h2>
-            <motion.p
-              transition={{ delay: 0.2 }}
-              className="mt-4 text-gray-600 dark:text-gray-400 text-lg"
-            >
+            <p className="mt-4 text-gray-600 dark:text-gray-400 text-lg">
               We specialize in building scalable solutions across diverse
-              technical ecosystems. Explore our work by category.
-            </motion.p>
+              technical ecosystems. Explore our services by category.
+            </p>
           </div>
 
-          <motion.div
-            transition={{ delay: 0.3 }}
-          >
+          <motion.div transition={{ delay: 0.3 }}>
             <Link
               to="/categories"
               className="hidden md:flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white border-b-2 border-[#F47C26] pb-1 hover:text-[#F47C26] transition-colors"
             >
-              View All Domains <FaArrowRight />
+              View All Services <FaArrowRight />
             </Link>
           </motion.div>
         </div>
 
         {/* Diagram: Showing diversity of project domains */}
-        <div className="flex justify-center mb-12 opacity-80 h-0 w-0 overflow-hidden"></div>
+        <div className="flex justify-center mb-8 opacity-80 h-0 w-0 overflow-hidden"></div>
 
         {/* Grid Section */}
         <motion.div

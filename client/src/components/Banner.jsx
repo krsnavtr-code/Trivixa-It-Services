@@ -148,7 +148,7 @@ const Banner = () => {
 
             <motion.h1
               variants={itemVariants}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight"
             >
               Forging the <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] via-purple-500 to-blue-600 animate-gradient-x">
@@ -335,7 +335,7 @@ const Banner = () => {
 
               <motion.div
                 style={{ translateZ: 80 }}
-                className="absolute -bottom-18 -left-24 bg-white dark:bg-[#1a1f3c] border border-gray-100 dark:border-white/10 p-4 sm:p-5 rounded-2xl shadow-2xl max-w-[160px] sm:max-w-[200px]"
+                className="absolute -bottom-18 -left-4 bg-white dark:bg-[#1a1f3c] border border-gray-100 dark:border-white/10 p-4 sm:p-5 rounded-2xl shadow-2xl max-w-[160px] sm:max-w-[200px]"
               >
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">

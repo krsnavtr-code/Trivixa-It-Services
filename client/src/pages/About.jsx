@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState} from "react";
 import { Link } from "react-router-dom";
 import SEO from "../components/SEO";
 import {
@@ -9,11 +9,13 @@ import {
   FaCode,
   FaLinkedinIn,
   FaTwitter,
-  FaCheckCircle,
+  FaQuoteLeft,
 } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import ScheduleMeetingModal from "../components/common/ScheduleMeetingModal";
 
 export default function About() {
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   // Animation Variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -28,41 +30,66 @@ export default function About() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
+  // Structured Data (JSON-LD) for SEO
+  // This helps Google understand that Trivixa IT Solution is a Business
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ITService",
+    name: "Trivixa IT Solution",
+    url: "https://trivixa.in",
+    logo: "https://trivixa.in/logo.png",
+    sameAs: [
+      "https://www.linkedin.com/company/trivixa-it-solution",
+      "https://twitter.com/trivixa",
+    ],
+    founder: {
+      "@type": "Person",
+      name: "Krishna Avtar", // Assuming Sachin is the lead/CEO based on list position, edit if needed
+      jobTitle: "CEO & Founder",
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "IN",
+    },
+    description:
+      "Trivixa IT Solution is a premier web development and digital strategy agency helping businesses scale through technology.",
+  };
+
   const teamMembers = [
     {
-      name: "Sachin Sharma",
-      role: "SEO Strategist",
-      bio: "Driving organic growth and digital visibility for enterprise clients.",
+      name: "Krishna Avtar",
+      role: "Founder & CEO",
+      bio: "The visionary behind Trivixa.in. With over a decade of experience in SEO and System Architecture, Sachin leads the company's strategic direction.",
       image: "/images/team-1.jpg",
     },
     {
-      name: "Krishna Avtar",
+      name: "Mani Chauhan",
       role: "Lead Full Stack Dev",
-      bio: "Architecting scalable cloud solutions and robust backend systems.",
+      bio: "Architecting scalable cloud solutions and robust backend systems that power enterprise applications.",
       image: "/images/team-5.jpg",
     },
     {
-      name: "Ritik Kumar",
+      name: "Kanika Gahlot",
       role: "Tech Content Lead",
-      bio: "Translating complex code logic into compelling user narratives.",
+      bio: "Translating complex code logic into compelling user narratives and technical documentation.",
       image: "/images/team-3.jpg",
     },
     {
-      name: "Sudev Mohan",
-      role: "UI/UX Designer",
-      bio: "Crafting intuitive digital experiences that delight users.",
+      name: "Km. Meenakshi",
+      role: "Head of UI/UX",
+      bio: "Crafting intuitive digital experiences that delight users and drive conversion rates.",
       image: "/images/team-4.jpg",
     },
     {
-      name: "Kiran Rawat",
-      role: "Digital Marketing",
-      bio: "Executing data-driven campaigns to maximize ROI.",
+      name: "Chanchal Singh",
+      role: "Digital Marketing Manager",
+      bio: "Executing data-driven campaigns to maximize ROI and brand visibility across digital channels.",
       image: "/images/team-2.jpg",
     },
     {
-      name: "Mohit Rajput",
-      role: "Frontend Developer",
-      bio: "Specializing in React.js and modern interactive interfaces.",
+      name: "Mayank Chauhan",
+      role: "Senior Frontend Engineer",
+      bio: "Specializing in React.js and modern interactive interfaces for high-performance web apps.",
       image: "/images/team-6.jpg",
     },
   ];
@@ -70,15 +97,22 @@ export default function About() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f2d] overflow-hidden text-gray-900 dark:text-white relative transition-colors duration-500">
       <SEO
-        title="About Us | Trivixa IT Solutions"
-        description="Learn about Trivixa's mission to drive digital transformation. Discover our story, values, and the expert team behind our innovative IT solutions."
-        keywords="about Trivixa, IT agency, software development, digital transformation, web development team"
+        title="About Trivixa IT Solution | CEO & Team | Web Development Experts"
+        description="Meet the team at Trivixa IT Solution. Read a message from our CEO, explore our mission, and discover why we are the top choice for web development at trivixa.in."
+        keywords="Trivixa IT Solution CEO, About Trivixa, trivixa.in team, IT Company India, Web Development Agency, Software Solutions Founder"
         og={{
-          title: "About Trivixa - Innovating Digital Futures",
+          title: "About Trivixa IT Solution - Leadership & Vision",
           description:
-            "We are a team of architects, developers, and strategists building the future of tech.",
+            "Empowering businesses through innovation. Meet the leadership driving Trivixa IT Solution.",
           type: "website",
+          url: "https://trivixa.in/about",
         }}
+      />
+
+      {/* Inject JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
       {/* --- Background Ambience --- */}
@@ -97,26 +131,111 @@ export default function About() {
             transition={{ duration: 0.8 }}
           >
             <span className="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-[#F47C26] dark:bg-white/5 dark:border-white/10 dark:text-[#F47C26] text-xs font-bold uppercase tracking-wider mb-6 inline-block shadow-sm dark:shadow-none">
-              Our Story
+              Since 2022
             </span>
             <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight text-gray-900 dark:text-white">
               We Are{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F47C26] to-[#ff9e5e]">
-                Trivixa
+                Trivixa IT Solution
               </span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Bridging the gap between complex business challenges and elegant
-              digital solutions. We don't just write code; we engineer growth.
+              Your strategic partner in <strong>Digital Transformation</strong>.
+              At trivixa.in, we bridge the gap between complex business
+              challenges and elegant, scalable software solutions.
             </p>
-
-            <div className="mt-12 flex justify-center opacity-90"></div>
           </motion.div>
         </div>
       </section>
 
-      {/* --- Narrative Section --- */}
-      <section className="py-16 px-6 relative z-10">
+      {/* --- CEO / Founder's Message Section (High SEO Value) --- */}
+      <section className="py-20 px-6 relative z-10 bg-white dark:bg-black/20 border-y border-gray-100 dark:border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* CEO Image */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="lg:col-span-5 relative"
+            >
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-white/10">
+                <img
+                  src="http://trivixa.in/api/upload/file/trivixa-owner-11012026-1849.png"
+                  alt="CEO of Trivixa IT Solution"
+                  className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-6">
+                  <h3 className="text-white text-2xl font-bold">
+                    Krishna Avtar
+                  </h3>
+                  <p className="text-[#F47C26] font-medium">Founder & CEO</p>
+                </div>
+              </div>
+              {/* Decorative Element */}
+              <div className="absolute -z-10 top-10 -left-10 w-full h-full border-2 border-[#F47C26]/30 rounded-2xl"></div>
+            </motion.div>
+
+            {/* CEO Content */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="lg:col-span-7 space-y-6"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <FaQuoteLeft className="text-4xl text-[#F47C26]/20" />
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  A Note from the Founder
+                </h2>
+              </div>
+
+              <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed">
+                <p>
+                  "When I established <strong>Trivixa IT Solution</strong>, the
+                  goal wasn't just to open another IT agency. The vision was to
+                  create a hub where innovation meets reliability. In an era
+                  where businesses are rapidly moving online, simply having a
+                  website isn't enough. You need a digital ecosystem that
+                  breathes, grows, and converts."
+                </p>
+                <p>
+                  At <strong>trivixa.in</strong>, we don't treat our clients as
+                  'projects'—we treat them as partners. Whether we are
+                  architecting a complex MERN stack application, optimizing an
+                  e-commerce platform for SEO, or designing a brand identity,
+                  our focus remains singular:{" "}
+                  <strong>Revenue Growth for our Clients.</strong>
+                </p>
+                <p>
+                  Our team is built on a foundation of relentless curiosity. We
+                  dive deep into your industry problems to engineer custom
+                  software solutions that provide a competitive edge. My promise
+                  to you is transparency, technical excellence, and a
+                  partnership that lasts beyond the deployment date."
+                </p>
+              </div>
+
+              <div className="pt-6">
+                <img
+                  src="/images/signature.png" // Optional: Add a signature image
+                  alt="CEO Signature"
+                  className="h-12 opacity-70 dark:invert"
+                  onError={(e) => (e.target.style.display = "none")}
+                />
+                <p className="mt-2 font-bold text-gray-900 dark:text-white">
+                  — Krishna Avtar
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- Narrative & Mission Section --- */}
+      <section className="py-20 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <motion.div
             variants={containerVariants}
@@ -129,15 +248,17 @@ export default function About() {
             <div className="space-y-10">
               <motion.div variants={itemVariants}>
                 <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
-                  Innovating the Future
+                  Why Leading Brands Choose Trivixa
                 </h2>
                 <div className="w-16 h-1 bg-[#F47C26] mb-6"></div>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
-                  Trivixa began with a clear purpose: to deliver
-                  enterprise-grade IT solutions that are accessible, scalable,
-                  and future-proof. Backed by a passionate team of architects
-                  and developers, we are committed to driving digital
-                  transformation for businesses of all sizes.
+                  Trivixa IT Solution stands at the forefront of the Indian IT
+                  sector, delivering enterprise-grade development services. We
+                  combine the agility of a startup with the process maturity of
+                  a large corporation. From{" "}
+                  <strong>Custom Web Development</strong> to
+                  <strong>AI-driven Marketing Strategies</strong>, our portfolio
+                  covers the full spectrum of digital needs.
                 </p>
               </motion.div>
 
@@ -146,11 +267,11 @@ export default function About() {
                   Our Mission
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                  To empower organizations with technology that automates
-                  workflows, enhances user engagement, and unlocks new revenue
-                  streams.
+                  To democratize access to high-end technology, empowering
+                  businesses of all sizes to automate workflows, enhance user
+                  engagement, and unlock new revenue streams through
+                  <strong>Trivixa's</strong> proven digital methodologies.
                 </p>
-                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 opacity-90"></div>
               </motion.div>
 
               <motion.div
@@ -158,10 +279,10 @@ export default function About() {
                 className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4"
               >
                 {[
-                  { icon: <FaCode />, text: "Modern Tech Stack" },
-                  { icon: <FaRocket />, text: "Agile Delivery" },
-                  { icon: <FaShieldAlt />, text: "Secure Architecture" },
-                  { icon: <FaUsers />, text: "Client-Centric" },
+                  { icon: <FaCode />, text: "MERN Stack Experts" },
+                  { icon: <FaRocket />, text: "SEO-First Approach" },
+                  { icon: <FaShieldAlt />, text: "Cybersecurity Ready" },
+                  { icon: <FaUsers />, text: "Dedicated Support" },
                 ].map((item, idx) => (
                   <div
                     key={idx}
@@ -180,25 +301,25 @@ export default function About() {
             <div className="grid grid-cols-2 gap-4">
               <motion.div variants={itemVariants} className="space-y-4 mt-8">
                 <StatCard
-                  number="5+"
-                  label="Years Experience"
+                  number="2+"
+                  label="Years of Excellence"
                   color="text-[#F47C26]"
                 />
                 <StatCard
-                  number="100+"
-                  label="Projects Shipped"
+                  number="21+"
+                  label="Projects Delivered"
                   color="text-blue-500"
                 />
               </motion.div>
               <motion.div variants={itemVariants} className="space-y-4">
                 <StatCard
-                  number="50+"
-                  label="Happy Clients"
+                  number="98%"
+                  label="Client Retention"
                   color="text-purple-500"
                 />
                 <StatCard
                   number="24/7"
-                  label="Active Support"
+                  label="Technical Support"
                   color="text-green-500"
                 />
               </motion.div>
@@ -212,10 +333,11 @@ export default function About() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-              Our Core Values
+              The Trivixa Value System
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              The principles that guide every line of code we write.
+              The principles that guide every line of code we write at Trivixa
+              IT Solution.
             </p>
           </div>
 
@@ -224,22 +346,22 @@ export default function About() {
               {
                 icon: <FaLightbulb />,
                 title: "Innovation",
-                desc: "We don't follow trends; we build solutions that set them.",
+                desc: "We don't follow trends; we build solutions that set them using the latest tech stacks.",
               },
               {
                 icon: <FaUsers />,
                 title: "Collaboration",
-                desc: "We work as an extension of your team, not just a vendor.",
+                desc: "We work as an extension of your team, not just a vendor. Your success is our KPI.",
               },
               {
                 icon: <FaShieldAlt />,
                 title: "Integrity",
-                desc: "Transparent pricing, clear communication, and secure code.",
+                desc: "Transparent pricing, clear communication, and secure, documented code.",
               },
               {
                 icon: <FaRocket />,
                 title: "Excellence",
-                desc: "We are obsessed with performance, speed, and quality.",
+                desc: "We are obsessed with performance, speed (Core Web Vitals), and quality assurance.",
               },
             ].map((val, idx) => (
               <motion.div
@@ -274,13 +396,9 @@ export default function About() {
             </h2>
             <div className="w-20 h-1 bg-[#F47C26] mx-auto mb-6"></div>
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              The architects, designers, and strategists behind Trivixa.
+              The architects, designers, and strategists behind Trivixa IT
+              Solution's success.
             </p>
-
-            {/* Visual Context: Organizational Structure */}
-            <div className="mt-8 flex justify-center opacity-80">
-              [Image of IT agency organizational structure]
-            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -294,11 +412,11 @@ export default function About() {
                 className="group bg-white dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden hover:border-orange-200 dark:hover:border-[#F47C26]/30 transition-all duration-300 shadow-lg dark:shadow-none"
               >
                 {/* Image Container */}
-                <div className="relative h-80 overflow-hidden bg-gray-200 dark:bg-[#0a0f2d]">
+                {/* <div className="relative h-80 overflow-hidden bg-gray-200 dark:bg-[#0a0f2d]">
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors z-10"></div>
                   <img
                     src={member.image}
-                    alt={member.name}
+                    alt={`${member.name} - ${member.role} at Trivixa`}
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                     onError={(e) => {
                       e.target.src =
@@ -306,16 +424,24 @@ export default function About() {
                     }}
                   />
 
-                  {/* Social Overlay */}
+                  
                   <div className="absolute bottom-0 left-0 w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20 bg-gradient-to-t from-black/80 to-transparent flex gap-4 justify-center">
-                    <a href="#" className="text-white hover:text-[#F47C26]">
+                    <a
+                      href="#"
+                      className="text-white hover:text-[#F47C26]"
+                      aria-label="LinkedIn"
+                    >
                       <FaLinkedinIn />
                     </a>
-                    <a href="#" className="text-white hover:text-[#F47C26]">
+                    <a
+                      href="#"
+                      className="text-white hover:text-[#F47C26]"
+                      aria-label="Twitter"
+                    >
                       <FaTwitter />
                     </a>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Content */}
                 <div className="p-6 text-center">
@@ -349,34 +475,45 @@ export default function About() {
 
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Ready to Digitalize Your Vision?
+                Ready to Transform Your Business?
               </h2>
               <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
-                Partner with Trivixa and let's build technology that drives real
-                business results.
+                Partner with <strong>Trivixa IT Solution</strong> and let's
+                build technology that drives real revenue. From website design
+                to complex software engines.
               </p>
-              <Link
-                to="/contact"
+              <button
+                onClick={() => setIsScheduleModalOpen(true)}
                 className="inline-flex items-center gap-2 bg-white text-[#d5671f] font-bold py-3.5 px-8 rounded-xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-lg"
               >
                 Start Your Project <FaRocket />
-              </Link>
+              </button>
             </div>
           </motion.div>
 
           <p className="text-center text-gray-500 mt-12 text-sm">
-            Trivixa IT Solutions — Engineering Excellence Since 2019.
+            Trivixa IT Solution — Engineering Excellence Since 2022 | trivixa.in
           </p>
         </div>
       </section>
+      <AnimatePresence>
+        {isScheduleModalOpen && (
+          <ScheduleMeetingModal
+            isOpen={isScheduleModalOpen}
+            onClose={() => setIsScheduleModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
 // Helper Component for Stats
 const StatCard = ({ number, label, color }) => (
-  <div className="bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 p-6 rounded-2xl shadow-sm dark:shadow-none">
+  <div className="bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 p-6 rounded-2xl shadow-sm dark:shadow-none hover:-translate-y-1 transition-transform duration-300">
     <h4 className={`text-4xl font-bold mb-1 ${color}`}>{number}</h4>
-    <p className="text-sm text-gray-600 dark:text-gray-400">{label}</p>
+    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+      {label}
+    </p>
   </div>
 );

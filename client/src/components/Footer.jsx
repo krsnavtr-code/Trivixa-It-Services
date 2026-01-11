@@ -12,6 +12,7 @@ import {
   FaEnvelope,
   FaChevronRight,
   FaInstagram,
+  FaGlobe,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -36,122 +37,160 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative bg-gray-50 dark:bg-[#05081a] border-t border-gray-200 dark:border-white/5 pt-20 pb-10 overflow-hidden transition-colors duration-300">
-      {/* Background Ambience */}
+    <footer className="relative bg-gray-50 dark:bg-[#05081a] border-t border-gray-200 dark:border-white/5 pt-16 pb-10 overflow-hidden transition-colors duration-300">
+      {/* --- Background Ambience --- */}
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-multiply dark:mix-blend-normal pointer-events-none"></div>
-      <div className="absolute -top-[20%] -left-[10%] w-[500px] h-[500px] bg-blue-200/40 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute -bottom-[20%] -right-[10%] w-[500px] h-[500px] bg-orange-200/40 dark:bg-[#F47C26]/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-[#F47C26] to-transparent opacity-50"></div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
+        {/* --- Section 1: Top Brand & Social Bar (Full Width) --- */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex flex-col md:flex-row justify-between items-center border-b border-gray-200 dark:border-white/10 pb-10 mb-12 gap-6 text-center md:text-left"
+        >
+          {/* Brand Identity */}
+          <div>
+            <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-2 justify-center md:justify-start">
+              <FaGlobe className="text-[#F47C26] text-2xl" />
+              Trivixa IT Solution<span className="text-[#F47C26]">.</span>
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-md">
+              Elevating businesses through **trivixa.in**. Your partner for
+              Custom Software, MERN Stack Development, and Strategic Digital
+              Marketing in India.
+            </p>
+          </div>
+
+          {/* Social Media Icons */}
+          <div className="flex gap-3">
+            <SocialIcon
+              href="https://wa.me/919084407615"
+              icon={<FaWhatsapp />}
+              label="Chat on WhatsApp"
+              color="hover:bg-green-500 hover:border-green-500"
+            />
+            <SocialIcon
+              href="https://www.linkedin.com/in/trivixa-it-services-75956a3a3/"
+              icon={<FaLinkedinIn />}
+              label="Follow on LinkedIn"
+              color="hover:bg-blue-600 hover:border-blue-600"
+            />
+            <SocialIcon
+              href="https://x.com/TrivixaIt"
+              icon={<FaTwitter />}
+              label="Follow on X (Twitter)"
+              color="hover:bg-sky-500 hover:border-sky-500"
+            />
+            <SocialIcon
+              href="https://www.instagram.com/trivixa_it_solution"
+              icon={<FaInstagram />}
+              label="Follow on Instagram"
+              color="hover:bg-pink-600 hover:border-pink-600"
+            />
+            <SocialIcon
+              href="https://www.facebook.com/profile.php?id=61585637262250"
+              icon={<FaFacebookF />}
+              label="Like on Facebook"
+              color="hover:bg-blue-700 hover:border-blue-700"
+            />
+          </div>
+        </motion.div>
+
+        {/* --- Section 2: Main Links Grid (5 Columns) --- */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-6 mb-16"
         >
-          {/* Column 1: About */}
-          <motion.div variants={itemVariants} className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                Trivixa<span className="text-[#F47C26]">.</span>
-              </h2>
-              <p className="text-xs text-blue-600 dark:text-blue-300 uppercase tracking-widest mt-1">
-                IT Solutions
-              </p>
-            </div>
-
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-              We help individuals and businesses build powerful, scalable, and
-              modern digital products — from websites to full IT ecosystems.
-            </p>
-
-            {/* Social Icons */}
-            <div className="flex gap-3">
-              <SocialIcon
-                href="https://wa.me/919084407615"
-                icon={<FaWhatsapp />}
-                color="hover:bg-green-500 hover:border-green-500"
+          {/* Column 1: Web/App Development (SEO Rich) */}
+          <motion.div variants={itemVariants}>
+            <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-6 relative inline-block">
+              Web Development
+              <span className="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-[#F47C26]"></span>
+            </h3>
+            <ul className="space-y-3">
+              <FooterLink
+                to="/services/web-development"
+                text="Custom Websites"
               />
-              <SocialIcon
-                href="https://www.linkedin.com/in/trivixa-it-services-75956a3a3/"
-                icon={<FaLinkedinIn />}
-                color="hover:bg-blue-600 hover:border-blue-600"
-              />
-              <SocialIcon
-                href="https://x.com/TrivixaIt"
-                icon={<FaTwitter />}
-                color="hover:bg-sky-500 hover:border-sky-500"
-              />
-              <SocialIcon
-                href="https://www.instagram.com/trivixa_it_solution"
-                icon={<FaInstagram />}
-                color="hover:bg-pink-600 hover:border-pink-600"
-              />
-              <SocialIcon
-                href="https://www.facebook.com/profile.php?id=61585637262250"
-                icon={<FaFacebookF />}
-                color="hover:bg-pink-600 hover:border-pink-600"
-              />
-            </div>
+              <FooterLink to="/services/mern-stack" text="MERN Stack Apps" />
+              <FooterLink to="/services/ecommerce" text="E-commerce Stores" />
+              <FooterLink to="/services/mobile-apps" text="Mobile App Dev" />
+              <FooterLink to="/services/cms" text="WordPress / CMS" />
+            </ul>
           </motion.div>
 
-          {/* Column 2: Company Links */}
+          {/* Column 2: Digital Marketing (SEO Rich) */}
+          <motion.div variants={itemVariants}>
+            <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-6 relative inline-block">
+              Digital Marketing
+              <span className="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-[#F47C26]"></span>
+            </h3>
+            <ul className="space-y-3">
+              <FooterLink to="/services/seo" text="SEO Services" />
+              <FooterLink
+                to="/services/social-media"
+                text="Social Media (SMM)"
+              />
+              <FooterLink to="/services/ppc" text="Google Ads (PPC)" />
+              <FooterLink to="/services/content" text="Content Strategy" />
+              <FooterLink to="/services/branding" text="Brand Identity" />
+            </ul>
+          </motion.div>
+
+          {/* Column 3: Company */}
           <motion.div variants={itemVariants}>
             <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-6 relative inline-block">
               Company
               <span className="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-[#F47C26]"></span>
             </h3>
             <ul className="space-y-3">
-              <FooterLink to="/about" text="About Us" />
-              <FooterLink to="/careers" text="Careers" />
-              <FooterLink to="/services" text="Our Services" />
-              <FooterLink to="/portfolio" text="Portfolio" />
-              <FooterLink to="/career" text="Careers" />
-              <FooterLink to="/corporate-training" text="Corporate" />
-              <FooterLink to="/contact" text="Contact" />
+              <FooterLink to="/about" text="About Trivixa" />
+              <FooterLink to="/careers" text="Careers & Jobs" />
+              <FooterLink to="/team" text="Our Team" />
+              <FooterLink to="/testimonials" text="Success Stories" />
+              <FooterLink to="/contact" text="Contact Us" />
             </ul>
           </motion.div>
 
-          {/* Column 3: Resources */}
+          {/* Column 4: Resources */}
           <motion.div variants={itemVariants}>
             <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-6 relative inline-block">
               Resources
               <span className="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-[#F47C26]"></span>
             </h3>
             <ul className="space-y-3">
-              <FooterLink to="/faq" text="FAQs" />
-              <FooterLink to="/blog" text="Blog & News" />
+              <FooterLink to="/faqs" text="Help & FAQs" />
+              <FooterLink to="/blog" text="Tech Blog" />
               <FooterLink to="/privacy-policy" text="Privacy Policy" />
-              <FooterLink to="/terms-of-service" text="Terms & Conditions" />
-              <FooterLink
-                to="/payment-t-and-c"
-                text="Payment Terms & Conditions"
-              />
+              <FooterLink to="/terms-of-service" text="Terms of Service" />
               <FooterLink to="/sitemap" text="Sitemap" />
             </ul>
           </motion.div>
 
-          {/* Column 4: Contact Info */}
-          <motion.div variants={itemVariants}>
+          {/* Column 5: Contact Info */}
+          <motion.div
+            variants={itemVariants}
+            className="col-span-2 md:col-span-1"
+          >
             <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-6 relative inline-block">
               Get in Touch
               <span className="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-[#F47C26]"></span>
             </h3>
             <ul className="space-y-5">
-              <li className="flex items-start gap-4 group">
-                <div className="mt-1 w-8 h-8 rounded-full bg-white dark:bg-white/5 flex items-center justify-center text-[#F47C26] border border-gray-200 dark:border-white/10 group-hover:bg-[#F47C26] group-hover:text-white transition-all duration-300 shrink-0 shadow-sm dark:shadow-none">
-                  <FaMapMarkerAlt className="text-xs" />
-                </div>
+              <li className="flex items-start gap-3 group">
+                <FaMapMarkerAlt className="mt-1 text-[#F47C26]" />
                 <span className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
-                  Noida, UP 201016
+                  Gaur City Mall, Ghaziabad, Uttar Pradesh-201016, India
                 </span>
               </li>
 
-              <li className="flex items-center gap-4 group">
-                <div className="w-8 h-8 rounded-full bg-white dark:bg-white/5 flex items-center justify-center text-[#F47C26] border border-gray-200 dark:border-white/10 group-hover:bg-[#F47C26] group-hover:text-white transition-all duration-300 shrink-0 shadow-sm dark:shadow-none">
-                  <FaPhoneAlt className="text-xs" />
-                </div>
+              <li className="flex items-center gap-3 group">
+                <FaPhoneAlt className="text-[#F47C26]" />
                 <a
                   href="tel:+919084407615"
                   className="text-gray-600 dark:text-gray-400 text-sm group-hover:text-[#F47C26] transition-colors"
@@ -160,10 +199,8 @@ const Footer = () => {
                 </a>
               </li>
 
-              <li className="flex items-center gap-4 group">
-                <div className="w-8 h-8 rounded-full bg-white dark:bg-white/5 flex items-center justify-center text-[#F47C26] border border-gray-200 dark:border-white/10 group-hover:bg-[#F47C26] group-hover:text-white transition-all duration-300 shrink-0 shadow-sm dark:shadow-none">
-                  <FaEnvelope className="text-xs" />
-                </div>
+              <li className="flex items-center gap-3 group">
+                <FaEnvelope className="text-[#F47C26]" />
                 <a
                   href="mailto:krishna.trivixa@gmail.com"
                   className="text-gray-600 dark:text-gray-400 text-sm group-hover:text-[#F47C26] transition-colors break-all"
@@ -175,7 +212,7 @@ const Footer = () => {
           </motion.div>
         </motion.div>
 
-        {/* Bottom Bar */}
+        {/* --- Section 3: Bottom Copyright --- */}
         <motion.div
           variants={itemVariants}
           className="pt-8 border-t border-gray-200 dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-4"
@@ -183,7 +220,7 @@ const Footer = () => {
           <p className="text-gray-500 dark:text-gray-500 text-sm text-center md:text-left">
             &copy; {currentYear}{" "}
             <span className="text-gray-900 dark:text-white font-semibold">
-              Trivixa IT Solutions
+              Trivixa IT Solution
             </span>
             . All rights reserved.
           </p>
@@ -191,7 +228,7 @@ const Footer = () => {
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none">
             <FaCode className="text-[#F47C26]" />
             <span className="text-gray-500 dark:text-gray-400 text-xs font-medium">
-              Crafted with precision & innovation
+              Made in India with ❤️
             </span>
           </div>
         </motion.div>
@@ -201,11 +238,12 @@ const Footer = () => {
 };
 
 // Helper Component: Social Icon
-const SocialIcon = ({ href, icon, color }) => (
+const SocialIcon = ({ href, icon, color, label }) => (
   <a
     href={href}
     target="_blank"
     rel="noopener noreferrer"
+    aria-label={label}
     className={`w-10 h-10 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 transition-all duration-300 hover:text-white hover:-translate-y-1 shadow-sm dark:shadow-none ${color}`}
   >
     {icon}

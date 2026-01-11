@@ -198,7 +198,7 @@ function Navbar() {
             showNavbar ? "translate-y-0" : "-translate-y-full"
           }`}
         >
-          <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-12 sm:h-14 flex items-center justify-between gap-4">
+          <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-12 sm:h-12 flex items-center justify-between gap-4">
             {/* 1. Logo */}
             <Link
               to="/"
@@ -227,7 +227,7 @@ function Navbar() {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onFocus={() => setShowResults(true)}
-                  className="w-full h-10 pl-10 pr-4 bg-[#0B2545]/5 dark:bg-white/10 border border-transparent dark:border-white/10 rounded-xl text-sm text-[#0B2545] dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:bg-white dark:focus:bg-[#0B2545] focus:ring-2 focus:ring-[#F47C26]/50 focus:border-[#F47C26] transition-all duration-300 shadow-inner"
+                  className="w-full h-8 pl-10 pr-4 bg-[#0B2545]/5 dark:bg-white/10 border border-transparent dark:border-white/10 rounded-xl text-sm text-[#0B2545] dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:bg-white dark:focus:bg-[#0B2545] focus:ring-2 focus:ring-[#F47C26]/50 focus:border-[#F47C26] transition-all duration-300 shadow-inner"
                   placeholder="Search projects..."
                 />
 

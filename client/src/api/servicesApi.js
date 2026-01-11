@@ -1,5 +1,16 @@
 import axios from './axios';
 
+// Get all projects
+export const getProjects = async () => {
+    try {
+        const response = await axios.get('/projects');
+        return response.data.data || [];
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        return [];
+    }
+};
+
 // Upload course image
 export const uploadCourseImage = async (formData) => {
     try {
