@@ -25,17 +25,17 @@ const ScheduleMeetingModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       // Scroll to top of the page
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
       // Lock body scroll
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
       // Restore body scroll
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     }
 
     // Cleanup function to reset overflow when component unmounts
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, [isOpen]);
 
@@ -49,9 +49,9 @@ const ScheduleMeetingModal = ({ isOpen, onClose }) => {
 
   // --- Logic: Generate Times ---
   const formatTimeDisplay = (time24) => {
-    const [hours, minutes] = time24.split(':');
+    const [hours, minutes] = time24.split(":");
     const hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const ampm = hour >= 12 ? "PM" : "AM";
     const hour12 = hour % 12 || 12; // Convert 0 to 12 for 12 AM
     return `${hour12}:${minutes} ${ampm}`;
   };
@@ -59,24 +59,21 @@ const ScheduleMeetingModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (selectedDate) {
       const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+      const isWeekend =
+        selectedDate.getDay() === 0 || selectedDate.getDay() === 6;
 
       if (isWeekend) {
         // Weekend times: 10AM, 1PM, 3PM, 6PM, 8PM (stored in 24h format)
-        const weekendTimes = [
-          '10:00', '13:00', '15:00', '18:00', '20:00'
-        ];
+        const weekendTimes = ["10:00", "13:00", "15:00", "18:00", "20:00"];
         setAvailableTimes(weekendTimes);
       } else {
         // Weekday times: 9AM, 6PM, 8PM (stored in 24h format)
-        const weekdayTimes = [
-          '09:00', '18:00', '20:00'
-        ];
+        const weekdayTimes = ["09:00", "18:00", "20:00"];
         setAvailableTimes(weekdayTimes);
       }
 
       // Reset selected time when date changes
-      setSelectedTime('');
+      setSelectedTime("");
     }
   }, [selectedDate]);
 
@@ -94,12 +91,14 @@ const ScheduleMeetingModal = ({ isOpen, onClose }) => {
         meetingDate: selectedDate,
         meetingTime: selectedTime,
         meetingType: "Initial Consultation",
-        adminEmail: "krishna.trivixa@gmail.com"
+        adminEmail: "krishna.trivixa@gmail.com",
       };
-      
+
       const result = await submitContactForm(meetingData);
       if (result.success) {
-        toast.success("Meeting scheduled successfully! Confirmation sent to your email.");
+        toast.success(
+          "Meeting scheduled successfully! Confirmation sent to your email."
+        );
         setTimeout(() => {
           onClose();
           setFormData({
@@ -129,7 +128,7 @@ const ScheduleMeetingModal = ({ isOpen, onClose }) => {
     const date = new Date();
     date.setDate(date.getDate() + i + 1);
     return date;
-  }).filter((d) => d.getDay() !== 0 && d.getDay() !== 6);
+  });
 
   if (!isOpen) return null;
 
@@ -230,21 +229,62 @@ const ScheduleMeetingModal = ({ isOpen, onClose }) => {
                         setSelectedDate(date);
                         setCurrentStep(2);
                       }}
-                      className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
+                      className={`relative flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 group overflow-hidden h-full min-h-[110px] ${
                         isSelected
-                          ? "border-[#F47C26] bg-[#F47C26]/10 text-[#F47C26]"
-                          : "border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:border-[#F47C26] hover:text-[#F47C26]"
+                          ? "bg-gradient-to-br from-[#F47C26] to-[#d5671f] text-white border-transparent shadow-xl shadow-orange-500/30 transform scale-105 z-10"
+                          : "bg-white dark:bg-[#0F1430] border-gray-100 dark:border-white/5 text-gray-500 dark:text-gray-400 hover:border-[#F47C26] hover:bg-gray-50 dark:hover:bg-white/5 hover:shadow-lg dark:hover:shadow-none hover:-translate-y-1"
                       }`}
                     >
-                      <span className="text-xs uppercase font-bold opacity-70">
+                      {/* Hover Glow Effect (Background) */}
+                      {!isSelected && (
+                        <div className="absolute inset-0 bg-[#F47C26]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                      )}
+
+                      {/* Weekday (e.g., MON) */}
+                      <span
+                        className={`text-[10px] uppercase font-bold tracking-widest mb-1 ${
+                          isSelected
+                            ? "text-white/80"
+                            : "text-gray-400 dark:text-gray-500"
+                        }`}
+                      >
                         {date.toLocaleDateString("en-US", { weekday: "short" })}
                       </span>
-                      <span className="text-xl font-black my-1">
+
+                      {/* Date Number (e.g., 12) */}
+                      <span
+                        className={`text-3xl font-black leading-none my-1 ${
+                          isSelected
+                            ? "text-white"
+                            : "text-gray-900 dark:text-white group-hover:text-[#F47C26] transition-colors"
+                        }`}
+                      >
                         {date.getDate()}
                       </span>
-                      <span className="text-xs opacity-70">
+
+                      {/* Month (e.g., Jan) */}
+                      <span
+                        className={`text-xs font-medium ${
+                          isSelected
+                            ? "text-white/90"
+                            : "text-gray-500 dark:text-gray-400"
+                        }`}
+                      >
                         {date.toLocaleDateString("en-US", { month: "short" })}
                       </span>
+
+                      {/* Weekend Badge (Conditional) */}
+                      {(date.getDay() === 0 || date.getDay() === 6) && (
+                        <span
+                          className={`mt-2 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${
+                            isSelected
+                              ? "bg-white/20 text-white border border-white/20"
+                              : "bg-orange-50 dark:bg-orange-500/10 text-[#F47C26] border border-orange-100 dark:border-orange-500/20"
+                          }`}
+                        >
+                          Weekend
+                        </span>
+                      )}
                     </button>
                   );
                 })}
